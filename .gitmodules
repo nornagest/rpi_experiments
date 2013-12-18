@@ -1,0 +1,9 @@
+[submodule "external/piface"]
+	path = external/piface
+	url = https://github.com/thomasmacpherson/piface.git
+[submodule "external/piface-perl"]
+	path = external/piface-perl
+	url = https://github.com/Robertof/piface-perl.git
+[submodule "external/wiringPi"]
+	path = external/wiringPi
+	url = git://git.drogon.net/wiringPi
