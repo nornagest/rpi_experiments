@@ -17,10 +17,7 @@ has 'Sensors' => (
     my $self = shift;
     $self->load_modules() unless (-e $self->Directory);
     my @files = $self->get_sensors($self->Directory);
-    my @sensors;
-    for (@files) {
-      push @sensors, DS18B20::Sensor->new(File => $_);
-    }
+    my @sensors = map { DS18B20::Sensor->new(File => $_) } @files;
     return \@sensors;
   }
 );
@@ -40,13 +37,7 @@ sub get_sensors {
   my @devices = readdir($dh);
   closedir($dh);
   
-  my @files;
-  for my $dev (@devices) {
-    if( $dev =~ m/28.*/ ) {
-      my $file = $dir . '/' . $dev . '/w1_slave';
-      push @files, $file;
-    }
-  }
+  my @files = map { $dir . '/' . $_ . '/w1_slave' } grep { /^28.*/ } @devices;
   return @files;
 }
 
