@@ -37,7 +37,7 @@ sub main_tick {
     $_[KERNEL]->post('reader', 'read', $sensor);
   }
 
-  $_[HEAP]->{time} += 60;
+  $_[HEAP]->{time} += 300;
   $_[KERNEL]->alarm( tick => $_[HEAP]->{time});
 }
 
