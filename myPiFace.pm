@@ -1,6 +1,5 @@
 package myPiFace;
 
-use feature ":5.10";
 use Moose;
 
 use PiFace qw(:all);
