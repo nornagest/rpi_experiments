@@ -23,7 +23,7 @@ while (1) {
     handle_input($input, $lastInput);
     $lastInput = $input;
   } 
-  usleep(1000);
+  usleep(10000);
 }
 
 sub handle_input {
