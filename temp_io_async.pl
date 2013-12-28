@@ -13,10 +13,22 @@ my $ds18b20 = DS18B20->new();
 
 sub read_temp {
   for(@{$ds18b20->Sensors}) {
-    print scalar localtime(), " ", $_->File, " ", $_->get_temp(), "°C\n";
+      my %temp = (
+        "time" => scalar localtime(),
+        "sensor" => $_->File,
+        "value" => $_->get_temp(),
+      );
+      process_temp(\%temp);
   }
 }
    
+sub process_temp {
+    my $temp = shift;
+    print %{$temp}{"time"}, " ",
+      %{$temp}{"sensor"}, " ",
+      %{$temp}{"value"}, "°C\n";
+}
+
  
 my $timer = IO::Async::Timer::Periodic->new(
    interval => 200,
