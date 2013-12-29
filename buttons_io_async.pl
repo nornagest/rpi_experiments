@@ -21,7 +21,7 @@
 use Modern::Perl 2013;
 use warnings;
 
-use MyPiFace;
+#use MyPiFace;
 
 use IO::Async::Channel;
 use IO::Async::Loop;
@@ -50,7 +50,7 @@ use Time::HiRes qw(sleep usleep);
 #Stream/Socket
 # for inputs via web interface
 
-my $piface = MyPiFace->new;
+#my $piface = MyPiFace->new;
 start();
 
 my $loop = IO::Async::Loop->new;
@@ -70,14 +70,15 @@ my $routine1 = IO::Async::Routine->new(
        $out_ch1->send( \$output );
 
        my $lastInput = 0;
-       my $state = 0;
        while(1) {
            my $input = $piface->read_byte();
            if ($input != $lastInput ) {
-               out_ch1-> send( \$input );
+               $out_ch1->send( \$input );
+               $lastInput = $input;
            }
            usleep(10000);
        }
+       return;
    },
  
    on_finish => sub {
@@ -131,11 +132,11 @@ $loop->run;
 
 sub start {
     say "Initializing PiFace...";
-    $piface->init;
+    #$piface->init;
 }
 
 sub finish {
-    $piface->deinit;
+    #$piface->deinit;
     $loop->stop;
     say "Goodbye!";
 }
