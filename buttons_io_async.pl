@@ -165,17 +165,17 @@ sub handle_button {
     my $button = shift;
 
     if    ($button == 0) { 
-        $state = ($state + 1) % 256 
+        $state = ($state + 1) % 256;
         say "+1 ($state)";
     } elsif ($button == 1) { 
-        $state = ($state - 1) % 256 
+        $state = ($state - 1) % 256;
         say "-1 ($state)";
     } elsif ($button == 2) { 
-        $state = 0 
+        $state = 0;
         say "reset. ($state)";
     } elsif ($button == 3) { 
         say "exit.";
-        finish() 
+        finish();
     };
 
     $in_ch2->send( \$state );
