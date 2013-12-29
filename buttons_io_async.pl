@@ -50,6 +50,8 @@ use Time::HiRes qw(sleep usleep);
 #Stream/Socket
 # for inputs via web interface
 
+my $state = 0;
+
 my $piface = MyPiFace->new;
 
 my $loop = IO::Async::Loop->new;
@@ -98,8 +100,10 @@ my $routine2 = IO::Async::Routine->new(
         $out_ch2->send( \$output );
 
         start();
-        #my $input = ${$in_ch->recv};
-        #$out_ch->send( \$input );
+
+        my $input = ${$in_ch2->recv};
+        $piface->write_byte($input);
+        $out_ch2->send( \$input );
 
         say "Routine 2 waiting for 10s...";
         sleep(10);
@@ -164,14 +168,13 @@ sub handle_input {
 }
 
 sub handle_button {
-    my state $state = 0;
     my $button = shift;
 
     if    ($button == 0) { $state = ($state + 1) % 256 }
     elsif ($button == 1) { $state = ($state - 1) % 256 }
     elsif ($button == 2) { $state = 0 }
-    elsif ($button == 3) { finalize() };
+    elsif ($button == 3) { finish() };
 
-    $in_ch2->send($state);
+    $in_ch2->send( \$state );
 }
 
