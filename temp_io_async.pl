@@ -29,7 +29,7 @@ sub process_temp {
 
  
 my $timer = IO::Async::Timer::Periodic->new(
-   interval => 200,
+   interval => 300,
    first_interval => 1,
  
    on_tick => sub {
