@@ -119,7 +119,7 @@ $out_ch1->configure(
         my ( $ch, $refout ) = @_;
         say "Input routine says: ", $refout->{'text'}
         if(defined $refout->{'text'});
-        if(defined $refout->{'input'} && defined $refout->{'lastInput'}) {
+        if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
             my $input = $refout->{'input'};
             my $last_input =  $refout->{'last_input'};
             say "Input: ", $input, " Last input: ", $last_input;
