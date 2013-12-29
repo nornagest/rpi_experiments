@@ -66,7 +66,7 @@ my $routine1 = IO::Async::Routine->new(
    code => sub {
        say "Routine 1 started...";
        my $output = "Just checking...";
-       $out_ch1->send( \$output );
+       $out_ch1->send( { 'text' => $output } );
 
 start();
 
@@ -74,7 +74,7 @@ start();
        while(1) {
            my $input = $piface->read_byte();
            if ($input != $lastInput ) {
-               $out_ch1->send( \$input );
+               $out_ch1->send( { 'input' => $input, 'lastInput' => $lastInput } );
                $lastInput = $input;
            }
            usleep(10000);
@@ -119,8 +119,11 @@ $loop->add( $routine2 );
 
 $out_ch1->configure(
    on_recv => sub {
-      my ( $ch, $output ) = @_;
-      say "Output of Routine 1: $$output";
+      my ( $ch, $refout ) = @_;
+      say "Output of Routine 1: ", $refout->{'text'}
+         if(defined $refout->{'text'});
+      say "Input: ", $refout->{'input'}, " Last input: ", $refout->{'lastInput'}
+         if(defined $refout->{'input'} && defined $refout->{'lastInput'});
    }
 );
 
