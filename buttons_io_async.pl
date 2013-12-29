@@ -164,14 +164,14 @@ sub handle_button {
     my $button = shift;
 
     if    ($button == 0) { 
-        say "+1";
         $state = ($state + 1) % 256 
+        say "+1 ($state)";
     } elsif ($button == 1) { 
-        say "-1";
         $state = ($state - 1) % 256 
+        say "-1 ($state)";
     } elsif ($button == 2) { 
-        say "reset.";
         $state = 0 
+        say "reset. ($state)";
     } elsif ($button == 3) { 
         say "exit.";
         finish() 
