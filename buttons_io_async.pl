@@ -51,7 +51,7 @@ use Time::HiRes qw(sleep usleep);
 # for inputs via web interface
 
 my $piface = MyPiFace->new;
-start;
+start();
 
 my $loop = IO::Async::Loop->new;
 
@@ -67,12 +67,11 @@ my $routine1 = IO::Async::Routine->new(
    code => sub {
            #my $input = ${$in_ch->recv};
            #$out_ch->send( \$input );
-       }
    },
  
    on_finish => sub {
       say "Routine1 exited.";
-      finish;
+      finish();
    },
 );
 
@@ -83,12 +82,11 @@ my $routine2 = IO::Async::Routine->new(
    code => sub {
            #my $input = ${$in_ch->recv};
            #$out_ch->send( \$input );
-       }
    },
  
    on_finish => sub {
       say "Routine2 exited.";
-      finish;
+      finish();
    },
 );
  
