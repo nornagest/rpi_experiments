@@ -62,6 +62,9 @@ my $out_ch1  = IO::Async::Channel->new;
 my $in_ch2 = IO::Async::Channel->new;
 my $out_ch2  = IO::Async::Channel->new;
 
+#global state in this case for counter on LEDs
+my $state = 0;
+
 my $input_routine = IO::Async::Routine->new(
     channels_in  => [ $in_ch1 ],
     channels_out => [ $out_ch1 ],
@@ -99,7 +102,6 @@ my $output_routine = IO::Async::Routine->new(
         while(1) {
             my $input = ${$in_ch2->recv};
             $piface->write_byte($input);
-            $out_ch2->send( \$input );
         }
     },
 
@@ -111,8 +113,6 @@ my $output_routine = IO::Async::Routine->new(
 
 $loop->add( $input_routine );
 $loop->add( $output_routine );
-
-my $state = 0;
 
 $out_ch1->configure(
     on_recv => sub {
@@ -163,10 +163,19 @@ sub handle_input {
 sub handle_button {
     my $button = shift;
 
-    if    ($button == 0) { $state = ($state + 1) % 256 }
-    elsif ($button == 1) { $state = ($state - 1) % 256 }
-    elsif ($button == 2) { $state = 0 }
-    elsif ($button == 3) { finish() };
+    if    ($button == 0) { 
+        say "+1";
+        $state = ($state + 1) % 256 
+    } elsif ($button == 1) { 
+        say "-1";
+        $state = ($state - 1) % 256 
+    } elsif ($button == 2) { 
+        say "reset.";
+        $state = 0 
+    } elsif ($button == 3) { 
+        say "exit.";
+        finish() 
+    };
 
     $in_ch2->send( \$state );
 }
