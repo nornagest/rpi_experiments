@@ -21,7 +21,7 @@
 use Modern::Perl 2013;
 use warnings;
 
-#use MyPiFace;
+use MyPiFace;
 
 use IO::Async::Channel;
 use IO::Async::Loop;
@@ -50,8 +50,7 @@ use Time::HiRes qw(sleep usleep);
 #Stream/Socket
 # for inputs via web interface
 
-#my $piface = MyPiFace->new;
-start();
+my $piface = MyPiFace->new;
 
 my $loop = IO::Async::Loop->new;
 
@@ -68,6 +67,8 @@ my $routine1 = IO::Async::Routine->new(
        say "Routine 1 started...";
        my $output = "Just checking...";
        $out_ch1->send( \$output );
+
+start();
 
        my $lastInput = 0;
        while(1) {
@@ -93,10 +94,12 @@ my $routine2 = IO::Async::Routine->new(
  
    code => sub {
        say "Routine 2 started...";
-           #my $input = ${$in_ch->recv};
-           #$out_ch->send( \$input );
        my $output = "Just checking...";
        $out_ch2->send( \$output );
+
+start();
+           #my $input = ${$in_ch->recv};
+           #$out_ch->send( \$input );
 
        say "Routine 2 waiting for 10s...";
        sleep(10);
@@ -132,11 +135,11 @@ $loop->run;
 
 sub start {
     say "Initializing PiFace...";
-    #$piface->init;
+    $piface->init;
 }
 
 sub finish {
-    #$piface->deinit;
+    $piface->deinit;
     $loop->stop;
     say "Goodbye!";
 }
