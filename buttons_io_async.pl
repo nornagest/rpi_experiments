@@ -50,8 +50,6 @@ use Time::HiRes qw(sleep usleep);
 #Stream/Socket
 # for inputs via web interface
 
-my $state = 0;
-
 my $piface = MyPiFace->new;
 
 my $loop = IO::Async::Loop->new;
@@ -101,12 +99,11 @@ my $routine2 = IO::Async::Routine->new(
 
         start();
 
-        my $input = ${$in_ch2->recv};
-        $piface->write_byte($input);
-        $out_ch2->send( \$input );
-
-        say "Routine 2 waiting for 10s...";
-        sleep(10);
+        while(1) {
+            my $input = ${$in_ch2->recv};
+            $piface->write_byte($input);
+            $out_ch2->send( \$input );
+        }
     },
 
     on_finish => sub {
@@ -118,8 +115,7 @@ my $routine2 = IO::Async::Routine->new(
 $loop->add( $routine1 );
 $loop->add( $routine2 );
 
-#my $test = "Test.";
-#$in_ch->send( \$test );
+my $state = 0;
 
 $out_ch1->configure(
     on_recv => sub {
