@@ -65,8 +65,19 @@ my $routine1 = IO::Async::Routine->new(
    channels_out => [ $out_ch1 ],
  
    code => sub {
-           #my $input = ${$in_ch->recv};
-           #$out_ch->send( \$input );
+       say "Routine 1 started...";
+       my $output = "Just checking...";
+       $out_ch1->send( \$output );
+
+       my $lastInput = 0;
+       my $state = 0;
+       while(1) {
+           my $input = $piface->read_byte();
+           if ($input != $lastInput ) {
+               out_ch1-> send( \$input );
+           }
+           usleep(10000);
+       }
    },
  
    on_finish => sub {
@@ -80,8 +91,14 @@ my $routine2 = IO::Async::Routine->new(
    channels_out => [ $out_ch2 ],
  
    code => sub {
+       say "Routine 2 started...";
            #my $input = ${$in_ch->recv};
            #$out_ch->send( \$input );
+       my $output = "Just checking...";
+       $out_ch2->send( \$output );
+
+       say "Routine 2 waiting for 10s...";
+       sleep(10);
    },
  
    on_finish => sub {
@@ -99,18 +116,26 @@ $loop->add( $routine2 );
 $out_ch1->configure(
    on_recv => sub {
       my ( $ch, $output ) = @_;
-      #say "Routine said: $$output";
-      #$loop->stop;
+      say "Output of Routine 1: $$output";
+   }
+);
+
+$out_ch2->configure(
+   on_recv => sub {
+      my ( $ch, $output ) = @_;
+      say "Output of Routine 2: $$output";
    }
 );
 
 $loop->run;
 
 sub start {
+    say "Initializing PiFace...";
     $piface->init;
 }
 
 sub finish {
     $piface->deinit;
     $loop->stop;
+    say "Goodbye!";
 }
