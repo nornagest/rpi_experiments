@@ -29,15 +29,18 @@ use IO::Async::Routine;
 use Time::HiRes qw(sleep usleep);
 
 #Main:
-# initialize PiFace (?)
+# create PiFace object
 # initialize Channels
+# keep state (should be done better than right now)
+# handle Inputs
+# create Outputs
 #
 #Routine 1:
 # Read PiFace inputs
 # on inputs -> send via Channel
 #
 #Routine 2:
-# on input write to PiFace outputs
+# on input from channel write to PiFace outputs
 #
 #Signal:
 # handle external Signals
@@ -59,44 +62,38 @@ my $out_ch1  = IO::Async::Channel->new;
 my $in_ch2 = IO::Async::Channel->new;
 my $out_ch2  = IO::Async::Channel->new;
 
-my $routine1 = IO::Async::Routine->new(
+my $input_routine = IO::Async::Routine->new(
     channels_in  => [ $in_ch1 ],
     channels_out => [ $out_ch1 ],
 
     code => sub {
-        say "Routine 1 started...";
-        my $output = "Just checking...";
-        $out_ch1->send( { 'text' => $output } );
-
+        $out_ch1->send( { 'text' => "Input routine started..." } );
         start();
 
-        my $lastInput = 0;
+        my $last_input = 0;
         while(1) {
             my $input = $piface->read_byte();
-            if ($input != $lastInput ) {
-                $out_ch1->send( { 'input' => $input, 'lastInput' => $lastInput } );
-                $lastInput = $input;
+            if ($input != $last_input ) {
+                $out_ch1->send( { 'input' => $input, 'last_input' => $last_input } );
+                $last_input = $input;
             }
             usleep(10000);
         }
-        return;
     },
 
     on_finish => sub {
-        say "Routine1 exited.";
+        say "Input routine exited.";
         finish();
     },
 );
 
-my $routine2 = IO::Async::Routine->new(
+my $output_routine = IO::Async::Routine->new(
     channels_in  => [ $in_ch2 ],
     channels_out => [ $out_ch2 ],
 
     code => sub {
-        say "Routine 2 started...";
-        my $output = "Just checking...";
+        my $output = "Output routine started...";
         $out_ch2->send( \$output );
-
         start();
 
         while(1) {
@@ -107,26 +104,26 @@ my $routine2 = IO::Async::Routine->new(
     },
 
     on_finish => sub {
-        say "Routine2 exited.";
+        say "Output routine exited.";
         finish();
     },
 );
 
-$loop->add( $routine1 );
-$loop->add( $routine2 );
+$loop->add( $input_routine );
+$loop->add( $output_routine );
 
 my $state = 0;
 
 $out_ch1->configure(
     on_recv => sub {
         my ( $ch, $refout ) = @_;
-        say "Output of Routine 1: ", $refout->{'text'}
+        say "Input routine says: ", $refout->{'text'}
         if(defined $refout->{'text'});
         if(defined $refout->{'input'} && defined $refout->{'lastInput'}) {
             my $input = $refout->{'input'};
-            my $lastInput =  $refout->{'lastInput'};
-            say "Input: ", $input, " Last input: ", $lastInput;
-            handle_input($input, $lastInput);
+            my $last_input =  $refout->{'last_input'};
+            say "Input: ", $input, " Last input: ", $last_input;
+            handle_input($input, $last_input);
         }
     }
 );
@@ -134,7 +131,7 @@ $out_ch1->configure(
 $out_ch2->configure(
     on_recv => sub {
         my ( $ch, $output ) = @_;
-        say "Output of Routine 2: $$output";
+        say "Output routine says: $$output";
     }
 );
 
