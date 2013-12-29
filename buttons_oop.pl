@@ -6,12 +6,12 @@ use warnings;
 
 use Time::HiRes qw(sleep usleep);
 
-use myPiFace;
+use MyPiFace;
 
 my $lastInput = 0;
 my $state = 0;
 
-my $piface = myPiFace->new();
+my $piface = MyPiFace->new();
 
 $piface->init();
 

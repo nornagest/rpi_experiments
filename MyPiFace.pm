@@ -1,4 +1,4 @@
-package myPiFace;
+package MyPiFace;
 
 use Moose;
 
