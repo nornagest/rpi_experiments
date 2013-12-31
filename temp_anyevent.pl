@@ -31,16 +31,6 @@ sub process_temp {
     print $temp->{"time"}, " ", $temp->{"sensor"}, " ", $temp->{"value"}, "°C\n";
 }
 
- 
-my $timer = IO::Async::Timer::Periodic->new(
-   interval => 300,
-   first_interval => 1,
- 
-   on_tick => sub {
-     read_temp();
-   },
-);
-
 my $exit_loop = AnyEvent->condvar;
 
 $exit_loop->recv; 
