@@ -4,12 +4,21 @@ use Modern::Perl 2013;
 use warnings;
 
 use DS18B20;
-
 use IO::Async::Timer::Periodic; 
 use IO::Async::Loop;
 
-my $loop = IO::Async::Loop->new;
 my $ds18b20 = DS18B20->new();
+my $loop = IO::Async::Loop->new;
+my $timer = IO::Async::Timer::Periodic->new(
+   interval => 300,
+   first_interval => 1,
+   on_tick => sub { read_temp(); },
+);
+ 
+$timer->start;
+$loop->add( $timer );
+$loop->run;
+
 
 sub read_temp {
   for(@{$ds18b20->Sensors}) {
@@ -26,19 +35,3 @@ sub process_temp {
     my $temp = shift;
     print $temp->{"time"}, " ", $temp->{"sensor"}, " ", $temp->{"value"}, "°C\n";
 }
-
- 
-my $timer = IO::Async::Timer::Periodic->new(
-   interval => 300,
-   first_interval => 1,
- 
-   on_tick => sub {
-     read_temp();
-   },
-);
- 
-$timer->start;
- 
-$loop->add( $timer );
- 
-$loop->run;
