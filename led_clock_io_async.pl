@@ -126,7 +126,6 @@ sub create_input_routine {
     $out_ch1->configure(
         on_recv => sub {
             my ( $ch, $refout ) = @_;
-            say "Input routine says: ", $refout->{'text'}
             if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
                 my $input = $refout->{'input'};
                 my $last_input =  $refout->{'last_input'};
