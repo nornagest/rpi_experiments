@@ -10,27 +10,27 @@ use IO::Async::Loop;
 my $ds18b20 = DS18B20->new();
 my $loop = IO::Async::Loop->new;
 my $timer = IO::Async::Timer::Periodic->new(
-   interval => 300,
-   first_interval => 1,
-   on_tick => sub { read_temp(); },
+    interval => 300,
+    first_interval => 1,
+    on_tick => sub { read_temp(); },
 );
- 
+
 $timer->start;
 $loop->add( $timer );
 $loop->run;
 
 
 sub read_temp {
-  for(@{$ds18b20->Sensors}) {
-      my %temp = (
-        "time" => scalar localtime(),
-        "sensor" => $_->File,
-        "value" => $_->get_temp(),
-      );
-      process_temp(\%temp);
-  }
+    for(@{$ds18b20->Sensors}) {
+        my %temp = (
+            "time" => scalar localtime(),
+            "sensor" => $_->File,
+            "value" => $_->get_temp(),
+        );
+        process_temp(\%temp);
+    }
 }
-   
+
 sub process_temp {
     my $temp = shift;
     print $temp->{"time"}, " ", $temp->{"sensor"}, " ", $temp->{"value"}, "°C\n";
