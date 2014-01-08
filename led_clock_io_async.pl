@@ -88,11 +88,13 @@ sub create_and_add_notifiers {
 }
 sub create_timer {
     my $loop = shift;
+
     my $timer = IO::Async::Timer::Periodic->new(
         interval => 1,
         first_interval => 1,
         on_tick => sub { handle_tick(); },
     );
+    $timer->start;
     $loop->add( $timer );
 }
 
@@ -140,7 +142,6 @@ sub create_output_routine {
 
     my $output_routine = IO::Async::Routine->new(
         channels_in  => [ $in_ch2 ],
-        channels_out => [ $out_ch2 ],
 
         code => sub {
             start();
@@ -161,7 +162,6 @@ sub create_output_routine {
 
 sub handle_input {
     my ($input, $last_input) = (@_);
-    say $last_input, " -> ", $input;
 
     my @buttons = (0,0,0,0);
     for my $i (0..3) {
@@ -179,10 +179,9 @@ sub handle_button {
         $state = ($state + 1) % 3;
     } elsif ($button == 1) { 
         $state = ($state - 1) % 3;
-    } elsif (button == 2) {
+    } elsif ($button == 2) {
         $state = 0;
     } elsif ($button == 3) { 
-        say "exit.";
         finish();
     };
 }
