@@ -29,15 +29,10 @@ use Time::HiRes qw(sleep usleep);
 
 #Main:
 #
+# Create PiFace
 # Create Loop
 # Create Notifiers and stuff
 # Start Loop
-#
-# create PiFace object
-# initialize Channels
-# keep state (should be done better than right now)
-# handle Inputs
-# create Outputs
 #
 #Routine 1:
 # Read PiFace inputs
@@ -51,18 +46,29 @@ use Time::HiRes qw(sleep usleep);
 # Stop/Restart
 #
 #Timer:
-# Check PulseAudio regularly
+# Check services regularly
 # play/stop on time
 #
 #Stream/Socket
-# for inputs via web interface
+# for inputs via web interface or keyboard
+#
+#TODO:
+#refactoring
+#extract creation of notifiers, make classes if useful
+#handle keeping state more sensible
+#add more stuff (signals, stream input, services/programs/commands to start)
+
+my $state = 0;
+my $in_ch1 = IO::Async::Channel->new;
+my $out_ch1  = IO::Async::Channel->new;
+my $in_ch2 = IO::Async::Channel->new;
+my $out_ch2  = IO::Async::Channel->new;
 
 my $piface = MyPiFace->new;
 
 my $loop = IO::Async::Loop->new;
 
 #global state in this case for counter on LEDs
-my $state = 0;
 
 create_and_add_notifiers($loop);
 say "Ready...";
@@ -88,8 +94,6 @@ sub create_and_add_notifiers {
 sub create_input_routine {
     my $loop = shift;
 
-    my $in_ch1 = IO::Async::Channel->new;
-    my $out_ch1  = IO::Async::Channel->new;
     my $input_routine = IO::Async::Routine->new(
         channels_in  => [ $in_ch1 ],
         channels_out => [ $out_ch1 ],
@@ -133,8 +137,6 @@ sub create_input_routine {
 sub create_output_routine {
     my $loop = shift;
 
-    my $in_ch2 = IO::Async::Channel->new;
-    my $out_ch2  = IO::Async::Channel->new;
     my $output_routine = IO::Async::Routine->new(
         channels_in  => [ $in_ch2 ],
         channels_out => [ $out_ch2 ],
