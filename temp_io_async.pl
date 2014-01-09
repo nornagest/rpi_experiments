@@ -31,7 +31,7 @@ sub read_temp {
     }
 }
 
-sub process_temp {
+sub process_temp($) {
     my $temp = shift;
     print $temp->{"time"}, " ", $temp->{"sensor"}, " ", $temp->{"value"}, "°C\n";
 }
