@@ -37,6 +37,7 @@
 #check every second/100ms if output changes or just output current value
 #indicate current output state (show 1/2/3 on change for a moment)
 #add display of date
+#kill subprocess/routine and reset PiFace on exit
 
 use Modern::Perl 2013;
 use warnings;
