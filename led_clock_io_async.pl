@@ -176,9 +176,9 @@ sub handle_button {
     my $button = shift;
 
     if    ($button == 0) { 
-        $state = ($state + 1) % 3;
+        $state = ($state + 1) % 9;
     } elsif ($button == 1) { 
-        $state = ($state - 1) % 3;
+        $state = ($state - 1) % 9;
     } elsif ($button == 2) {
         $state = 0;
     } elsif ($button == 3) { 
@@ -192,5 +192,6 @@ sub handle_tick {
     my @time = localtime();
     my $time = $time[$state];
     $time %= 100 if $state == 5;
+say "Index: $state Output: $time";
     $in_ch2->send( \$time );
 }
