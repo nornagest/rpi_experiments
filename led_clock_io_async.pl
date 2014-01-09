@@ -28,32 +28,33 @@
 #change:
 # audio volume
 
-#need to check:
-#timer interrupt (Time::HiRes e.g.)
-
 #TODO:
-#keep track of display (hour/min/sec)
-#check every second/100ms if output changes or just output current value
-#indicate current output state (show 1/2/3 on change for a moment)
-#add display of date
+#extract PiFace stuff
+#extract creation of notifiers
+#indicate current output state (show on change for a moment)
 #kill subprocess/routine and reset PiFace on exit
 
 use Modern::Perl 2013;
 use warnings;
 
+#use MyNoPiFace; #dummy for testing locally
 use MyPiFace;
 use IO::Async::Channel;
 use IO::Async::Loop;
 use IO::Async::Routine;
 use IO::Async::Timer::Periodic; 
+use IO::Async::Timer::Countdown; 
 use Time::HiRes qw(sleep usleep);
 
-#TODO:
-#use sensible values of localtime structure or hash for mapping
-#
-#0 - hour
-#1 - minute
-#2 - second
+#value to mod by for cycling through fiels
+my $state_mod = 6;
+
+#0 - seconds
+#1 - minutes
+#2 - hours
+#3 - day
+#4 - month
+#5 - year
 my $state = 0;
 
 my $out_ch1  = IO::Async::Channel->new;
@@ -86,6 +87,7 @@ sub create_and_add_notifiers {
     create_output_routine($loop);
     create_timer($loop);
 }
+
 sub create_timer {
     my $loop = shift;
 
@@ -176,9 +178,9 @@ sub handle_button {
     my $button = shift;
 
     if    ($button == 0) { 
-        $state = ($state + 1) % 9;
+        $state = ($state + 1) % $state_mod;
     } elsif ($button == 1) { 
-        $state = ($state - 1) % 9;
+        $state = ($state - 1) % $state_mod;
     } elsif ($button == 2) {
         $state = 0;
     } elsif ($button == 3) { 
@@ -191,7 +193,28 @@ sub handle_tick {
     #send part of time instead
     my @time = localtime();
     my $time = $time[$state];
-    $time %= 100 if $state == 5;
-say "Index: $state Output: $time";
-    $in_ch2->send( \$time );
+    $time++ if $state == 4;      # adjust month representation 
+    $time %= 100 if $state == 5; # adjust year representation
+#say "Index: $state Output: $time";
+    output($time);
+}
+
+sub blink_once {
+    my ($value, $duration) = @_;
+
+    #TODO: Implement
+}
+
+sub blink {
+    my ($value, $interval) = @_;
+
+    #TODO: Implement
+}
+
+my $last_output;
+sub output {
+    my $value = shift;
+
+    $in_ch2->send( \$value ) unless defined $last_output && $value == $last_output;
+    $last_output = $value;
 }
