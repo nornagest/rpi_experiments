@@ -90,7 +90,7 @@ sub create_timer {
     my $loop = shift;
 
     my $timer = IO::Async::Timer::Periodic->new(
-        interval => 1,
+        interval => 0.1,
         first_interval => 1,
         on_tick => sub { handle_tick(); },
     );
