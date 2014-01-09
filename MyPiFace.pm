@@ -1,3 +1,7 @@
+#TODO: 
+#move to MyPiFace::PiFace
+#make this base class to switch between real and dummy class
+
 package MyPiFace;
 
 use Moose;
