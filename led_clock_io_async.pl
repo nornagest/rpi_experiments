@@ -29,7 +29,6 @@
 # audio volume
 
 #need to check:
-#DateTime object (again)
 #timer interrupt (Time::HiRes e.g.)
 
 #TODO:
@@ -50,7 +49,7 @@ use IO::Async::Timer::Periodic;
 use Time::HiRes qw(sleep usleep);
 
 #TODO:
-#use sensible values of DateTime structure or hash for mapping
+#use sensible values of localtime structure or hash for mapping
 #
 #0 - hour
 #1 - minute
@@ -190,6 +189,8 @@ sub handle_button {
 #react on timer interrupt
 sub handle_tick {
     #send part of time instead
-    my $time = time() % 256;
+    my @time = localtime();
+    my $time = $time[$state];
+    $time %= 100 if $state == 5;
     $in_ch2->send( \$time );
 }
