@@ -19,12 +19,13 @@
 #     REVISION: ---
 #===============================================================================
 
+#===============================================================================
 #TODO:
 #add fault tolerance
 #
 #manage notifiers (or just access via $loop)
 #
-#rename (GOOD NAME!)
+#use Exporter
 #
 #extract PiFace stuff
 #extract creation of notifiers
@@ -51,18 +52,19 @@
 #use outputs (relais/433MHz)
 #
 #control/integrate camera module on creampi
+#===============================================================================
 
 use Modern::Perl 2013;
 use warnings;
 
-use MyInputRoutine;
-use MyOutputRoutine;
-use MyTimer;
+use Notifier::MyInputRoutine;
+use Notifier::MyOutputRoutine;
+use Notifier::MyTimer;
 
 use IO::Async::Loop;
 
-#use MyNoPiFace; #dummy for testing locally
-use MyPiFace;
+use Interface::MyNoPiFace; #dummy for testing locally
+#use Interface::MyPiFace;
 
 #0 - seconds
 #1 - minutes
@@ -84,10 +86,11 @@ my $loop = IO::Async::Loop->new;
 say "Ready...";
 $loop->run;
 
-###########################################
+#===============================================================================
 
 sub create_and_add_notifiers($$) {
     my ($loop, $piface) = @_;
+
     MyInputRoutine::create_input_routine($loop, $piface, \&handle_input);
     $out_ch = MyOutputRoutine::create_output_routine($loop, $piface);
     MyTimer::create_timer_periodic($loop, 0.1, 1, \&handle_tick);
