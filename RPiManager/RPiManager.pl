@@ -63,8 +63,8 @@ use Notifier::MyTimer;
 
 use IO::Async::Loop;
 
-use Interface::MyNoPiFace; #dummy for testing locally
-#use Interface::MyPiFace;
+#use Interface::MyNoPiFace; #dummy for testing locally
+use Interface::MyPiFace;
 
 #0 - seconds
 #1 - minutes
