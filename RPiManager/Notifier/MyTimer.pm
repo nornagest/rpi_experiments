@@ -36,7 +36,7 @@ sub create_timer_periodic($$$$) {
     $loop->add( $timer );
 }
 
-sub create_timer_countdown($$) {
+sub create_timer_countdown($$$) {
     my ($loop, $delay, $on_expire_ref) = @_;
 
     my $timer = IO::Async::Timer::Countdown->new(
@@ -47,7 +47,7 @@ sub create_timer_countdown($$) {
     $loop->add( $timer );
 }
 
-sub create_timer_absolute($$) {
+sub create_timer_absolute($$$) {
     my ($loop, $time, $on_expire_ref) = @_;
 
     my $timer = IO::Async::Timer::Absolute->new(

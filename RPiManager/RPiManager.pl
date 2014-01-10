@@ -1,12 +1,11 @@
 #!/usr/bin/perl 
 #===============================================================================
 #
-#         FILE: led_clock_io_async.pl
+#         FILE: RPiManager.pl
 #
-#        USAGE: ./led_clock_io_async.pl  
+#        USAGE: ./RPiManager.pl  
 #
-#  DESCRIPTION: Show time in binary format with PiFace LEDs, switch between
-#               hour, minute and second display on button press
+#  DESCRIPTION: Program to manage some stuff on a Raspberry Pi and have fun
 #
 #      OPTIONS: ---
 # REQUIREMENTS: ---
@@ -59,27 +58,30 @@
 use Modern::Perl 2013;
 use warnings;
 
-use Notifier::MyInputRoutine;
-use Notifier::MyOutputRoutine;
-use Notifier::MyTimer;
-
 use Function::Clock;
-
-use IO::Async::Loop;
 
 #use Interface::MyNoPiFace; #dummy for testing locally
 use Interface::MyPiFace;
 
+use Notifier::MyInputRoutine;
+use Notifier::MyOutputRoutine;
+use Notifier::MyTimer;
+
+use IO::Async::Loop;
+
+
 my $out_ch;
 my $last_output;
+my $block_output = 0; #don't override output of main
 
 my $piface = MyPiFace->new;
-my $clock = Function::Clock->new('output_ref' => \&output);
+my $clock = Function::Clock->new('output_ref' => \&sub_output);
 my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
 say "Ready...";
 $clock->print_state();
+
 $loop->run;
 
 #===============================================================================
@@ -111,6 +113,7 @@ sub handle_button($) {
     #TODO: think about one handler function instead of one per button
     $clock->on_button->[$button]( $clock );
     $clock->print_state();
+    blink_once($clock->state, 0.5);
 
     if    ($button == 0) { 
     } elsif ($button == 1) { 
@@ -126,13 +129,27 @@ sub handle_tick() {
 sub blink_once($$) {
     my ($value, $duration) = @_;
 
-    #TODO: Implement
+    main_output($value, 1);
+    MyTimer::create_timer_countdown($loop, $duration, sub { main_output( 0, 0 ) });
 }
 
 sub blink($$) {
     my ($value, $interval) = @_;
 
     #TODO: Implement
+}
+
+sub main_output($$) {
+    my ($value, $block) = @_;
+
+    $block_output = $block;
+    output($value);
+}
+
+sub sub_output($) {
+    my $value = shift;
+
+    output($value) unless $block_output;
 }
 
 sub output($) {

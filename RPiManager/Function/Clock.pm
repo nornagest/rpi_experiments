@@ -3,12 +3,13 @@
 #
 #         FILE: Clock.pm
 #
-#  DESCRIPTION: 
+#  DESCRIPTION: Show time in binary format with PiFace LEDs, switch between
+#               hour, minute and second display on button press
 #
 #        FILES: ---
 #         BUGS: ---
 #        NOTES: ---
-#       AUTHOR: YOUR NAME (), 
+#       AUTHOR: Hagen Kuehl
 # ORGANIZATION: 
 #      VERSION: 1.0
 #      CREATED: 01/10/2014 06:14:09 PM
