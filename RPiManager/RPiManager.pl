@@ -79,6 +79,7 @@ my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
 say "Ready...";
+$clock->print_state();
 $loop->run;
 
 #===============================================================================
@@ -107,7 +108,9 @@ sub handle_input($$) {
 sub handle_button($) {
     my $button = shift;
 
+    #TODO: think about one handler function instead of one per button
     $clock->on_button->[$button]( $clock );
+    $clock->print_state();
 
     if    ($button == 0) { 
     } elsif ($button == 1) { 

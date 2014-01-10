@@ -24,12 +24,6 @@ use warnings;
 
 my $state_mod = 6;
 
-#0 - seconds
-#1 - minutes
-#2 - hours
-#3 - day
-#4 - month
-#5 - year
 has 'state' => (
     is => 'rw',
     isa => 'Int',
@@ -69,6 +63,13 @@ sub prev {
 sub reset {
     my $self = shift;
     $self->state( 0 ) if defined $self;
+}
+
+sub print_state {
+    my $self = shift;
+    my $state = $self->state;
+    my @states = ( 'Seconds', 'Minutes', 'Hours', 'Day', 'Month', 'Year' );
+    say $states[$state];
 }
 
 no Moose;
