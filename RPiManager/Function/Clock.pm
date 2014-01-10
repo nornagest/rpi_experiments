@@ -15,7 +15,63 @@
 #     REVISION: ---
 #===============================================================================
 
-use strict;
-use warnings;
- 
+package Function::Clock;
 
+use Moose;
+
+use Modern::Perl 2013;
+use warnings;
+
+my $state_mod = 6;
+
+#0 - seconds
+#1 - minutes
+#2 - hours
+#3 - day
+#4 - month
+#5 - year
+has 'state' => (
+    is => 'rw',
+    isa => 'Int',
+    default => 0,
+);
+
+has 'on_button' => (
+    is => 'ro',
+    isa => 'ArrayRef',
+    default => sub { [ \&next, \&prev, \&reset, sub {} ] },
+);
+
+has 'output_ref' => (
+    is => 'ro',
+    isa => 'CodeRef',
+    default => sub {},
+);
+
+sub on_tick {
+    my $self = shift;
+
+    my @time = localtime();
+    my $time = $time[$self->state];
+    $time++ if $self->state == 4;      # adjust month representation 
+    $time %= 100 if $self->state == 5; # adjust year representation
+    $self->output_ref->($time);
+}
+
+sub next {
+    my $self = shift;
+    $self->state( ($self->state + 1) % $state_mod) if defined $self;
+}
+sub prev {
+    my $self = shift;
+    $self->state( ($self->state - 1) % $state_mod) if defined $self;
+}
+sub reset {
+    my $self = shift;
+    $self->state( 0 ) if defined $self;
+}
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
+
+1;

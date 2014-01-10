@@ -52,6 +52,8 @@
 #use outputs (relais/433MHz)
 #
 #control/integrate camera module on creampi
+#
+#handle button combinations
 #===============================================================================
 
 use Modern::Perl 2013;
@@ -61,25 +63,18 @@ use Notifier::MyInputRoutine;
 use Notifier::MyOutputRoutine;
 use Notifier::MyTimer;
 
+use Function::Clock;
+
 use IO::Async::Loop;
 
 #use Interface::MyNoPiFace; #dummy for testing locally
 use Interface::MyPiFace;
 
-#0 - seconds
-#1 - minutes
-#2 - hours
-#3 - day
-#4 - month
-#5 - year
-my $state = 0;
-#value to mod by for cycling through fiels
-my $state_mod = 6;
-
 my $out_ch;
 my $last_output;
 
 my $piface = MyPiFace->new;
+my $clock = Function::Clock->new('output_ref' => \&output);
 my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
@@ -93,7 +88,7 @@ sub create_and_add_notifiers($$) {
 
     MyInputRoutine::create_input_routine($loop, $piface, \&handle_input);
     $out_ch = MyOutputRoutine::create_output_routine($loop, $piface);
-    MyTimer::create_timer_periodic($loop, 0.1, 1, \&handle_tick);
+    MyTimer::create_timer_periodic($loop, 0.1, 1, sub { $clock->on_tick() });
 }
 
 sub handle_input($$) {
@@ -112,23 +107,17 @@ sub handle_input($$) {
 sub handle_button($) {
     my $button = shift;
 
+    $clock->on_button->[$button]( $clock );
+
     if    ($button == 0) { 
-        $state = ($state + 1) % $state_mod;
     } elsif ($button == 1) { 
-        $state = ($state - 1) % $state_mod;
     } elsif ($button == 2) {
-        $state = 0;
     } elsif ($button == 3) { 
         finish();
     };
 }
 
 sub handle_tick() {
-    my @time = localtime();
-    my $time = $time[$state];
-    $time++ if $state == 4;      # adjust month representation 
-    $time %= 100 if $state == 5; # adjust year representation
-    output($time);
 }
 
 sub blink_once($$) {
