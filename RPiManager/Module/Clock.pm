@@ -16,7 +16,7 @@
 #     REVISION: ---
 #===============================================================================
 
-package Function::Clock;
+package Module::Clock;
 
 use Moose;
 

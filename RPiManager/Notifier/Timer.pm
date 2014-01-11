@@ -15,7 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-package MyTimer;
+package Notifier::Timer;
 
 use Modern::Perl 2013;
 use warnings;
@@ -24,8 +24,12 @@ use IO::Async::Timer::Absolute;
 use IO::Async::Timer::Countdown; 
 use IO::Async::Timer::Periodic; 
 
-sub create_timer_periodic($$$$) {
-    my ($loop, $interval, $first_interval, $on_tick_ref) = @_;
+#TODO:
+#Make this a class
+#object has Timer -> is Periodic/Absolute/Countdown
+
+sub create_timer_periodic($$$) {
+    my ($interval, $first_interval, $on_tick_ref) = @_;
 
     my $timer = IO::Async::Timer::Periodic->new(
         interval => $interval,
@@ -33,29 +37,29 @@ sub create_timer_periodic($$$$) {
         on_tick => $on_tick_ref,
     );
     $timer->start;
-    $loop->add( $timer );
+    return $timer;
 }
 
-sub create_timer_countdown($$$) {
-    my ($loop, $delay, $on_expire_ref) = @_;
+sub create_timer_countdown($$) {
+    my ($delay, $on_expire_ref) = @_;
 
     my $timer = IO::Async::Timer::Countdown->new(
         delay => $delay,
         on_expire => $on_expire_ref,
     );
     $timer->start;
-    $loop->add( $timer );
+    return $timer;
 }
 
-sub create_timer_absolute($$$) {
-    my ($loop, $time, $on_expire_ref) = @_;
+sub create_timer_absolute($$) {
+    my ($time, $on_expire_ref) = @_;
 
     my $timer = IO::Async::Timer::Absolute->new(
         time => $time,
         on_expire => $on_expire_ref,
     );
     $timer->start;
-    $loop->add( $timer );
+    return $timer;
 }
 
 1;

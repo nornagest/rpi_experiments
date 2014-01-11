@@ -15,39 +15,29 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO:
-#move MyPiFace::OutputRoutine
-package MyOutputRoutine;
+package Out::PiFaceOutputRoutine;
 
 use Modern::Perl 2013;
 use warnings;
 
-use IO::Async::Channel;
-use IO::Async::Routine;
+use Notifier::Routine;
 
-sub create_output_routine($$) {
-    my ($loop, $piface) = @_;
+sub create_piface_output_routine {
+    my ($piface, $channel) = @_;
 
-    my $in_ch = IO::Async::Channel->new;
-    my $output_routine = IO::Async::Routine->new(
-        channels_in  => [ $in_ch ],
-
-        code => sub {
+    my $output_code_ref = sub {
             $piface->init;
-
             while(1) {
-                my $input = ${$in_ch->recv};
+                my $input = ${$channel->recv};
                 $piface->write_byte($input);
             }
-        },
-
-        on_finish => sub {
+    };
+    my $on_finish_ref = sub {
             say "Output routine exited.";
             $piface->deinit;
-        },
-    );
-    $loop->add( $output_routine );
-    return $in_ch;
+    };
+
+    return Notifier::Routine::create_output_routine($channel, $output_code_ref, $on_finish_ref);
 }
 
 1;

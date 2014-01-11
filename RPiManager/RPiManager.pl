@@ -20,20 +20,39 @@
 
 #===============================================================================
 #TODO:
-#add fault tolerance
+#better encapsulation
+# => make interaction more sane 
+# => less giving CodeRefs to each other
 #
-#manage notifiers (or just access via $loop)
+#IN: Type + Value => give to Main
+#OUT: register outputs + accepting Types => accept from Main and dispatch
 #
-#use Exporter
+#Devices: PiFace / GPIO / Sensor
 #
-#extract PiFace stuff
+#Notifier: encapsulate IO::Async implementation
+#
+#Modules: implement Functionality 
+#
+#Main/Reactor: build a state machine for handling stuff
+# keep main state
+# manage inputs + outputs
+# keep track of modules
+#
+#------
+#change from specific buttons to input value (numbers)
+# => button combinations possible
+#------
+#extract PiFace stuff => for that wrap Input and Output routines together
 #extract creation of notifiers
 #extract clock part for modularization for different outputs
+#===============================================================================
+#add fault tolerance / error handling
+#use Exporter in modules
 #
-#indicate current output state (show on change for a moment)
 #kill subprocess/routine and reset PiFace on exit
 #make a state machine for menu (+/-/ok/back via buttons)
 #
+#===============================================================================
 #other modules:
 #temperature
 #load
@@ -51,31 +70,31 @@
 #use outputs (relais/433MHz)
 #
 #control/integrate camera module on creampi
-#
-#handle button combinations
 #===============================================================================
 
 use Modern::Perl 2013;
 use warnings;
 
-use Function::Clock;
+use Module::Clock;
 
-#use Interface::MyNoPiFace; #dummy for testing locally
-use Interface::MyPiFace;
+#use Device::MyNoPiFace; #dummy for testing locally
+use Device::MyPiFace;
 
-use Notifier::MyInputRoutine;
-use Notifier::MyOutputRoutine;
-use Notifier::MyTimer;
+use In::PiFaceInputRoutine;
+use Out::PiFaceOutputRoutine;
+use Notifier::Timer;
 
 use IO::Async::Loop;
 
 
-my $out_ch;
+use IO::Async::Channel;
+my $in_ch = IO::Async::Channel->new;
+my $out_ch = IO::Async::Channel->new;
 my $last_output;
 my $block_output = 0; #don't override output of main
 
 my $piface = MyPiFace->new;
-my $clock = Function::Clock->new('output_ref' => \&sub_output);
+my $clock = Module::Clock->new('output_ref' => \&sub_output);
 my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
@@ -86,12 +105,26 @@ $loop->run;
 
 #===============================================================================
 
-sub create_and_add_notifiers($$) {
-    my ($loop, $piface) = @_;
+sub create_and_add_notifiers() {
+    my $input_routine = In::PiFaceInputRoutine::create_piface_input_routine($piface, $in_ch);
+    my $output_routine = Out::PiFaceOutputRoutine::create_piface_output_routine($piface, $out_ch);
+    my $ticker = Notifier::Timer::create_timer_periodic(0.1, 1, sub { $clock->on_tick() });
 
-    MyInputRoutine::create_input_routine($loop, $piface, \&handle_input);
-    $out_ch = MyOutputRoutine::create_output_routine($loop, $piface);
-    MyTimer::create_timer_periodic($loop, 0.1, 1, sub { $clock->on_tick() });
+    $loop->add( $input_routine );
+    $loop->add( $output_routine );
+    $loop->add( $ticker );
+
+    $in_ch->configure(
+        on_recv => sub {
+            my ( $ch, $refout ) = @_;
+
+            if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
+                my $input = $refout->{'input'};
+                my $last_input =  $refout->{'last_input'};
+                handle_input($input, $last_input);
+            }
+        }
+    );
 }
 
 sub handle_input($$) {
@@ -105,8 +138,6 @@ sub handle_input($$) {
     }
 }
 
-#TODO:
-#use sub references for reaction to buttons => make dynamic
 sub handle_button($) {
     my $button = shift;
 
@@ -123,14 +154,12 @@ sub handle_button($) {
     };
 }
 
-sub handle_tick() {
-}
-
 sub blink_once($$) {
     my ($value, $duration) = @_;
 
     main_output($value, 1);
-    MyTimer::create_timer_countdown($loop, $duration, sub { main_output( 0, 0 ) });
+    my $countdown = Notifier::Timer::create_timer_countdown($duration, sub { main_output( 0, 0 ) });
+    $loop->add( $countdown );
 }
 
 sub blink($$) {
@@ -161,7 +190,7 @@ sub output($) {
 
 sub finish {
     $loop->stop;
-    &output(0);
+    main_output(0, 1);
     say "Goodbye!";
 }
 
