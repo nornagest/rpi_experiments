@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 
 use strict;
 use warnings;
@@ -13,11 +13,11 @@ print "Testing outputs...\n";
 
 #my $mask = 10;
 #while(1) {
-#  my $lastbit = ($mask & (1 << 5)) != 0 ;
-#  $mask <<= 1;
-#  $mask = $lastbit | $mask;
-#  pfio_write_output($mask << 2);
-#  sleep(0.05);
+# my $lastbit = ($mask & (1 << 5)) != 0 ;
+# $mask <<= 1;
+# $mask = $lastbit | $mask;
+# pfio_write_output($mask << 2);
+# sleep(0.05);
 #}
 
 for my $count (0..255) {
@@ -62,7 +62,7 @@ for my $i (0..100) {
     #my $in = pfio_digital_read($pin);
     my $in = pfio_read_input;
     #print "Pin " . $pin . " " . $in . "\n"
-    #  unless $in == 0;
+    # unless $in == 0;
     print "Input: " . $in . "\n"
       unless $in == 0;
   #}

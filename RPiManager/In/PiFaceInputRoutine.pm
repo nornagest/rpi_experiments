@@ -21,7 +21,7 @@ use Modern::Perl 2013;
 use warnings;
 
 use Notifier::Routine;
-use Time::HiRes qw(usleep);
+use Time::HiRes qw(sleep);
 
 #TODO: 
 #make this a class
@@ -43,7 +43,7 @@ sub create_piface_input_routine {
                 $channel->send( { 'input' => $input, 'last_input' => $last_input } );
                 $last_input = $input;
             }
-            usleep(10000);
+            sleep(0.01);
         }
     };
     my $on_finish_ref = sub {
