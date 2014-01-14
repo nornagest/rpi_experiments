@@ -22,6 +22,9 @@ use warnings;
 
 use Notifier::Routine;
 
+#TODO: 
+#make this a class
+
 sub create_piface_output_routine {
     my ($piface, $channel) = @_;
 

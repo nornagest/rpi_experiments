@@ -26,6 +26,9 @@ use IO::Async::Routine;
 #inject $loop
 #add routine to loop
 #configure channel via $output_code_ref
+# => think about it again
+#
+# make this a class
 sub create_routine {
     my ($input_channel, 
         $output_channel,

@@ -23,11 +23,13 @@
 #better encapsulation
 # => make interaction more sane 
 # => less giving CodeRefs to each other
+#  => use objects and curry
 #
 #IN: Type + Value => give to Main
 #OUT: register outputs + accepting Types => accept from Main and dispatch
+#  types: text, piface/byte, object
 #
-#Devices: PiFace / GPIO / Sensor
+#Devices: PiFace / GPIO / Sensors
 #
 #Notifier: encapsulate IO::Async implementation
 #
@@ -39,19 +41,19 @@
 # keep track of modules
 #
 #------
-#change from specific buttons to input value (numbers)
-# => button combinations possible
+#think about state of modules 
+# Clock:
+# Part 1: functionality (create timer, on_tick give time to Main for output)
+# Part 2: output time (on PiFace), react to buttons and change output accordingly
+#think about Childmanager instead of Routine
 #------
-#extract PiFace stuff => for that wrap Input and Output routines together
-#extract creation of notifiers
-#extract clock part for modularization for different outputs
+#change from specific buttons to input value (numbers)
 #===============================================================================
 #add fault tolerance / error handling
 #use Exporter in modules
 #
 #kill subprocess/routine and reset PiFace on exit
 #make a state machine for menu (+/-/ok/back via buttons)
-#
 #===============================================================================
 #other modules:
 #temperature
@@ -70,15 +72,21 @@
 #use outputs (relais/433MHz)
 #
 #control/integrate camera module on creampi
+#run on creampi
+# i/o web frontend
+# upload to nornagest.org
 #===============================================================================
 
 use Modern::Perl 2013;
 use warnings;
 
 use Module::Clock;
+#WebCam
+#Temperature
+#Web -> Mojo? Dancer? Listener?
 
-#use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
+use Device::MyNoPiFace; #dummy for testing locally
+#use Device::MyPiFace;
 
 use In::PiFaceInputRoutine;
 use Out::PiFaceOutputRoutine;
@@ -91,6 +99,7 @@ use IO::Async::Channel;
 my $in_ch = IO::Async::Channel->new;
 my $out_ch = IO::Async::Channel->new;
 my $last_output;
+#TODO: change this into some kind of semaphore and ideally make it kind of safe
 my $block_output = 0; #don't override output of main
 
 my $piface = MyPiFace->new;

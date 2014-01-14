@@ -23,6 +23,13 @@ use warnings;
 use Notifier::Routine;
 use Time::HiRes qw(usleep);
 
+#TODO: 
+#make this a class
+#
+#init -> Initialization
+#recv -> get Input (?)
+#add  -> register callback
+
 sub create_piface_input_routine {
     my ($piface, $channel) = @_;
     
@@ -46,7 +53,7 @@ sub create_piface_input_routine {
     return Notifier::Routine::create_input_routine($channel, $input_code_ref, $on_finish_ref);
 }
 
-#TODO: integrate that 
+#TODO: configuration of channel
 #    $in_ch->configure(
 #        on_recv => sub {
 #            my ( $ch, $refout ) = @_;
