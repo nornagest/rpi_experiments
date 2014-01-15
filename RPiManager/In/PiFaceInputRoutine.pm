@@ -18,19 +18,39 @@
 package In::PiFaceInputRoutine;
 
 use Modern::Perl 2013;
-use warnings;
-
+use Moose;
 use Notifier::Routine;
 use Time::HiRes qw(sleep);
 
-#TODO: 
-#make this a class
-#
-#init -> Initialization
-#recv -> get Input (?)
-#add  -> register callback
+has 'piface' => ( is => 'rw', required => 1,);
+has 'channel' => ( is => 'rw', required => 1,);
+has 'loop' => ( is => 'rw', required => 1,);
+has 'in_ref' => ( is => 'rw', required => 1,);
+has 'routine' => ( is => 'rw',);
 
-sub create_piface_input_routine {
+sub BUILD {
+    my $self = shift;
+    $self->routine(
+        __create_piface_input_routine(
+            $self->piface, 
+            $self->channel
+        )
+    );
+    $self->loop->add( $self->routine );
+    $self->channel->configure(
+        on_recv => sub {
+            my ( $ch, $refout ) = @_;
+
+            if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
+                my $input = $refout->{'input'};
+                my $last_input =  $refout->{'last_input'};
+                $self->in_ref->($input, $last_input);
+            }
+        }
+    );
+}
+
+sub __create_piface_input_routine {
     my ($piface, $channel) = @_;
     
     my $input_code_ref = sub {
@@ -53,17 +73,7 @@ sub create_piface_input_routine {
     return Notifier::Routine::create_input_routine($channel, $input_code_ref, $on_finish_ref);
 }
 
-#TODO: configuration of channel
-#    $in_ch->configure(
-#        on_recv => sub {
-#            my ( $ch, $refout ) = @_;
-#
-#            if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
-#                my $input = $refout->{'input'};
-#                my $last_input =  $refout->{'last_input'};
-#                handle_input($input, $last_input);
-#            }
-#        }
-#    );
+no Moose;
+__PACKAGE__->meta->make_immutable;
 
 1;

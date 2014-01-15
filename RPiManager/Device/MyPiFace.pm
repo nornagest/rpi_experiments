@@ -4,21 +4,9 @@ use Moose;
 
 use PiFace qw(:all);
 
-has 'IsInitialized' => (
-  is => 'rw',
-  isa => 'Bool',
-  default => 0,
-);
-
-has 'Inputs' => (
-  is => 'ro',
-  isa => 'Int',
-);
-
-has 'Outputs' => (
-  is => 'rw',
-  isa => 'Int',
-);
+has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
+has 'Inputs' => ( is => 'ro', isa => 'Int',);
+has 'Outputs' => ( is => 'rw', isa => 'Int',);
 
 sub init {
   my $self = shift;

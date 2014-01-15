@@ -100,6 +100,8 @@ my $in_ch = IO::Async::Channel->new;
 my $out_ch = IO::Async::Channel->new;
 my $last_output;
 #TODO: change this into some kind of semaphore and ideally make it kind of safe
+#think about multiple button presses -> $block_output++
+#remeber last timer and replace or queue new timer
 my $block_output = 0; #don't override output of main
 
 my $piface = MyPiFace->new;
@@ -115,25 +117,20 @@ $loop->run;
 #===============================================================================
 
 sub create_and_add_notifiers() {
-    my $input_routine = In::PiFaceInputRoutine::create_piface_input_routine($piface, $in_ch);
-    my $output_routine = Out::PiFaceOutputRoutine::create_piface_output_routine($piface, $out_ch);
-    my $ticker = Notifier::Timer::create_timer_periodic(0.1, 1, sub { $clock->on_tick() });
-
-    $loop->add( $input_routine );
-    $loop->add( $output_routine );
-    $loop->add( $ticker );
-
-    $in_ch->configure(
-        on_recv => sub {
-            my ( $ch, $refout ) = @_;
-
-            if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
-                my $input = $refout->{'input'};
-                my $last_input =  $refout->{'last_input'};
-                handle_input($input, $last_input);
-            }
-        }
+    my $input_routine = In::PiFaceInputRoutine->new(
+        'piface' => $piface, 
+        'channel' => $in_ch, 
+        'loop' => $loop,
+        'in_ref' => \&handle_input,
     );
+    my $output_routine = Out::PiFaceOutputRoutine->new(
+        'piface' => $piface, 
+        'channel' => $out_ch, 
+        'loop' => $loop,
+    );
+
+    my $ticker = Notifier::Timer::create_timer_periodic(0.1, 1, sub { $clock->on_tick() });
+    $loop->add( $ticker );
 }
 
 sub handle_input($$) {
@@ -163,18 +160,21 @@ sub handle_button($) {
     };
 }
 
+#TODO: Try to use Future
 sub blink_once($$) {
     my ($value, $duration) = @_;
 
     main_output($value, 1);
-    my $countdown = Notifier::Timer::create_timer_countdown($duration, sub { main_output( 0, 0 ) });
+    my $countdown = Notifier::Timer::create_timer_countdown($duration, 
+        sub { main_output( 0, 0 ) });
     $loop->add( $countdown );
 }
 
 sub blink($$) {
     my ($value, $interval) = @_;
 
-    #TODO: Implement
+    my $ticker = Notifier::Timer::create_timer_periodic($interval, 0, 
+        sub {}); #TODO: implement and make this a Module
 }
 
 sub main_output($$) {

@@ -45,7 +45,7 @@ sub create_routine {
     return $routine;
 }
 
-#TODO: like create_routine
+#TODO: like for create_routine
 sub create_input_routine {
     my ( $output_channel,
         $code_ref, 

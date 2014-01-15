@@ -18,14 +18,26 @@
 package Out::PiFaceOutputRoutine;
 
 use Modern::Perl 2013;
-use warnings;
-
+use Moose;
 use Notifier::Routine;
 
-#TODO: 
-#make this a class
+has 'piface' => ( is => 'rw', required => 1,);
+has 'channel' => ( is => 'rw', required => 1,);
+has 'loop' => ( is => 'rw', required => 1,);
+has 'routine' => ( is => 'rw',);
 
-sub create_piface_output_routine {
+sub BUILD {
+    my $self = shift;
+    $self->routine(
+        __create_piface_output_routine(
+            $self->piface,
+            $self->channel,
+        )
+    );
+    $self->loop->add( $self->routine );
+};
+
+sub __create_piface_output_routine {
     my ($piface, $channel) = @_;
 
     my $output_code_ref = sub {
@@ -42,5 +54,8 @@ sub create_piface_output_routine {
 
     return Notifier::Routine::create_output_routine($channel, $output_code_ref, $on_finish_ref);
 }
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
 
 1;
