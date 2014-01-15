@@ -30,9 +30,7 @@
 #  types: text, piface/byte, object
 #
 #Devices: PiFace / GPIO / Sensors
-#
 #Notifier: encapsulate IO::Async implementation
-#
 #Modules: implement Functionality 
 #
 #Main/Reactor: build a state machine for handling stuff
@@ -52,8 +50,7 @@
 #add fault tolerance / error handling
 #use Exporter in modules
 #
-#kill subprocess/routine and reset PiFace on exit
-#make a state machine for menu (+/-/ok/back via buttons)
+#kill subprocess/routine on exit
 #===============================================================================
 #other modules:
 #temperature
@@ -163,7 +160,6 @@ sub handle_button($) {
 #TODO: Try to use Future
 sub blink_once($$) {
     my ($value, $duration) = @_;
-
     main_output($value, 1);
     my $countdown = Notifier::Timer::create_timer_countdown($duration, 
         sub { main_output( 0, 0 ) });
@@ -172,27 +168,23 @@ sub blink_once($$) {
 
 sub blink($$) {
     my ($value, $interval) = @_;
-
     my $ticker = Notifier::Timer::create_timer_periodic($interval, 0, 
         sub {}); #TODO: implement and make this a Module
 }
 
 sub main_output($$) {
     my ($value, $block) = @_;
-
     $block_output = $block;
     output($value);
 }
 
 sub sub_output($) {
     my $value = shift;
-
     output($value) unless $block_output;
 }
 
 sub output($) {
     my $value = shift;
-
     $out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
     $last_output = $value;
 }
