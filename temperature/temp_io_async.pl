@@ -19,6 +19,20 @@ my $timer = IO::Async::Timer::Periodic->new(
     },
 );
 
+$loop->listen(
+   service  => 12345,
+   socktype => 'stream',
+ 
+   on_stream => sub {
+       my ($self, $stream) = @_;
+       my $temp = read_temp();
+       $stream->write($temp);
+   },
+ 
+   on_resolve_error => sub { print STDERR "Cannot resolve - $_[0]\n"; },
+   on_listen_error  => sub { print STDERR "Cannot listen\n"; },
+);
+
 $timer->start;
 $loop->add( $timer );
 $loop->run;
