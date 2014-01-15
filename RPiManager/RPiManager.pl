@@ -128,7 +128,7 @@ sub create_and_add_notifiers() {
 
     my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
     $loop->add( $ticker );
-    my $temp_ticker = Notifier::Timer::create_timer_periodic(10, 0, sub { on_tick() });
+    my $temp_ticker = Notifier::Timer::create_timer_periodic(60, 0, sub { on_tick() });
     $loop->add( $temp_ticker );
 }
 
@@ -140,11 +140,9 @@ sub on_tick {
 
         on_stream => sub {
             my $stream = shift;
-            print "Connected.\n";
             $stream->configure(
                 on_read => sub {
                     my ( $self, $buffref, $eof ) = @_;
-                    #print thaw($buffref);
                     print_temp( thaw($$buffref) );
                     $$buffref = "";
                     return 0;
