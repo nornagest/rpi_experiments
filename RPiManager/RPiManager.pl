@@ -85,8 +85,8 @@ use Module::Clock;
 #Temperature
 #Web -> Mojo? Dancer? Listener?
 
-use Device::MyNoPiFace; #dummy for testing locally
-#use Device::MyPiFace;
+#use Device::MyNoPiFace; #dummy for testing locally
+use Device::MyPiFace;
 
 use In::PiFaceInputRoutine;
 use Out::PiFaceOutputRoutine;
