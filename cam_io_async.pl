@@ -6,8 +6,8 @@ use IO::Async::Timer::Periodic;
 
 my %params = (
 	'program' => '/opt/vc/bin/raspistill',
-	'interval' => 30,
-	'dealy' => 2000,
+	'interval' => 300,
+	'delay' => 2000,
 	'width' => 1024,
 	'height' => 768,
 	'rotation' => 270,
@@ -52,5 +52,6 @@ $loop->run();
 sub take_pic {
     my $epoch = time();
     my $final_command = $command . ' '. $epoch .'_'. $params{'name'};
+print $final_command, "\n";
     system($final_command);
 }

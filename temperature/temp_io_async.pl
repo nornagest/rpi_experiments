@@ -24,7 +24,7 @@ $loop->listen(
    socktype => 'stream',
  
    on_stream => sub {
-       my ($self, $stream) = @_;
+       my ($stream) = @_;
        my $temp = read_temp();
        $stream->write($temp);
    },
