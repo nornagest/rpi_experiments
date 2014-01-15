@@ -101,8 +101,8 @@ my $last_output;
 my $block_output = 0; #don't override output of main
 
 my $piface = MyPiFace->new;
-#my $clock = Module::Clock->new('output_ref' => \&sub_output);
-my $clock = Module::Clock->new('output_ref' => sub {});
+my $clock = Module::Clock->new('output_ref' => \&sub_output);
+#my $clock = Module::Clock->new('output_ref' => sub {});
 my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
