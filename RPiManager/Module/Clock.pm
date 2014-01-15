@@ -25,23 +25,11 @@ use warnings;
 
 my $state_mod = 6;
 
-has 'state' => (
-    is => 'rw',
-    isa => 'Int',
-    default => 0,
-);
-
-has 'on_button' => (
-    is => 'ro',
-    isa => 'ArrayRef',
+has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
+has 'on_button' => ( is => 'ro', isa => 'ArrayRef', 
     default => sub { [ \&next, \&prev, \&reset, sub {} ] },
 );
-
-has 'output_ref' => (
-    is => 'ro',
-    isa => 'CodeRef',
-    default => sub {},
-);
+has 'output_ref' => ( is => 'ro', isa => 'CodeRef', default => sub {});
 
 sub on_tick {
     my $self = shift;

@@ -88,11 +88,10 @@ use Device::MyPiFace;
 use In::PiFaceInputRoutine;
 use Out::PiFaceOutputRoutine;
 use Notifier::Timer;
-
 use IO::Async::Loop;
-
-
+use IO::Async::Stream;
 use IO::Async::Channel;
+use Storable qw(thaw);
 my $in_ch = IO::Async::Channel->new;
 my $out_ch = IO::Async::Channel->new;
 my $last_output;
@@ -102,7 +101,8 @@ my $last_output;
 my $block_output = 0; #don't override output of main
 
 my $piface = MyPiFace->new;
-my $clock = Module::Clock->new('output_ref' => \&sub_output);
+#my $clock = Module::Clock->new('output_ref' => \&sub_output);
+my $clock = Module::Clock->new('output_ref' => sub {});
 my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
@@ -126,8 +126,47 @@ sub create_and_add_notifiers() {
         'loop' => $loop,
     );
 
-    my $ticker = Notifier::Timer::create_timer_periodic(0.1, 1, sub { $clock->on_tick() });
+    my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
     $loop->add( $ticker );
+    my $temp_ticker = Notifier::Timer::create_timer_periodic(10, 0, sub { on_tick() });
+    $loop->add( $temp_ticker );
+}
+
+sub on_tick {
+    $loop->connect(
+        host     => "creampi",
+        service  => 12345,
+        socktype => 'stream',
+
+        on_stream => sub {
+            my $stream = shift;
+            print "Connected.\n";
+            $stream->configure(
+                on_read => sub {
+                    my ( $self, $buffref, $eof ) = @_;
+                    #print thaw($buffref);
+                    print_temp( thaw($$buffref) );
+                    $$buffref = "";
+                    return 0;
+                },
+                on_closed => sub {
+                    print "Closed.\n";
+                }
+            );
+            $loop->add( $stream );
+        },
+
+        on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
+        on_connect_error => sub { die "Cannot connect\n" },
+    );
+}
+
+sub print_temp {
+    my $temp = shift;
+
+    for(keys %{$temp}) {
+        print $_, " => ", $temp->{$_}, "\n";
+    }
 }
 
 sub handle_input($$) {
@@ -145,6 +184,7 @@ sub handle_button($) {
     my $button = shift;
 
     #TODO: think about one handler function instead of one per button
+    #let OutputManager decide which Module methods to call
     $clock->on_button->[$button]( $clock );
     $clock->print_state();
     blink_once($clock->state, 0.5);
