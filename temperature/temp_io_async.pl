@@ -38,6 +38,7 @@ $loop->listen(
         $loop->add( $stream );
         my $temp = read_temp();
         $stream->write(nfreeze($temp));
+        $stream->write("\n\n");
         $stream->close_when_empty; #TODO: test this
     },
 
