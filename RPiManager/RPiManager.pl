@@ -132,6 +132,12 @@ sub create_and_add_notifiers() {
     $loop->add( $temp_ticker );
 }
 
+#TODO: Socket handling verbessern
+#-> Rückfrage an mst/LeoNerd
+#Möglichkeit 1:
+# Objekte aufheben: Socket einmal verbinden und offen lassen
+#Möglichkeit 2:
+# Objekte nach Nutzung explizit zerstören: $stream aus loop entfernen und Referenz auf undef setzen
 sub on_tick {
     $loop->connect(
         host     => "creampi",
