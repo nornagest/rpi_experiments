@@ -87,8 +87,8 @@ use Module::Clock;
 #Temperature
 #Web -> Mojo? Dancer? Listener?
 
-#use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
+use Device::MyNoPiFace; #dummy for testing locally
+#use Device::MyPiFace;
 
 use In::PiFaceInputRoutine;
 use Out::PiFaceOutputRoutine;
@@ -134,7 +134,7 @@ sub create_and_add_notifiers() {
 
     my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
     $loop->add( $ticker );
-    my $temp_ticker = Notifier::Timer::create_timer_periodic(60, 0, sub { on_tick() });
+    my $temp_ticker = Notifier::Timer::create_timer_periodic(10, 0, sub { on_tick() });
     $loop->add( $temp_ticker );
 }
 
@@ -161,7 +161,7 @@ sub on_tick {
                     $$buffref = "";
                 },
                 on_closed => sub {
-                    print "Connection closed.\n";
+                    #say "Connection closed.";
                 }
             );
             $loop->add( $stream );
