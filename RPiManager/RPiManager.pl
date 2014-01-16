@@ -151,17 +151,17 @@ sub on_tick {
         socktype => 'stream',
 
         on_stream => sub {
-            $stream->close if defined $stream;
+            #$stream->close if defined $stream;
             $stream = shift;
             $stream->configure(
                 on_read => sub {
                     my ( $self, $buffref, $eof ) = @_;
+                    return 0 unless $eof;
                     print_temp( thaw($$buffref) );
                     $$buffref = "";
-                    return 0;
                 },
                 on_closed => sub {
-                    print "Closed.\n";
+                    print "Connection closed.\n";
                 }
             );
             $loop->add( $stream );
@@ -174,7 +174,6 @@ sub on_tick {
 
 sub print_temp {
     my $temp = shift;
-
     for(keys %{$temp}) {
         print $_, " => ", $temp->{$_}, "\n";
     }

@@ -37,9 +37,9 @@ $loop->listen(
             });
         $loop->add( $stream );
         my $temp = read_temp();
-        #print "Connection.\n";
         $stream->write(nfreeze($temp));
-        #$stream->close_when_empty; #TODO: test this
+        $stream->write("\n\n");
+        $stream->close_when_empty; #TODO: test this
     },
 
     on_closed => sub {
