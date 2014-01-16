@@ -33,7 +33,7 @@ $loop->listen(
         my $temp = read_temp();
 	$temp = nfreeze($temp);
         $stream->write($temp);
-        $stream->close_when_empty; #TODO: test this
+        $stream->close_when_empty; 
     },
 
     on_closed => sub {
