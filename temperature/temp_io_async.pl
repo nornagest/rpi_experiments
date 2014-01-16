@@ -20,26 +20,20 @@ my $timer = IO::Async::Timer::Periodic->new(
     },
 );
 
-#TODO: Auslagern und Strukturieren
-# danach: Teil von RPiManager machen
+#TODO: make this part of RPiManager
 $loop->listen(
     service  => 12345,
     socktype => 'stream',
 
     on_stream => sub {
         my ($stream) = @_;
-        $stream->configure(
-            on_read => sub {
-                my ( $self, $buffref, $eof ) = @_;
-                $self->write( $$buffref );
-                $$buffref = "";
-                return 0;
-            });
+        #don't expect client input
+        $stream->configure( on_read => sub { ${$_[1]} = ""; return 0; } );
         $loop->add( $stream );
         my $temp = read_temp();
-        $stream->write(nfreeze($temp));
-        $stream->write("\n\n");
-        $stream->close_when_empty; #TODO: test this
+        $temp = nfreeze($temp);
+        $stream->write($temp);
+        $stream->close_when_empty; 
     },
 
     on_closed => sub {
@@ -58,15 +52,17 @@ sub read_temp {
     #TODO: Make temp a class, so can handle it easier
     my %temp = ("time" => scalar localtime());
     for(@{$ds18b20->Sensors}) {
-        $temp{$_->File} = $_->get_temp();
+        $temp{"sensors"}{$_->File} = $_->get_temp();
     }
     return \%temp;
 }
 
 sub print_temp {
     my $temp = shift;
-    for(keys %{$temp}) {
-        print $_, " => ", $temp->{$_}, "\n";
+
+    say $temp->{"time"};
+    for(sort keys %{$temp->{"sensors"}}) {
+        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
     }
 }
 

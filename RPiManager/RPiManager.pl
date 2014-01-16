@@ -138,12 +138,6 @@ sub create_and_add_notifiers() {
     $loop->add( $temp_ticker );
 }
 
-#TODO: Socket handling verbessern
-#-> Rückfrage an mst/LeoNerd
-#Möglichkeit 1:
-# Objekte aufheben: Socket einmal verbinden und offen lassen
-#Möglichkeit 2:
-# Objekte nach Nutzung explizit zerstören: $stream aus loop entfernen und Referenz auf undef setzen
 sub on_tick {
     $loop->connect(
         host     => "creampi",
@@ -151,7 +145,6 @@ sub on_tick {
         socktype => 'stream',
 
         on_stream => sub {
-            #$stream->close if defined $stream;
             $stream = shift;
             $stream->configure(
                 on_read => sub {
@@ -161,7 +154,7 @@ sub on_tick {
                     $$buffref = "";
                 },
                 on_closed => sub {
-                    print "Connection closed.\n";
+                    #say "Connection closed.";
                 }
             );
             $loop->add( $stream );
@@ -174,9 +167,11 @@ sub on_tick {
 
 sub print_temp {
     my $temp = shift;
-    for(keys %{$temp}) {
-        print $_, " => ", $temp->{$_}, "\n";
+    say $temp->{"time"};
+    for(sort keys %{$temp->{"sensors"}}) {
+        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
     }
+
 }
 
 sub handle_input($$) {
