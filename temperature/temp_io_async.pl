@@ -61,8 +61,8 @@ sub print_temp {
     my $temp = shift;
 
     say $temp->{"time"};
-    for(keys %{$temp->{"sensors"}}) {
-        print $_, " => ", $temp->{$_}, "\n";
+    for(sort keys %{$temp->{"sensors"}}) {
+        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
     }
 }
 
