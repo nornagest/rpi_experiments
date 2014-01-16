@@ -87,8 +87,8 @@ use Module::Clock;
 #Temperature
 #Web -> Mojo? Dancer? Listener?
 
-#use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
+use Device::MyNoPiFace; #dummy for testing locally
+#use Device::MyPiFace;
 
 use In::PiFaceInputRoutine;
 use Out::PiFaceOutputRoutine;
@@ -108,6 +108,7 @@ my $block_output = 0; #don't override output of main
 my $piface = MyPiFace->new;
 my $clock = Module::Clock->new('output_ref' => \&sub_output);
 #my $clock = Module::Clock->new('output_ref' => sub {});
+my $stream;
 my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
@@ -150,7 +151,8 @@ sub on_tick {
         socktype => 'stream',
 
         on_stream => sub {
-            my $stream = shift;
+            $stream->close if defined $stream;
+            $stream = shift;
             $stream->configure(
                 on_read => sub {
                     my ( $self, $buffref, $eof ) = @_;
