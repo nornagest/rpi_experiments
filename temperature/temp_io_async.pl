@@ -20,6 +20,8 @@ my $timer = IO::Async::Timer::Periodic->new(
     },
 );
 
+#TODO: Auslagern und Strukturieren
+# danach: Teil von RPiManager machen
 $loop->listen(
     service  => 12345,
     socktype => 'stream',
@@ -37,6 +39,7 @@ $loop->listen(
         my $temp = read_temp();
         #print "Connection.\n";
         $stream->write(nfreeze($temp));
+        $stream->close_when_empty; #TODO: test this
     },
 
     on_closed => sub {
@@ -52,6 +55,7 @@ $loop->add( $timer );
 $loop->run;
 
 sub read_temp {
+    #TODO: Make temp a class, so can handle it easier
     my %temp = ("time" => scalar localtime());
     for(@{$ds18b20->Sensors}) {
         $temp{$_->File} = $_->get_temp();
