@@ -22,7 +22,9 @@ use Moose;
 use Modern::Perl 2013;
 use warnings;
 
-
+#TODO: implement
+# split into client and Server? Best do this in Input/Output and just keep 
+#   functionality here
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
