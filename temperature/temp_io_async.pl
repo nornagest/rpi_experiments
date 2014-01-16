@@ -54,6 +54,7 @@ $loop->add( $timer );
 $loop->run;
 
 sub read_temp {
+    #TODO: Make temp a class, so can handle it easier
     my %temp = ("time" => scalar localtime());
     for(@{$ds18b20->Sensors}) {
         $temp{$_->File} = $_->get_temp();
