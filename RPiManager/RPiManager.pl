@@ -87,8 +87,8 @@ use Module::Clock;
 #Temperature
 #Web -> Mojo? Dancer? Listener?
 
-use Device::MyNoPiFace; #dummy for testing locally
-#use Device::MyPiFace;
+#use Device::MyNoPiFace; #dummy for testing locally
+use Device::MyPiFace;
 
 use In::PiFaceInputRoutine;
 use Out::PiFaceOutputRoutine;
@@ -134,16 +134,10 @@ sub create_and_add_notifiers() {
 
     my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
     $loop->add( $ticker );
-    my $temp_ticker = Notifier::Timer::create_timer_periodic(10, 0, sub { on_tick() });
+    my $temp_ticker = Notifier::Timer::create_timer_periodic(60, 0, sub { on_tick() });
     $loop->add( $temp_ticker );
 }
 
-#TODO: Socket handling verbessern
-#-> Rückfrage an mst/LeoNerd
-#Möglichkeit 1:
-# Objekte aufheben: Socket einmal verbinden und offen lassen
-#Möglichkeit 2:
-# Objekte nach Nutzung explizit zerstören: $stream aus loop entfernen und Referenz auf undef setzen
 sub on_tick {
     $loop->connect(
         host     => "creampi",
@@ -151,7 +145,6 @@ sub on_tick {
         socktype => 'stream',
 
         on_stream => sub {
-            #$stream->close if defined $stream;
             $stream = shift;
             $stream->configure(
                 on_read => sub {
@@ -174,9 +167,11 @@ sub on_tick {
 
 sub print_temp {
     my $temp = shift;
-    for(keys %{$temp}) {
-        print $_, " => ", $temp->{$_}, "\n";
+    say $temp->{"time"};
+    for(sort keys %{$temp->{"sensors"}}) {
+        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
     }
+
 }
 
 sub handle_input($$) {
