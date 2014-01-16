@@ -28,17 +28,11 @@ $loop->listen(
 
     on_stream => sub {
         my ($stream) = @_;
-        $stream->configure(
-            on_read => sub {
-                my ( $self, $buffref, $eof ) = @_;
-                $self->write( $$buffref );
-                $$buffref = "";
-                return 0;
-            });
+        $stream->configure( on_read => sub { ${$_[1]} = ""; return 0; } );
         $loop->add( $stream );
         my $temp = read_temp();
-        $stream->write(nfreeze($temp));
-        $stream->write("\n\n");
+	$temp = nfreeze($temp);
+        $stream->write($temp);
         $stream->close_when_empty; #TODO: test this
     },
 
