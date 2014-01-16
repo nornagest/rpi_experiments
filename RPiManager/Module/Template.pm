@@ -24,8 +24,8 @@ use warnings;
 
 #What it needs:
 #should be a class
-#Handler for Buttons
+#configuration
+#capabilities (possible output, inputs)
 #
-#optional Timer/Signal/Stream event handler
-#
-#could have sub process/routine
+#Eventhandlers for Timer/Signal/Stream
+#  or create own Notifiers
