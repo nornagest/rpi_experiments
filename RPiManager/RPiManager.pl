@@ -23,6 +23,9 @@
 #implement Input and Output managers
 #Make used modules configurable -> config file
 #better encapsulation
+# => Notifier::Listener
+# => hide reading temperature over network somehow
+#
 # => make interaction more sane 
 # => less giving CodeRefs to each other
 #  => use objects and curry
