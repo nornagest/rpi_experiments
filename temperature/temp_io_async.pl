@@ -28,13 +28,13 @@ $loop->listen(
 
     on_stream => sub {
         my ($stream) = @_;
-        #$stream->configure(
-        #    on_read => sub {
-        #        my ( $self, $buffref, $eof ) = @_;
-        #        $self->write( $$buffref );
-        #        $$buffref = "";
-        #        return 0;
-        #    });
+        $stream->configure(
+            on_read => sub {
+                my ( $self, $buffref, $eof ) = @_;
+                $self->write( $$buffref );
+                $$buffref = "";
+                return 0;
+            });
         $loop->add( $stream );
         my $temp = read_temp();
         #print "Connection.\n";
