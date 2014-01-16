@@ -20,6 +20,8 @@
 
 #===============================================================================
 #TODO:
+#implement Input and Output managers
+#Make used modules configurable -> config file
 #better encapsulation
 # => make interaction more sane 
 # => less giving CodeRefs to each other
