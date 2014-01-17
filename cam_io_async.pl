@@ -4,29 +4,21 @@ use IO::Async::Loop;
 use IO::Async::Signal;
 use IO::Async::Timer::Periodic;
 
+my $program = '/opt/vc/bin/raspistill';
+my $interval = 300;
+my $output = 'cam.jpg';
 my %params = (
-	'program' => '/opt/vc/bin/raspistill',
-	'interval' => 300,
-	'delay' => 2000,
-	'width' => 1024,
-	'height' => 768,
-	'rotation' => 270,
-	'exposure' => 'night',
-	'name' => 'cam.jpg',
+	'-t' => 2000,      #delay
+	'-w' => 1024,      #width
+	'-h' => 768,       #height
+	'-rot' => 270,     #rotation
+	'-ex' => 'night',  #exposure
 );
-
-my $command = $params{'program'} .
-	' -t ' . $params{'delay'} .
-	' -w ' . $params{'width'} .
-	' -h ' . $params{'height'} .
-	' -rot ' . $params{'rotation'} .
-	' -ex '. $params{'exposure'} .
-	' -o ';
 
 my $loop = IO::Async::Loop->new;
 #Timer
 my $timer = IO::Async::Timer::Periodic->new(
-	interval => $params{'interval'},
+	interval => $interval,
 	first_interval => 0,
 	on_tick => \&take_pic,
 );
@@ -50,8 +42,12 @@ $loop->add($sigterm);
 $loop->run();
 #subs
 sub take_pic {
-    my $epoch = time();
-    my $final_command = $command . ' '. $epoch .'_'. $params{'name'};
+    #TODO: test this
+    my epoch = time();
+    my $command = $program . join ' ', %params;
+    my $final_command = "$command -o ";
+    $final_command .= $epoch unless $output eq '-';
+    $final_command .= $output;
 print $final_command, "\n";
     system($final_command);
 }
