@@ -9,38 +9,38 @@ use IO::Async::Loop;
 my $loop = IO::Async::Loop->new;
 
 $loop->connect(
-		host     => "localhost",
-		service  => 12345,
-		socktype => 'stream',
+    host     => "localhost",
+    service  => 12345,
+    socktype => 'stream',
 
-		on_stream => sub {
-		my $stream = shift;
-		$stream->configure(
-			on_read => sub {
-			my ( $self, $buffref, $eof ) = @_;
-			return 0 unless $eof;
-			print_temp( thaw($$buffref) );
-			$$buffref = "";
-			},
-			on_closed => sub {
+    on_stream => sub {
+        my $stream = shift;
+        $stream->configure(
+            on_read => sub {
+                my ( $self, $buffref, $eof ) = @_;
+                return 0 unless $eof;
+                print_temp( thaw($$buffref) );
+                $$buffref = "";
+            },
+            on_closed => sub {
 #say "Connection closed.";
-			$loop->stop;
-			}
-			);
-		$loop->add( $stream );
-		},
+                $loop->stop;
+            }
+        );
+        $loop->add( $stream );
+    },
 
-		on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
-		on_connect_error => sub { die "Cannot connect\n" },
-		);
+    on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
+    on_connect_error => sub { die "Cannot connect\n" },
+);
 
 sub print_temp {
-	my $temp = shift;
-	say "Content-type: text/plain\n";
-	say $temp->{"time"};
-	for(sort keys %{$temp->{"sensors"}}) {
-		print $_, " => ", $temp->{"sensors"}{$_}, "\n";
-	}
+    my $temp = shift;
+    say "Content-type: text/plain\n";
+    say $temp->{"time"};
+    for(sort keys %{$temp->{"sensors"}}) {
+        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
+    }
 
 }
 
