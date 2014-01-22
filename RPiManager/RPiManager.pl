@@ -20,38 +20,21 @@
 
 #===============================================================================
 #TODO:
-#implement Input and Output managers
-#Make used modules configurable -> config file
+#Make modules configurable -> config file
 #better encapsulation
 # => Notifier::Listener
 # => hide reading temperature over network somehow
 #
-# => make interaction more sane 
-# => less giving CodeRefs to each other
-#  => use objects and curry
-#
-#IN: Type + Value => give to Main
-#OUT: register outputs + accepting Types => accept from Main and dispatch
-#  types: text, piface/byte, object
-#
-#------
-#Output idea:
-# have module create output hash (on request or tick/interrupt)
-# (rpi => $number, console => $string OR byte => $number, string => $string)
-# OutputManager pulls hashes from modules it knows/are activated and sends it
-#   to submodules for different types/devices)
 #TODO: think about additional output, like state!
 #------
-#
-#Devices: PiFace / GPIO / Sensors
+#Devices ( PiFace / GPIO / Sensors / Console / DB )
 #Notifier: encapsulate IO::Async implementation
 #Modules: implement Functionality 
-#
+#------
 #Main/Reactor: build a state machine for handling stuff
 # keep main state
-# manage inputs + outputs
+# manage inputs + outputs -> more or less in IO::Manager
 # keep track of modules
-#
 #------
 #think about state of modules 
 # Clock:
@@ -63,17 +46,14 @@
 #===============================================================================
 #add fault tolerance / error handling
 #use Exporter in modules
-#
 #kill subprocess/routine on exit
 #===============================================================================
-#other modules:
-#temperature
-#load
-#audio volume
+#other modules with PiFace output:
+#temperature load audio_volume
 #
+#more Modules:
 #manage programs/services module (indicators via LEDs, start/stop via buttons)
 #read/request info from other hosts/programs via sockets 
-# (e.g. temperature from creampi)
 #write information to DB/file
 #
 #web frontend (first just output, then control)
@@ -95,7 +75,6 @@ use Module::Clock;
 #WebCam
 #Temperature
 #Web -> Mojo? Dancer? Listener? HTTP::Server?
-
 use Device::MyNoPiFace; #dummy for testing locally
 #use Device::MyPiFace;
 
@@ -103,12 +82,12 @@ use IO::Manager;
 
 use IO::PiFaceInputRoutine;
 use IO::PiFaceOutputRoutine;
-
 use Notifier::Timer;
 use IO::Async::Loop;
 use IO::Async::Stream;
 use IO::Async::Channel;
 use Storable qw(thaw);
+
 my $in_ch = IO::Async::Channel->new;
 my $out_ch = IO::Async::Channel->new;
 my $last_output;

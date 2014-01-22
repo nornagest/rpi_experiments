@@ -22,7 +22,9 @@ use Moose;
 use Modern::Perl 2013;
 use warnings;
  
+#name of source Device
 has 'Device' => ( is => 'ro', isa => 'Str' );
+#Hash of input
 has 'Content' => ( is => 'ro', isa => 'HashRef' );
 
 no Moose;

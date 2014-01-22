@@ -29,24 +29,21 @@ use strict;
 use warnings;
  
 #TODO:
+#retrieve_inputs()
+#get inputs from registered Devices
+#send to registered Modules
+#
 #Device --Input-> Manager --input-> Module
+#
+#dispatch_outputs()
+#get outputs from registered Modules
+#send to registered Devices
+#
 #Device <-Output- Manager <-output- Module
-#
-#Outputs:
-#has Modules name, output type, active, Module reference
-#Methods:
-#add_module
-#remove_module
-#activate_module
-#deactivate_module
-#write/print
-#
-#knowns Devices
-#  Device has accepted_types
-#knows Modules
-#  retrieves output from module and maps to devices
 
+#list of Modules
 has 'Modules' => ( is => 'rw', isa => 'ArrayRef' );
+#list of Devices
 has 'Devices' => ( is => 'rw', isa => 'ArrayRef' );
 
 sub add_module {};

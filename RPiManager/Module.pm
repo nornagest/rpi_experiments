@@ -21,17 +21,13 @@ use Moose;
 use Modern::Perl 2013;
 use warnings;
  
-#has 
-#input
-#output
-
 has 'Name' => ( is => 'rw', isa => 'Str' );
 has 'Input' => ( is => 'rw', isa => 'HashRef' );
 has 'Output' => ( is => 'rw', isa => 'HashRef' );
 has 'Active' => ( is => 'rw', isa => 'Bool' );
 
-sub send_input {};
 sub get_output {};
+sub send_input {};
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
