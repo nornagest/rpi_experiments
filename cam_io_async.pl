@@ -1,18 +1,24 @@
 #!/usr/bin/perl
 
+use Modern::Perl 2013;
+use warnings; 
+
+use POSIX qw(strftime);
 use IO::Async::Loop;
 use IO::Async::Signal;
 use IO::Async::Timer::Periodic;
 
 my $program = '/opt/vc/bin/raspistill';
-my $interval = 300;
-my $output = 'cam.jpg';
+my $interval = 600;
+my $output_dir = '/usr/share/nginx/img';
+my $output = '_cam.jpg';
 my %params = (
+	'-n' => '', #no preview
 	'-t' => 2000,      #delay
-	'-w' => 1024,      #width
-	'-h' => 768,       #height
-	'-rot' => 270,     #rotation
-	'-ex' => 'night',  #exposure
+	'-w' => 1280,      #width
+	'-h' => 960,       #height
+	'-rot' => 90,     #rotation
+#	'-ex' => 'night',  #exposure
 );
 
 my $loop = IO::Async::Loop->new;
@@ -35,18 +41,28 @@ my $sigterm = IO::Async::Signal->new(
    name => "TERM",
    on_receipt => sub {
 	   $loop->stop;
+	   say "Bye.";
    },
 );
 $loop->add($sigterm);
+#SIGINT
+my $sigint = IO::Async::Signal->new(
+   name => "INT",
+   on_receipt => sub {
+	   $loop->stop;
+	   say "Bye.";
+   },
+);
+$loop->add($sigint);
 #run
 $loop->run();
 #subs
 sub take_pic {
     #TODO: test this
-    my epoch = time();
-    my $command = $program . join ' ', %params;
-    my $final_command = "$command -o ";
-    $final_command .= $epoch unless $output eq '-';
+    my $time = strftime "%Y%m%d-%H%M%S", localtime;
+    my $command = $program . ' ' . join ' ', %params;
+    my $final_command = "$command -o " . $output_dir . '/';
+    $final_command .= $time unless $output eq '-';
     $final_command .= $output;
 print $final_command, "\n";
     system($final_command);
