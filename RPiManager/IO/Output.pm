@@ -22,10 +22,8 @@ use Moose;
 use Modern::Perl 2013;
 use warnings;
  
-has 'Name' => ( is => 'ro', isa => 'Str' );
-has 'Type' => ( is => 'ro', isa => 'Str' );
-has 'Active' => ( is => 'rw', isa => 'Bool' );
-has 'Module' => ( is => 'ro' );
+has 'Module' => ( is => 'ro', isa => 'Str' );
+has 'Content' => ( is => 'ro', isa => 'HashRef' );
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

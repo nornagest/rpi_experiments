@@ -1,7 +1,7 @@
 #
 #===============================================================================
 #
-#         FILE: IO.pm
+#         FILE: Input.pm
 #
 #  DESCRIPTION: 
 #
@@ -11,11 +11,21 @@
 #       AUTHOR: YOUR NAME (), 
 # ORGANIZATION: 
 #      VERSION: 1.0
-#      CREATED: 01/21/2014 09:57:24 PM
+#      CREATED: 01/22/2014 10:32:06 PM
 #     REVISION: ---
 #===============================================================================
 
-use strict;
+package IO::Input;
+
+use Moose;
+
+use Modern::Perl 2013;
 use warnings;
  
+has 'Device' => ( is => 'ro', isa => 'Str' );
+has 'Content' => ( is => 'ro', isa => 'HashRef' );
 
+no Moose;
+__PACKAGE__->meta->make_immutable;
+
+1;

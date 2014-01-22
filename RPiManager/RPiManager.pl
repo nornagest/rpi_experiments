@@ -99,7 +99,7 @@ use Module::Clock;
 use Device::MyNoPiFace; #dummy for testing locally
 #use Device::MyPiFace;
 
-use IO::OutputManager;
+use IO::Manager;
 
 use IO::PiFaceInputRoutine;
 use IO::PiFaceOutputRoutine;
