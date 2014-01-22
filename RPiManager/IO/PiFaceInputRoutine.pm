@@ -15,7 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-package In::PiFaceInputRoutine;
+package IO::PiFaceInputRoutine;
 
 use Modern::Perl 2013;
 use Moose;

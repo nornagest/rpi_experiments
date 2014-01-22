@@ -34,6 +34,15 @@
 #OUT: register outputs + accepting Types => accept from Main and dispatch
 #  types: text, piface/byte, object
 #
+#------
+#Output idea:
+# have module create output hash (on request or tick/interrupt)
+# (rpi => $number, console => $string OR byte => $number, string => $string)
+# OutputManager pulls hashes from modules it knows/are activated and sends it
+#   to submodules for different types/devices)
+#TODO: think about additional output, like state!
+#------
+#
 #Devices: PiFace / GPIO / Sensors
 #Notifier: encapsulate IO::Async implementation
 #Modules: implement Functionality 
@@ -85,13 +94,16 @@ use warnings;
 use Module::Clock;
 #WebCam
 #Temperature
-#Web -> Mojo? Dancer? Listener?
+#Web -> Mojo? Dancer? Listener? HTTP::Server?
 
-#use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
+use Device::MyNoPiFace; #dummy for testing locally
+#use Device::MyPiFace;
 
-use In::PiFaceInputRoutine;
-use Out::PiFaceOutputRoutine;
+use IO::OutputManager;
+
+use IO::PiFaceInputRoutine;
+use IO::PiFaceOutputRoutine;
+
 use Notifier::Timer;
 use IO::Async::Loop;
 use IO::Async::Stream;
@@ -107,8 +119,6 @@ my $block_output = 0; #don't override output of main
 
 my $piface = MyPiFace->new;
 my $clock = Module::Clock->new('output_ref' => \&sub_output);
-#my $clock = Module::Clock->new('output_ref' => sub {});
-my $stream;
 my $loop = IO::Async::Loop->new;
 
 &create_and_add_notifiers($loop, $piface);
@@ -120,13 +130,13 @@ $loop->run;
 #===============================================================================
 
 sub create_and_add_notifiers() {
-    my $input_routine = In::PiFaceInputRoutine->new(
+    my $input_routine = IO::PiFaceInputRoutine->new(
         'piface' => $piface, 
         'channel' => $in_ch, 
         'loop' => $loop,
         'in_ref' => \&handle_input,
     );
-    my $output_routine = Out::PiFaceOutputRoutine->new(
+    my $output_routine = IO::PiFaceOutputRoutine->new(
         'piface' => $piface, 
         'channel' => $out_ch, 
         'loop' => $loop,
@@ -134,10 +144,11 @@ sub create_and_add_notifiers() {
 
     my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
     $loop->add( $ticker );
-    my $temp_ticker = Notifier::Timer::create_timer_periodic(60, 0, sub { on_tick() });
+    my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
     $loop->add( $temp_ticker );
 }
 
+#TODO: Move this to Notifier and Module
 sub on_tick {
     $loop->connect(
         host     => "creampi",
@@ -145,7 +156,7 @@ sub on_tick {
         socktype => 'stream',
 
         on_stream => sub {
-            $stream = shift;
+            my $stream = shift;
             $stream->configure(
                 on_read => sub {
                     my ( $self, $buffref, $eof ) = @_;

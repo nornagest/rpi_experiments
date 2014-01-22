@@ -16,6 +16,7 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO: Remove old way of output
 package Module::Clock;
 
 use Moose;
@@ -31,6 +32,8 @@ has 'on_button' => ( is => 'ro', isa => 'ArrayRef',
 );
 has 'output_ref' => ( is => 'ro', isa => 'CodeRef', default => sub {});
 
+has 'output' => ( is => 'rw', isa => 'HashRef' );
+
 sub on_tick {
     my $self = shift;
 
@@ -39,8 +42,11 @@ sub on_tick {
     $time++ if $self->state == 4;      # adjust month representation 
     $time %= 100 if $self->state == 5; # adjust year representation
     $self->output_ref->($time);
+
+    $self->output( { "byte" => $time, "string" => scalar localtime() } );
 }
 
+#TODO: Handle byte input from InputManager
 sub next {
     my $self = shift;
     $self->state( ($self->state + 1) % $state_mod) if defined $self;
@@ -54,6 +60,7 @@ sub reset {
     $self->state( 0 ) if defined $self;
 }
 
+#TODO: Remove this or come up with right way to output
 sub print_state {
     my $self = shift;
     my $state = $self->state;

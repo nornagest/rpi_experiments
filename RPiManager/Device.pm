@@ -1,7 +1,7 @@
 #
 #===============================================================================
 #
-#         FILE: OutputManager.pm
+#         FILE: Device.pm
 #
 #  DESCRIPTION: 
 #
@@ -11,18 +11,11 @@
 #       AUTHOR: YOUR NAME (), 
 # ORGANIZATION: 
 #      VERSION: 1.0
-#      CREATED: 01/13/2014 08:12:21 PM
+#      CREATED: 01/21/2014 09:57:37 PM
 #     REVISION: ---
 #===============================================================================
 
-use Moose;
-
-use Modern::Perl 2013;
 use strict;
 use warnings;
  
 
-no Moose;
-__PACKAGE__->meta->make_immutable;
-
-1;
