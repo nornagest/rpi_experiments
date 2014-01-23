@@ -4,6 +4,13 @@ use Moose;
 
 use PiFace qw(:all);
 
+#TODO: encapsulate more
+# Init/Deinit automatically
+# read  -> reads byte
+# write -> writes byte
+#
+# makr low level functions as such
+
 has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
 has 'Inputs' => ( is => 'ro', isa => 'Int',);
 has 'Outputs' => ( is => 'rw', isa => 'Int',);
