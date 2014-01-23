@@ -64,6 +64,6 @@ sub take_pic {
     my $final_command = "$command -o " . $output_dir . '/';
     $final_command .= $time unless $output eq '-';
     $final_command .= $output;
-print $final_command, "\n";
+    say $final_command;
     system($final_command);
 }
