@@ -26,7 +26,9 @@ use warnings;
 #output
 
 has 'Name' => ( is => 'rw', isa => 'Str' );
+#TODO: make this an ArrayRef + add Type
 has 'Input' => ( is => 'rw', isa => 'HashRef' );
+#TODO: do I really need this?
 has 'Output' => ( is => 'rw', isa => 'HashRef' );
 has 'Active' => ( is => 'rw', isa => 'Bool' );
 
