@@ -33,7 +33,7 @@
 #------
 #Main/Reactor: build a state machine for handling stuff
 # keep main state
-# manage inputs + outputs -> more or less in IO::Manager
+# manage inputs + outputs -> more or less in InOut::Manager
 # keep track of modules
 #------
 #think about state of modules 
@@ -75,32 +75,33 @@ use Module::Clock;
 #WebCam
 #Temperature
 #Web -> Mojo? Dancer? Listener? HTTP::Server?
-use Device::MyNoPiFace; #dummy for testing locally
-#use Device::MyPiFace;
 
-use IO::Manager;
+use Manager;
+use InOut::PiFace;
 
-use IO::PiFaceInputRoutine;
-use IO::PiFaceOutputRoutine;
 use Notifier::Timer;
 use IO::Async::Loop;
 use IO::Async::Stream;
-use IO::Async::Channel;
 use Storable qw(thaw);
+use Data::GUID;
+#my $guid = Data::GUID->new;
+#my $guid_string = $guid->as_string;
 
-my $in_ch = IO::Async::Channel->new;
-my $out_ch = IO::Async::Channel->new;
 my $last_output;
 #TODO: change this into some kind of semaphore and ideally make it kind of safe
 #think about multiple button presses -> $block_output++
 #remeber last timer and replace or queue new timer
 my $block_output = 0; #don't override output of main
 
-my $piface = MyPiFace->new;
 my $clock = Module::Clock->new('output_ref' => \&sub_output);
 my $loop = IO::Async::Loop->new;
 
-&create_and_add_notifiers($loop, $piface);
+my $manager = Manager->new( 'Loop' => $loop );
+my $piface = InOut::PiFace->new( 
+    'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
+$manager->add_inout( $piface );
+
+&create_and_add_notifiers;
 say "Ready...";
 $clock->print_state();
 
@@ -109,22 +110,13 @@ $loop->run;
 #===============================================================================
 
 sub create_and_add_notifiers() {
-    my $input_routine = IO::PiFaceInputRoutine->new(
-        'piface' => $piface, 
-        'channel' => $in_ch, 
-        'loop' => $loop,
-        'in_ref' => \&handle_input,
-    );
-    my $output_routine = IO::PiFaceOutputRoutine->new(
-        'piface' => $piface, 
-        'channel' => $out_ch, 
-        'loop' => $loop,
-    );
-
     my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
     $loop->add( $ticker );
     my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
     $loop->add( $temp_ticker );
+
+    my $deadline = Notifier::Timer::create_timer_countdown( 5, sub { $loop->stop });
+    $loop->add( $deadline );
 }
 
 #TODO: Move this to Notifier and Module
@@ -164,6 +156,7 @@ sub print_temp {
 
 }
 
+#Do this in InOut::Manager
 sub handle_input($$) {
     my ($input, $last_input) = @_;
     my @buttons = (0,0,0,0);
@@ -220,7 +213,8 @@ sub sub_output($) {
 
 sub output($) {
     my $value = shift;
-    $out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
+    #TODO: send this to InOut::Manager
+#    $out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
     $last_output = $value;
 }
 

@@ -20,6 +20,7 @@
 package Module::Clock;
 
 use Moose;
+extends 'Module';
 
 use Modern::Perl 2013;
 use warnings;

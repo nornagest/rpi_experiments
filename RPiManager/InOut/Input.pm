@@ -1,7 +1,7 @@
 #
 #===============================================================================
 #
-#         FILE: Output.pm
+#         FILE: Input.pm
 #
 #  DESCRIPTION: 
 #
@@ -11,20 +11,20 @@
 #       AUTHOR: YOUR NAME (), 
 # ORGANIZATION: 
 #      VERSION: 1.0
-#      CREATED: 01/20/2014 11:08:48 PM
+#      CREATED: 01/22/2014 10:32:06 PM
 #     REVISION: ---
 #===============================================================================
 
-package IO::Output;
+package InOut::Input;
 
 use Moose;
 
 use Modern::Perl 2013;
 use warnings;
  
-#name of source Module
-has 'Module' => ( is => 'ro', isa => 'Str' );
-#Hash of output
+#name of source Device
+has 'Device' => ( is => 'ro', isa => 'Str' );
+#Hash of input
 has 'Content' => ( is => 'ro', isa => 'HashRef' );
 
 no Moose;

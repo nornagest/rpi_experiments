@@ -1,6 +1,9 @@
-package MyPiFace;
+package Device::MyPiFace;
 
 use Moose;
+
+use Modern::Perl 2013;
+use warnings;
 
 use PiFace qw(:all);
 
@@ -12,9 +15,19 @@ use PiFace qw(:all);
 # makr low level functions as such
 
 has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
-has 'Inputs' => ( is => 'ro', isa => 'Int',);
-has 'Outputs' => ( is => 'rw', isa => 'Int',);
 
+#constructor
+sub BUILD {
+    my $self = shift;
+    $self->init();
+};
+#destructor
+sub DEMOLISH {
+    my $self = shift;
+    $self->deinit;
+};
+
+#
 sub init {
   my $self = shift;
   return if $self->IsInitialized;

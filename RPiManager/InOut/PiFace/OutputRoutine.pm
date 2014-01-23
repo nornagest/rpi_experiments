@@ -16,7 +16,7 @@
 #===============================================================================
 
 #TODO: Make this a Notifier
-package IO::PiFaceOutputRoutine;
+package InOut::PiFace::OutputRoutine;
 
 use Modern::Perl 2013;
 use Moose;
@@ -42,15 +42,17 @@ sub __create_piface_output_routine {
     my ($piface, $channel) = @_;
 
     my $output_code_ref = sub {
-            $piface->init;
-            while(1) {
-                my $input = ${$channel->recv};
-                $piface->write_byte($input);
-            }
+        $piface->init;
+
+        say "OutputRoutine code";
+        while(1) {
+            my $input = ${$channel->recv};
+            $piface->write_byte($input);
+        }
     };
     my $on_finish_ref = sub {
-            say "Output routine exited.";
-            $piface->deinit;
+        say "Output routine exited.";
+        $piface->deinit;
     };
 
     return Notifier::Routine::create_output_routine($channel, $output_code_ref, $on_finish_ref);

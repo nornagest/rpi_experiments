@@ -21,15 +21,16 @@ use Moose;
 use Modern::Perl 2013;
 use warnings;
  
-has 'Name' => ( is => 'rw', isa => 'Str' );
-has 'Input' => ( is => 'rw', isa => 'HashRef' );
-has 'Output' => ( is => 'rw', isa => 'HashRef' );
-has 'Active' => ( is => 'rw', isa => 'Bool' );
+has 'Name' => ( is => 'ro', isa => 'Str', required => 1 );
+has 'GUID' => ( is => 'ro', isa => 'Str', required => 1 );
+has 'Type' => ( is => 'ro', isa => 'Str', required => 1 );
+has 'Active' => ( is => 'rw', isa => 'Bool', default => 1 );
+has 'Manager' => ( is => 'ro', isa => 'Object', required => 1 );
 
-sub get_output {};
 sub send_input {};
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
+
