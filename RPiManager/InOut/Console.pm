@@ -31,7 +31,7 @@ override 'write' => sub {
     my ($self, $output) = @_;
     my $string = $output->{string} if defined $output->{string};
     return if defined $self->last_output && $self->last_output eq $string;
-    say "Console $string";
+    say $string;
     $self->last_output($string);
 };
 

@@ -83,29 +83,23 @@ use Module::Clock;
 #WebCam
 #Web -> Mojo? Dancer? Listener? HTTP::Server?
 
-#TODO: handle this inside Manager
-#change this into some kind of semaphore and ideally make it kind of safe
-#think about multiple button presses -> $block_output++
-#remeber last timer and replace or queue new timer
-my $block_output = 0; #don't override output of main
-
 my $loop = IO::Async::Loop->new;
 my $manager = Manager->new( 'Loop' => $loop );
 
 $manager->add_module( Module::Clock->new( 
-        'GUID' => Data::GUID->new->as_string, 'Manager' => $manager, 'output_ref' => \&sub_output) );
+        'GUID' => Data::GUID->new->as_string, 'Manager' => $manager, 
+        'output_ref' => \&sub_output) );
 $manager->add_inout( InOut::PiFace->new( 
         'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
 $manager->add_inout( InOut::Console->new( 
         'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
 
 &create_and_add_notifiers;
-say "Ready...";
 
+say "Ready...";
 $loop->run;
 
 #===============================================================================
-
 sub create_and_add_notifiers() {
     my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
     $loop->add( $temp_ticker );
@@ -150,43 +144,14 @@ sub print_temp {
     my $temp = shift;
     say $temp->{"time"};
     for(sort keys %{$temp->{"sensors"}}) {
-        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
+        say $_, " => ", $temp->{"sensors"}{$_};
     }
-
 }
 
 #===============================================================================
-#TODO: Try to use Future
-sub blink_once($$) {
-    my ($value, $duration) = @_;
-    main_output($value, 1);
-    my $countdown = Notifier::Timer::create_timer_countdown($duration, 
-        sub { main_output( 0, 0 ) });
-    $loop->add( $countdown );
-}
-
 sub blink($$) {
     my ($value, $interval) = @_;
     my $ticker = Notifier::Timer::create_timer_periodic($interval, 0, 
         sub {}); #TODO: implement and make this a Module
-}
-
-#===============================================================================
-sub main_output($$) {
-    my ($value, $block) = @_;
-    $block_output = $block;
-    output($value);
-}
-
-sub sub_output($) {
-    my $value = shift;
-    output($value) unless $block_output;
-}
-
-sub output($) {
-    my $value = shift;
-    #TODO: send this to InOut::Manager
-    #$out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
-    #$last_output = $value;
 }
 

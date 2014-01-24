@@ -53,7 +53,7 @@ sub write_byte {
     return unless $self->IsInitialized;
 
     $| = 1;
-    say "PiFace $byte";
+    say "PiFace: $byte";
     $| = 0;
 }
 

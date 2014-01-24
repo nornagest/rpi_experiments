@@ -27,9 +27,8 @@ use InOut::PiFace::InputRoutine;
 use InOut::PiFace::OutputRoutine;
 use IO::Async::Channel;
 
-#use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
-my $piface_class = 'Device::MyPiFace';
+use Device::MyNoPiFace; #dummy for testing locally
+#use Device::MyPiFace;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
 has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
@@ -43,7 +42,7 @@ sub BUILD {
     my $self = shift;
     $self->In_Channel( IO::Async::Channel->new );
     $self->Out_Channel( IO::Async::Channel->new);
-    $self->MyPiFace($piface_class->new);
+    $self->MyPiFace(Device::MyPiFace->new);
 
     $self->create_routines();
 }
