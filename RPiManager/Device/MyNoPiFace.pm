@@ -53,7 +53,7 @@ sub write_byte {
     return unless $self->IsInitialized;
 
     $| = 1;
-    say "PiFace: $byte";
+    say "\tPiFace: $byte";
     $| = 0;
 }
 
@@ -64,7 +64,7 @@ sub write_bit {
     return unless $self->IsInitialized;
 
     $| = 1;
-    say "PiFace: $pin $value";
+    say "\tPiFace: $pin $value";
     $| = 0;
 }
 

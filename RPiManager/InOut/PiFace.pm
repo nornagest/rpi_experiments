@@ -27,8 +27,8 @@ use InOut::PiFace::InputRoutine;
 use InOut::PiFace::OutputRoutine;
 use IO::Async::Channel;
 
-use Device::MyNoPiFace; #dummy for testing locally
-#use Device::MyPiFace;
+#use Device::MyNoPiFace; #dummy for testing locally
+use Device::MyPiFace;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
 has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
