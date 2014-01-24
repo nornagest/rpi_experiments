@@ -48,7 +48,7 @@ sub BUILD {
     $self->create_routines();
 }
 
-sub write {
+override 'write' => sub {
     my ($self, $output) = @_;
     my $byte = $output->{byte} if defined $output->{byte};
     return if defined $self->last_output && $self->last_output == $byte;

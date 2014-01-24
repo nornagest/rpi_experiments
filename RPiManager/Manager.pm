@@ -52,7 +52,6 @@ sub deactivate_inout {};
 
 sub handle_input {
     my ($self, $inout, $input) = @_;
-    #say "Manager handle_input $inout $input";
     if($input->{byte} == 8) {
         $self->Loop->stop;
         say "Bye.";
@@ -66,7 +65,6 @@ sub handle_input {
 };
 sub handle_output {
     my ($self, $module, $output) = @_;
-    #say "Manager handle_output $module $output";
     for my $inout (values $self->InOuts) {
         for my $type (keys %$output) {
             $inout->write($output) 

@@ -27,6 +27,8 @@ use warnings;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Clock' );
 has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
+has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
+has 'output' => ( is => 'rw', isa => 'HashRef' );
 
 override 'write' => sub {
     my ($self, $input) = @_;
@@ -39,15 +41,6 @@ override 'write' => sub {
     }
 };
 
-
-has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
-has 'on_button' => ( is => 'ro', isa => 'ArrayRef', 
-    default => sub { [ \&next, \&prev, \&reset, sub {} ] },
-);
-has 'output_ref' => ( is => 'ro', isa => 'CodeRef', default => sub {});
-
-has 'output' => ( is => 'rw', isa => 'HashRef' );
-
 my $state_mod = 6;
 
 sub on_tick {
@@ -57,10 +50,9 @@ sub on_tick {
     my $time = $time[$self->state];
     $time++ if $self->state == 4;      # adjust month representation 
     $time %= 100 if $self->state == 5; # adjust year representation
-    $self->output_ref->($time);
 
     $self->output( { "byte" => $time, "string" => scalar localtime() } );
-    $self->Manager->handle_output( $self->Name, $self->output );
+    $self->print;
 }
 
 #TODO: Handle byte input from InputManager
@@ -77,11 +69,20 @@ sub reset {
     $self->state( 0 ) if defined $self;
 }
 
-#TODO: Remove this or come up with right way to output
 sub print_state {
     my $self = shift;
     my @states = ( 'Seconds', 'Minutes', 'Hours', 'Day', 'Month', 'Year' );
-    say $states[$self->state];
+    
+    $self->output( 
+        { "byte" => $self->state, "string" => $states[$self->state] } );
+    #say $states[$self->state];
+    $self->print;
+}
+
+sub print {
+    my $self = shift;
+
+    $self->Manager->handle_output( $self->Name, $self->output );
 }
 
 no Moose;

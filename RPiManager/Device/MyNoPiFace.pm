@@ -1,4 +1,4 @@
-package Device::MyoPiFace;
+package Device::MyPiFace;
 
 use Moose;
 
@@ -53,7 +53,7 @@ sub write_byte {
     return unless $self->IsInitialized;
 
     $| = 1;
-    print "$byte\n";
+    say "PiFace $byte";
     $| = 0;
 }
 
@@ -64,7 +64,7 @@ sub write_bit {
     return unless $self->IsInitialized;
 
     $| = 1;
-    print "$pin $value\n";
+    say "PiFace: $pin $value";
     $| = 0;
 }
 

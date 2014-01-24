@@ -19,21 +19,18 @@
 #===============================================================================
 
 #===============================================================================
+#TODO: 
+#avoid spamming console from Clock
+#find a decent way to block certain output (per Module/Type) for a time
 #TODO:
 #Make modules configurable -> config file
-#better encapsulation
-# => Notifier::Listener
-# => hide reading temperature over network somehow
-#
-#TODO: Finish refactoring
+#TODO: 
 #move everything so far to Manager
 #make Modules real Modules
 #remove all say except for debugging and in upcoming InOut::Console
 #  even better: handle debug output via InOut::Console
-#
-#TODO: think about additional output, like state!
 #------
-#Devices ( PiFace / GPIO / Sensors / Console / DB )
+#Devices: PiFace / GPIO / Sensors / Console / DB
 #Notifier: encapsulate IO::Async implementation
 #Modules: implement Functionality 
 #------
@@ -44,11 +41,10 @@
 #------
 #think about state of modules 
 # Clock:
-# Part 1: functionality (create timer, on_tick give time to Main for output)
+# Part 1: functionality (create timer, on_tick give time to Manager for output)
 # Part 2: output time (on PiFace), react to buttons and change output accordingly
-#think about Childmanager instead of Routine
 #------
-#change from specific buttons to input value (numbers)
+#think about Childmanager instead of Routine
 #===============================================================================
 #add fault tolerance / error handling
 #use Exporter in modules
@@ -77,23 +73,16 @@
 use Modern::Perl 2013;
 use warnings;
 
+use Data::GUID;
+use IO::Async::Loop;
+use InOut::PiFace;
+use InOut::Console;
+use Manager;
 use Module::Clock;
-#WebCam
 #Temperature
+#WebCam
 #Web -> Mojo? Dancer? Listener? HTTP::Server?
 
-use Manager;
-use InOut::PiFace;
-
-use Notifier::Timer;
-use IO::Async::Loop;
-use IO::Async::Stream;
-use Storable qw(thaw);
-use Data::GUID;
-#my $guid = Data::GUID->new;
-#my $guid_string = $guid->as_string;
-
-my $last_output;
 #TODO: handle this inside Manager
 #change this into some kind of semaphore and ideally make it kind of safe
 #think about multiple button presses -> $block_output++
@@ -108,6 +97,9 @@ $manager->add_module( $clock );
 my $piface = InOut::PiFace->new( 
     'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
 $manager->add_inout( $piface );
+my $console = InOut::Console->new( 
+    'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
+$manager->add_inout( $console );
 
 &create_and_add_notifiers;
 say "Ready...";
@@ -124,7 +116,20 @@ sub create_and_add_notifiers() {
     $loop->add( $temp_ticker );
 }
 
+sub finish {
+    $loop->stop;
+    main_output(0, 1);
+    say "Goodbye!";
+}
+
+#===============================================================================
 #TODO: Move this to Notifier and Module
+# => Notifier::Listener
+# => hide reading temperature over network somehow
+use Notifier::Timer;
+use IO::Async::Stream;
+use Storable qw(thaw);
+
 sub on_tick {
     $loop->connect(
         host     => "creampi",
@@ -161,36 +166,7 @@ sub print_temp {
 
 }
 
-#Do this in InOut::Manager
-sub handle_input($$) {
-    my ($input, $last_input) = @_;
-    say "RPi handle_input";
-    my @buttons = (0,0,0,0);
-    for my $i (0..3) {
-        $buttons[$i] = ($input & (1<<$i)) >> $i;
-        if ( $buttons[$i] == 1  && ($last_input & (1 << $i)) == 0 ) {
-            handle_button($i);
-        }
-    }
-}
-
-sub handle_button($) {
-    my $button = shift;
-
-    #TODO: think about one handler function instead of one per button
-    #let OutputManager decide which Module methods to call
-    $clock->on_button->[$button]( $clock );
-    $clock->print_state();
-    blink_once($clock->state, 0.5);
-
-    if    ($button == 0) { 
-    } elsif ($button == 1) { 
-    } elsif ($button == 2) {
-    } elsif ($button == 3) { 
-        finish();
-    };
-}
-
+#===============================================================================
 #TODO: Try to use Future
 sub blink_once($$) {
     my ($value, $duration) = @_;
@@ -206,6 +182,7 @@ sub blink($$) {
         sub {}); #TODO: implement and make this a Module
 }
 
+#===============================================================================
 sub main_output($$) {
     my ($value, $block) = @_;
     $block_output = $block;
@@ -220,13 +197,7 @@ sub sub_output($) {
 sub output($) {
     my $value = shift;
     #TODO: send this to InOut::Manager
-#    $out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
-    $last_output = $value;
-}
-
-sub finish {
-    $loop->stop;
-    main_output(0, 1);
-    say "Goodbye!";
+    #$out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
+    #$last_output = $value;
 }
 
