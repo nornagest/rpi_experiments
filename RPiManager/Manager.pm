@@ -53,13 +53,12 @@ sub deactivate_inout {};
 sub handle_input {
     my ($self, $inout, $input) = @_;
     if($input->{byte} == 8) {
-        $self->Loop->stop;
-        say "Bye.";
+        $self->finish;
     }
     for my $module (values $self->Modules) {
         for my $type (keys %$input) {
             $module->write($input) 
-                if $module->Type eq $type && $module->Active;
+            if $module->Type eq $type && $module->Active;
         }
     }
 };
@@ -68,12 +67,18 @@ sub handle_output {
     for my $inout (values $self->InOuts) {
         for my $type (keys %$output) {
             $inout->write($output) 
-                if $inout->Type eq $type && $inout->Active;
+            if $inout->Type eq $type && $inout->Active;
         }
     }
 };
 sub dispatch_input {};
 sub dispatch_outputs {};
+
+sub finish {
+    my $self = shift;
+    $self->Loop->stop;
+    say "Goodbye!";
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

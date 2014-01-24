@@ -91,35 +91,24 @@ my $block_output = 0; #don't override output of main
 
 my $loop = IO::Async::Loop->new;
 my $manager = Manager->new( 'Loop' => $loop );
-my $clock = Module::Clock->new( 'GUID' => Data::GUID->new->as_string,
-    'Manager' => $manager, 'output_ref' => \&sub_output);
-$manager->add_module( $clock );
-my $piface = InOut::PiFace->new( 
-    'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
-$manager->add_inout( $piface );
-my $console = InOut::Console->new( 
-    'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
-$manager->add_inout( $console );
+
+$manager->add_module( Module::Clock->new( 
+        'GUID' => Data::GUID->new->as_string, 'Manager' => $manager, 'output_ref' => \&sub_output) );
+$manager->add_inout( InOut::PiFace->new( 
+        'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
+$manager->add_inout( InOut::Console->new( 
+        'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
 
 &create_and_add_notifiers;
 say "Ready...";
-$clock->print_state();
 
 $loop->run;
 
 #===============================================================================
 
 sub create_and_add_notifiers() {
-    my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
-    $loop->add( $ticker );
     my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
     $loop->add( $temp_ticker );
-}
-
-sub finish {
-    $loop->stop;
-    main_output(0, 1);
-    say "Goodbye!";
 }
 
 #===============================================================================
