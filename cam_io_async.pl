@@ -1,32 +1,30 @@
 #!/usr/bin/perl
 
+use Modern::Perl 2013;
+use warnings; 
+
+use POSIX qw(strftime);
 use IO::Async::Loop;
 use IO::Async::Signal;
 use IO::Async::Timer::Periodic;
 
+my $program = '/opt/vc/bin/raspistill';
+my $interval = 600;
+my $output_dir = '/usr/share/nginx/img';
+my $output = '_cam.jpg';
 my %params = (
-	'program' => '/opt/vc/bin/raspistill',
-	'interval' => 300,
-	'delay' => 2000,
-	'width' => 1024,
-	'height' => 768,
-	'rotation' => 270,
-	'exposure' => 'night',
-	'name' => 'cam.jpg',
+	'-n' => '', #no preview
+	'-t' => 2000,      #delay
+	'-w' => 1280,      #width
+	'-h' => 960,       #height
+	'-rot' => 90,     #rotation
+#	'-ex' => 'night',  #exposure
 );
-
-my $command = $params{'program'} .
-	' -t ' . $params{'delay'} .
-	' -w ' . $params{'width'} .
-	' -h ' . $params{'height'} .
-	' -rot ' . $params{'rotation'} .
-	' -ex '. $params{'exposure'} .
-	' -o ';
 
 my $loop = IO::Async::Loop->new;
 #Timer
 my $timer = IO::Async::Timer::Periodic->new(
-	interval => $params{'interval'},
+	interval => $interval,
 	first_interval => 0,
 	on_tick => \&take_pic,
 );
@@ -43,15 +41,29 @@ my $sigterm = IO::Async::Signal->new(
    name => "TERM",
    on_receipt => sub {
 	   $loop->stop;
+	   say "Bye.";
    },
 );
 $loop->add($sigterm);
+#SIGINT
+my $sigint = IO::Async::Signal->new(
+   name => "INT",
+   on_receipt => sub {
+	   $loop->stop;
+	   say "Bye.";
+   },
+);
+$loop->add($sigint);
 #run
 $loop->run();
 #subs
 sub take_pic {
-    my $epoch = time();
-    my $final_command = $command . ' '. $epoch .'_'. $params{'name'};
-print $final_command, "\n";
+    #TODO: test this
+    my $time = strftime "%Y%m%d-%H%M%S", localtime;
+    my $command = $program . ' ' . join ' ', %params;
+    my $final_command = "$command -o " . $output_dir . '/';
+    $final_command .= $time unless $output eq '-';
+    $final_command .= $output;
+    say $final_command;
     system($final_command);
 }

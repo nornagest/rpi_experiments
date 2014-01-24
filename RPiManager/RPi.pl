@@ -20,29 +20,27 @@
 
 #===============================================================================
 #TODO:
-#implement Input and Output managers
-#Make used modules configurable -> config file
+#Make modules configurable -> config file
 #better encapsulation
 # => Notifier::Listener
 # => hide reading temperature over network somehow
 #
-# => make interaction more sane 
-# => less giving CodeRefs to each other
-#  => use objects and curry
+#TODO: Finish refactoring
+#move everything so far to Manager
+#make Modules real Modules
+#remove all say except for debugging and in upcoming InOut::Console
+#  even better: handle debug output via InOut::Console
 #
-#IN: Type + Value => give to Main
-#OUT: register outputs + accepting Types => accept from Main and dispatch
-#  types: text, piface/byte, object
-#
-#Devices: PiFace / GPIO / Sensors
+#TODO: think about additional output, like state!
+#------
+#Devices ( PiFace / GPIO / Sensors / Console / DB )
 #Notifier: encapsulate IO::Async implementation
 #Modules: implement Functionality 
-#
+#------
 #Main/Reactor: build a state machine for handling stuff
 # keep main state
-# manage inputs + outputs
+# manage inputs + outputs -> more or less in InOut::Manager
 # keep track of modules
-#
 #------
 #think about state of modules 
 # Clock:
@@ -54,17 +52,14 @@
 #===============================================================================
 #add fault tolerance / error handling
 #use Exporter in modules
-#
 #kill subprocess/routine on exit
 #===============================================================================
-#other modules:
-#temperature
-#load
-#audio volume
+#other modules with PiFace output:
+#temperature load audio_volume
 #
+#more Modules:
 #manage programs/services module (indicators via LEDs, start/stop via buttons)
 #read/request info from other hosts/programs via sockets 
-# (e.g. temperature from creampi)
 #write information to DB/file
 #
 #web frontend (first just output, then control)
@@ -85,33 +80,36 @@ use warnings;
 use Module::Clock;
 #WebCam
 #Temperature
-#Web -> Mojo? Dancer? Listener?
+#Web -> Mojo? Dancer? Listener? HTTP::Server?
 
-#use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
+use Manager;
+use InOut::PiFace;
 
-use In::PiFaceInputRoutine;
-use Out::PiFaceOutputRoutine;
 use Notifier::Timer;
 use IO::Async::Loop;
 use IO::Async::Stream;
-use IO::Async::Channel;
 use Storable qw(thaw);
-my $in_ch = IO::Async::Channel->new;
-my $out_ch = IO::Async::Channel->new;
+use Data::GUID;
+#my $guid = Data::GUID->new;
+#my $guid_string = $guid->as_string;
+
 my $last_output;
-#TODO: change this into some kind of semaphore and ideally make it kind of safe
+#TODO: handle this inside Manager
+#change this into some kind of semaphore and ideally make it kind of safe
 #think about multiple button presses -> $block_output++
 #remeber last timer and replace or queue new timer
 my $block_output = 0; #don't override output of main
 
-my $piface = MyPiFace->new;
-my $clock = Module::Clock->new('output_ref' => \&sub_output);
-#my $clock = Module::Clock->new('output_ref' => sub {});
-my $stream;
 my $loop = IO::Async::Loop->new;
+my $manager = Manager->new( 'Loop' => $loop );
+my $clock = Module::Clock->new( 'GUID' => Data::GUID->new->as_string,
+    'Manager' => $manager, 'output_ref' => \&sub_output);
+$manager->add_module( $clock );
+my $piface = InOut::PiFace->new( 
+    'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
+$manager->add_inout( $piface );
 
-&create_and_add_notifiers($loop, $piface);
+&create_and_add_notifiers;
 say "Ready...";
 $clock->print_state();
 
@@ -120,24 +118,13 @@ $loop->run;
 #===============================================================================
 
 sub create_and_add_notifiers() {
-    my $input_routine = In::PiFaceInputRoutine->new(
-        'piface' => $piface, 
-        'channel' => $in_ch, 
-        'loop' => $loop,
-        'in_ref' => \&handle_input,
-    );
-    my $output_routine = Out::PiFaceOutputRoutine->new(
-        'piface' => $piface, 
-        'channel' => $out_ch, 
-        'loop' => $loop,
-    );
-
     my $ticker = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $clock->on_tick() });
     $loop->add( $ticker );
-    my $temp_ticker = Notifier::Timer::create_timer_periodic(60, 0, sub { on_tick() });
+    my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
     $loop->add( $temp_ticker );
 }
 
+#TODO: Move this to Notifier and Module
 sub on_tick {
     $loop->connect(
         host     => "creampi",
@@ -145,7 +132,7 @@ sub on_tick {
         socktype => 'stream',
 
         on_stream => sub {
-            $stream = shift;
+            my $stream = shift;
             $stream->configure(
                 on_read => sub {
                     my ( $self, $buffref, $eof ) = @_;
@@ -174,8 +161,10 @@ sub print_temp {
 
 }
 
+#Do this in InOut::Manager
 sub handle_input($$) {
     my ($input, $last_input) = @_;
+    say "RPi handle_input";
     my @buttons = (0,0,0,0);
     for my $i (0..3) {
         $buttons[$i] = ($input & (1<<$i)) >> $i;
@@ -230,7 +219,8 @@ sub sub_output($) {
 
 sub output($) {
     my $value = shift;
-    $out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
+    #TODO: send this to InOut::Manager
+#    $out_ch->send( \$value ) unless defined $last_output && $value == $last_output;
     $last_output = $value;
 }
 

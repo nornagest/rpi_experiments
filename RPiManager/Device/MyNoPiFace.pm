@@ -1,16 +1,40 @@
-package MyPiFace;
+package Device::MyNoPiFace;
 
 use Moose;
+
+use Modern::Perl 2013;
+use warnings;
+
 use Term::ReadKey;
 
 has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
-has 'Inputs' => ( is => 'ro', isa => 'Int',);
-has 'Outputs' => ( is => 'rw', isa => 'Int',);
+
+#constructor
+sub BUILD {
+    my $self = shift;
+    $self->init();
+};
+#destructor
+sub DEMOLISH {
+    my $self = shift;
+    $self->deinit;
+};
+
+#TODO: Use Term::TermKey(::Async)
+sub get_key {
+    ReadMode 'raw';
+    my $input = ReadKey(0);
+    ReadMode 'restore';
+    chomp $input;
+    return $input; 
+}
 
 sub init {
     my $self = shift;
+    say "MyNoPiFace init";
     return if $self->IsInitialized;
 
+    say "MyNoPiFace init really";
     $self->IsInitialized(1);
 }
 
@@ -62,14 +86,6 @@ sub read_output_byte {
     return unless $self->IsInitialized;
 
     return get_key();
-}
-
-sub get_key {
-    ReadMode 'raw';
-    my $input = ReadKey(0);
-    ReadMode 'restore';
-    chomp $input;
-    return $input; 
 }
 
 no Moose;
