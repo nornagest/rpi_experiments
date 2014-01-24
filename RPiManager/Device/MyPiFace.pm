@@ -23,18 +23,18 @@ sub DEMOLISH {
 #
 sub init {
     my $self = shift;
-    return if $self->IsInitialized;
+    say "MyPiFace init";
+    #return if $self->IsInitialized;
 
+    say "MyPiFace init really";
     pfio_init();
     $self->IsInitialized(1);
 }
 
 sub deinit {
     my $self = shift;
-    say "MyNoPiFace init";
     return unless $self->IsInitialized;
 
-    say "MyNoPiFace init really";
     pfio_deinit();
     $self->IsInitialized(0);
 }
