@@ -10,10 +10,10 @@ use PiFace qw(:all);
 has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
 
 #constructor
-sub BUILD {
-    my $self = shift;
-    $self->init();
-};
+#sub BUILD {
+#    my $self = shift;
+#    $self->init();
+#};
 #destructor
 sub DEMOLISH {
     my $self = shift;
@@ -24,7 +24,7 @@ sub DEMOLISH {
 sub init {
     my $self = shift;
     say "MyPiFace init";
-    #return if $self->IsInitialized;
+    return if $self->IsInitialized;
 
     say "MyPiFace init really";
     pfio_init();
@@ -33,8 +33,10 @@ sub init {
 
 sub deinit {
     my $self = shift;
+    say "MyNoPiFace deinit";
     return unless $self->IsInitialized;
 
+    say "MyNoPiFace init";
     pfio_deinit();
     $self->IsInitialized(0);
 }

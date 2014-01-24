@@ -1,4 +1,4 @@
-package Device::MyNoPiFace;
+package Device::MyoPiFace;
 
 use Moose;
 
@@ -10,10 +10,10 @@ use Term::ReadKey;
 has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
 
 #constructor
-sub BUILD {
-    my $self = shift;
-    $self->init();
-};
+#sub BUILD {
+#    my $self = shift;
+#    $self->init();
+#};
 #destructor
 sub DEMOLISH {
     my $self = shift;
@@ -40,8 +40,10 @@ sub init {
 
 sub deinit {
     my $self = shift;
+    say "MyNoPiFace deinit";
     return unless $self->IsInitialized;
 
+    say "MyNoPiFace deinit really";
     $self->IsInitialized(0);
 }
 
