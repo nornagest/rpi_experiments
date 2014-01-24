@@ -35,7 +35,7 @@ override 'write' => sub {
         $self->next if $byte & 1;
         $self->prev if $byte & 2;
         $self->reset if $byte & 4;
-        $self->print_state;
+        $self->print_state if $byte > 0 && $byte < 8;
     }
 };
 
