@@ -15,6 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO: extract most of this as a role
 package InOut;
 use Moose;
 
