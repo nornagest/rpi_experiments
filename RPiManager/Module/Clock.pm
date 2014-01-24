@@ -25,7 +25,20 @@ extends 'Module';
 use Modern::Perl 2013;
 use warnings;
 
-my $state_mod = 6;
+has '+Name' => ( is => 'ro', isa => 'Str', default => 'Clock' );
+has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
+
+override 'write' => sub {
+    my ($self, $input) = @_;
+    my $byte = $input->{byte} if defined $input->{byte};
+    if(defined $byte) {
+        $self->next if $byte & 1;
+        $self->prev if $byte & 2;
+        $self->reset if $byte & 4;
+        $self->print_state;
+    }
+};
+
 
 has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
 has 'on_button' => ( is => 'ro', isa => 'ArrayRef', 
@@ -34,6 +47,8 @@ has 'on_button' => ( is => 'ro', isa => 'ArrayRef',
 has 'output_ref' => ( is => 'ro', isa => 'CodeRef', default => sub {});
 
 has 'output' => ( is => 'rw', isa => 'HashRef' );
+
+my $state_mod = 6;
 
 sub on_tick {
     my $self = shift;
@@ -45,6 +60,7 @@ sub on_tick {
     $self->output_ref->($time);
 
     $self->output( { "byte" => $time, "string" => scalar localtime() } );
+    $self->Manager->handle_output( $self->Name, $self->output );
 }
 
 #TODO: Handle byte input from InputManager
@@ -64,9 +80,8 @@ sub reset {
 #TODO: Remove this or come up with right way to output
 sub print_state {
     my $self = shift;
-    my $state = $self->state;
     my @states = ( 'Seconds', 'Minutes', 'Hours', 'Day', 'Month', 'Year' );
-    say $states[$state];
+    say $states[$self->state];
 }
 
 no Moose;

@@ -43,8 +43,6 @@ sub __create_piface_output_routine {
 
     my $output_code_ref = sub {
         $piface->init;
-
-        say "OutputRoutine code";
         while(1) {
             my $input = ${$channel->recv};
             $piface->write_byte($input);

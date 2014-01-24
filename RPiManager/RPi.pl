@@ -25,6 +25,12 @@
 # => Notifier::Listener
 # => hide reading temperature over network somehow
 #
+#TODO: Finish refactoring
+#move everything so far to Manager
+#make Modules real Modules
+#remove all say except for debugging and in upcoming InOut::Console
+#  even better: handle debug output via InOut::Console
+#
 #TODO: think about additional output, like state!
 #------
 #Devices ( PiFace / GPIO / Sensors / Console / DB )
@@ -88,15 +94,17 @@ use Data::GUID;
 #my $guid_string = $guid->as_string;
 
 my $last_output;
-#TODO: change this into some kind of semaphore and ideally make it kind of safe
+#TODO: handle this inside Manager
+#change this into some kind of semaphore and ideally make it kind of safe
 #think about multiple button presses -> $block_output++
 #remeber last timer and replace or queue new timer
 my $block_output = 0; #don't override output of main
 
-my $clock = Module::Clock->new('output_ref' => \&sub_output);
 my $loop = IO::Async::Loop->new;
-
 my $manager = Manager->new( 'Loop' => $loop );
+my $clock = Module::Clock->new( 'GUID' => Data::GUID->new->as_string,
+    'Manager' => $manager, 'output_ref' => \&sub_output);
+$manager->add_module( $clock );
 my $piface = InOut::PiFace->new( 
     'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
 $manager->add_inout( $piface );
@@ -114,9 +122,6 @@ sub create_and_add_notifiers() {
     $loop->add( $ticker );
     my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
     $loop->add( $temp_ticker );
-
-    my $deadline = Notifier::Timer::create_timer_countdown( 5, sub { $loop->stop });
-    $loop->add( $deadline );
 }
 
 #TODO: Move this to Notifier and Module
@@ -159,6 +164,7 @@ sub print_temp {
 #Do this in InOut::Manager
 sub handle_input($$) {
     my ($input, $last_input) = @_;
+    say "RPi handle_input";
     my @buttons = (0,0,0,0);
     for my $i (0..3) {
         $buttons[$i] = ($input & (1<<$i)) >> $i;

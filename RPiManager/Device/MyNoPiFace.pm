@@ -30,8 +30,8 @@ sub get_key {
 }
 
 sub init {
-    say "MyNoPiFace init";
     my $self = shift;
+    say "MyNoPiFace init";
     return if $self->IsInitialized;
 
     say "MyNoPiFace init really";

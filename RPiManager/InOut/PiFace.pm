@@ -37,6 +37,7 @@ has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
 has 'MyPiFace' => ( is => 'rw', isa => 'Object' );
 has 'In_Channel' => ( is => 'rw', isa => 'Object' );
 has 'Out_Channel' => ( is => 'rw', isa => 'Object' );
+has 'last_output' => ( is => 'rw', isa => 'Int' );
 
 sub BUILD {
     my $self = shift;
@@ -49,13 +50,16 @@ sub BUILD {
 
 sub write {
     my ($self, $output) = @_;
-    $self->Out_Channel->send( $output );
+    my $byte = $output->{byte} if defined $output->{byte};
+    return if defined $self->last_output && $self->last_output == $byte;
+    $self->Out_Channel->send( \$byte );
+    $self->last_output($byte);
 };
 
 sub handle_input {
     my ($self, $input, $last_input) = @_;
-    say "PiFace handle_input";
-    $self->Manager->handle_input($self->Name, $input, $last_input);
+    my $input_diff = (0 + $input) ^ (0 + $last_input);
+    $self->Manager->handle_input( $self->Name, { 'byte' => $input } );
 }
 
 sub create_routines {
@@ -66,7 +70,6 @@ sub create_routines {
         'loop' => $self->Manager->Loop,
         'in_ref' => sub { 
             my ($input, $last_input) = @_;
-            say "InputRoutine in_ref";
             $self->handle_input($input, $last_input) 
         },
     );

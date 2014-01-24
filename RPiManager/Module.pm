@@ -24,11 +24,15 @@ use warnings;
  
 has 'Name' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'GUID' => ( is => 'ro', isa => 'Str', required => 1 );
+#TODO: seperate Input and Output types, allow multiple
 has 'Type' => ( is => 'ro', isa => 'Str', required => 1 );
-has 'Active' => ( is => 'rw', isa => 'Bool', default => 1 );
 has 'Manager' => ( is => 'ro', isa => 'Object', required => 1 );
+has 'Active' => ( is => 'rw', isa => 'Bool', default => 1 );
 
-sub send_input {};
+sub write {
+    my ($self, $input) = @_;
+    say "Module write $input";
+};
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

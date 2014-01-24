@@ -41,8 +41,6 @@ sub BUILD {
     $self->channel->configure(
         on_recv => sub {
             my ( $ch, $refout ) = @_;
-            say "InputRoutine on_recv";
-
             if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
                 my $input = $refout->{'input'};
                 my $last_input =  $refout->{'last_input'};
@@ -57,8 +55,6 @@ sub __create_piface_input_routine {
     
     my $input_code_ref = sub {
         $piface->init;
-
-        say "InputRoutine code";
         my $last_input = 0;
         while(1) {
             my $input = $piface->read_byte();
