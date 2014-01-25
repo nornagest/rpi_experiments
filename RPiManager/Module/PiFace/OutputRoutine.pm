@@ -15,7 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-package InOut::PiFace::OutputRoutine;
+package Module::PiFace::OutputRoutine;
 
 use Modern::Perl 2013;
 use Moose;

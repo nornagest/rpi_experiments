@@ -1,7 +1,7 @@
 #
 #===============================================================================
 #
-#         FILE: Module.pm
+#         FILE: Device.pm
 #
 #  DESCRIPTION: 
 #
@@ -11,27 +11,37 @@
 #       AUTHOR: YOUR NAME (), 
 # ORGANIZATION: 
 #      VERSION: 1.0
-#      CREATED: 01/21/2014 09:56:45 PM
+#      CREATED: 01/21/2014 09:57:37 PM
 #     REVISION: ---
 #===============================================================================
 
-#TODO: extract most of this as a role give it a kill/clean method
 package Module;
 use Moose;
 
 use Modern::Perl 2013;
 use warnings;
  
+has 'Manager' => ( is => 'ro', isa => 'Object', required => 1);
 has 'Name' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'GUID' => ( is => 'ro', isa => 'Str', required => 1 );
-#TODO: seperate Input and Output types, allow multiple
-has 'Type' => ( is => 'ro', isa => 'Str', required => 1 );
-has 'Manager' => ( is => 'ro', isa => 'Object', required => 1 );
 has 'Active' => ( is => 'rw', isa => 'Bool', default => 1 );
 
-sub write {
-    my ($self, $input) = @_;
-    say "Module write $input";
+#intenal stuff
+has '__direction' => ( is => 'ro', isa => 'Str' );
+has '__type' => ( is => 'ro', isa => 'Str' );
+
+sub accepts { 
+    my ($self, $message) = @_;
+    return 0 unless $message->Direction eq $self->__direction;
+    return 0 unless grep $_ eq $self->__type , keys $message->Content;
+    return 1;
+};
+
+sub send {
+    my ($self, $output) = @_;
+    say "Module write";
+    use Data::Dumper;
+    say Dumper($output);
 };
 
 no Moose;

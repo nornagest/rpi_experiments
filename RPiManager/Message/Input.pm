@@ -1,7 +1,7 @@
 #
 #===============================================================================
 #
-#         FILE: Notifier.pm
+#         FILE: Input.pm
 #
 #  DESCRIPTION: 
 #
@@ -11,13 +11,22 @@
 #       AUTHOR: YOUR NAME (), 
 # ORGANIZATION: 
 #      VERSION: 1.0
-#      CREATED: 01/21/2014 09:57:11 PM
+#      CREATED: 01/25/2014 11:22:31 AM
 #     REVISION: ---
 #===============================================================================
 
-use strict;
+package Message::Input;
+
+use Moose;
+extends 'Message';
+
+use Modern::Perl 2013;
 use warnings;
- 
-#TODO: design this
-#Make this a base class
+
+has '+Direction' => ( default => 'Input' );
+
+no Moose;
+__PACKAGE__->meta->make_immutable;
+
+1;
 

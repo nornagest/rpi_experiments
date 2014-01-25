@@ -15,6 +15,10 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO:
+#Make this a class
+#object has Timer -> is Periodic/Absolute/Countdown
+
 package Notifier::Timer;
 
 use Modern::Perl 2013;
@@ -23,10 +27,6 @@ use warnings;
 use IO::Async::Timer::Absolute; 
 use IO::Async::Timer::Countdown; 
 use IO::Async::Timer::Periodic; 
-
-#TODO:
-#Make this a class
-#object has Timer -> is Periodic/Absolute/Countdown
 
 sub create_timer_periodic($$$) {
     my ($interval, $first_interval, $on_tick_ref) = @_;

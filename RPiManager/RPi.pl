@@ -19,6 +19,8 @@
 #===============================================================================
 
 #===============================================================================
+#TODO:
+#more type checking
 #TODO: 
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO:
@@ -26,24 +28,19 @@
 #TODO: 
 #move everything so far to Manager
 #make Modules real Modules
-#remove all say except for debugging and in upcoming InOut::Console
-#  even better: handle debug output via InOut::Console
+#remove all say except for debugging
+#  even better: handle debug output via Module::Console
 #------
-#Devices: PiFace / GPIO / Sensors / Console / DB
+#Modules: PiFace / 433MHz / GPIO / Sensors / Console / DB / File
 #Notifier: encapsulate IO::Async implementation
 #Modules: implement Functionality 
 #------
 #Main/Reactor: build a state machine for handling stuff
 # keep main state
-# manage inputs + outputs -> more or less in InOut::Manager
-#------
-#think about state of modules 
-# Clock:
-# Part 1: functionality (create timer, on_tick give time to Manager for output)
-# Part 2: output time (on PiFace), react to buttons and change output accordingly
+# manage Modules and Modules
 #===============================================================================
 #add fault tolerance / error handling
-#use Exporter in modules
+#use Exporter 
 #===============================================================================
 #other modules with PiFace output:
 #temperature load audio_volume
@@ -57,8 +54,6 @@
 #integration with nornagest.org (just transfer info/write info to DB on 
 # server/accept requests from server)
 #
-#use outputs (relais/433MHz)
-#
 #control/integrate camera module on creampi
 #run on creampi
 # i/o web frontend
@@ -70,9 +65,9 @@ use warnings;
 
 use Data::GUID;
 use IO::Async::Loop;
-use InOut::PiFace;
-use InOut::Console;
 use Manager;
+use Module::PiFace;
+use Module::Console;
 use Module::Clock;
 #Temperature
 #WebCam
@@ -81,12 +76,12 @@ use Module::Clock;
 my $loop = IO::Async::Loop->new;
 my $manager = Manager->new( 'Loop' => $loop );
 
-$manager->add_module( Module::Clock->new( 
+$manager->add( Module::Clock->new( 
         'GUID' => Data::GUID->new->as_string, 'Manager' => $manager, 
         'output_ref' => \&sub_output) );
-$manager->add_inout( InOut::PiFace->new( 
+$manager->add( Module::PiFace->new( 
         'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
-$manager->add_inout( InOut::Console->new( 
+$manager->add( Module::Console->new( 
         'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
 
 &create_and_add_notifiers;

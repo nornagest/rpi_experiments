@@ -16,21 +16,28 @@
 #===============================================================================
 
 #TODO: Use IO::Async
-package InOut::Console;
+package Module::Console;
 
 use Moose;
-extends 'InOut';
+extends 'Module';
 
 use Modern::Perl 2013;
 use warnings;
  
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Console' );
-has '+Type' => ( is => 'ro', isa => 'Str', default => 'string' );
+has '+__direction' => ( default => 'Output' );
+has '+__type' => ( default => 'string' );
+
 has 'last_output' => ( is => 'rw', isa => 'Str' );
 
-override 'write' => sub {
+sub BUILD {
+    my $self = shift;
+    $self->Manager->add( $self );
+}
+override 'send' => sub {
     my ($self, $output) = @_;
-    my $string = $output->{string} if defined $output->{string};
+    return unless $self->accepts($output);
+    my $string = $output->Content->{string} if defined $output->Content->{string};
     return if defined $self->last_output && $self->last_output eq $string;
     say $string;
     $self->last_output($string);

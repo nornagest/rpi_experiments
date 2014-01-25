@@ -15,7 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-package InOut::PiFace::InputRoutine;
+package Module::PiFace::InputRoutine;
 
 use Modern::Perl 2013;
 use Moose;
@@ -43,7 +43,7 @@ sub BUILD {
             if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
                 my $input = $refout->{'input'};
                 my $last_input =  $refout->{'last_input'};
-                $self->in_ref->($input, $last_input);
+                $self->in_ref->($input);
             }
         }
     );

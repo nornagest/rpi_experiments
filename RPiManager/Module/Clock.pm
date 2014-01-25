@@ -25,23 +25,29 @@ extends 'Module';
 use Modern::Perl 2013;
 use warnings;
 
+use Message::Output;
 use Notifier::Timer;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Clock' );
-has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
+has '+__direction' => ( default => 'Input' );
+has '+__type' => ( default => 'byte' );
+
 has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
 has 'output' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 has 'block_output' => ( is => 'rw', isa => 'Bool', default => 0 );
 
+
 sub BUILD {
     my $self = shift;
     my $timer = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $self->on_tick() });
+    $self->Manager->add( $self );
     $self->Manager->Loop->add( $timer );
 }
 
-override 'write' => sub {
+override 'send' => sub {
     my ($self, $input) = @_;
-    my $byte = $input->{byte} if defined $input->{byte};
+    return unless $self->accepts($input);
+    my $byte = $input->Content->{byte} if defined $input->Content->{byte};
     if(defined $byte) {
         $self->next if $byte & 1;
         $self->prev if $byte & 2;
@@ -93,7 +99,11 @@ sub print_state {
 
 sub print {
     my $self = shift;
-    $self->Manager->handle_output( $self->Name, $self->output );
+    my $message = Message::Output->new(
+        'Source'  => $self->Name,
+        'Content' => $self->output,
+    );
+    $self->Manager->send( $message );
 }
 
 no Moose;
