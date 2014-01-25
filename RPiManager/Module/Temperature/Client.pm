@@ -32,11 +32,13 @@ use Storable qw(thaw);
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Temperature-Client' );
 has '+__direction' => ( default => '' );
 has '+__type' => ( default => '' );
+
+has 'interval' => ( is => 'ro', isa => 'Int', default => 60 );
 #interval
 
 sub BUILD {
     my $self = shift;
-    my $timer = Notifier::Timer::create_timer_periodic( 60, 0, sub { $self->on_tick() } );
+    my $timer = Notifier::Timer::create_timer_periodic( $self->interval, 0, sub { $self->on_tick() } );
     $self->Manager->add( $self );
     $self->Manager->Loop->add( $timer );
 }
@@ -45,8 +47,8 @@ sub on_tick {
     my $self = shift;
     my $print_temp = $self->curry::print;
     $self->Manager->Loop->connect(
-        host     => "creampi",
-        service  => 12345,
+        host     => $self->Host,
+        service  => $self->Port,
         socktype => 'stream',
 
         on_stream => sub {

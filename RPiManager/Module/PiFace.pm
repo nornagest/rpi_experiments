@@ -29,7 +29,9 @@ use Module::PiFace::OutputRoutine;
 use Message::Input;
 
 #use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
+#use Device::MyPiFace;
+#dynamically load dummy module if the real one doesn't work
+eval "require Device::MyNoPiFace" unless eval "require Device::MyPiFace";
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
 has '+__direction' => ( default => 'Output' );

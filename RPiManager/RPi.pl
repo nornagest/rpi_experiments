@@ -20,7 +20,7 @@
 
 #===============================================================================
 #TODO:
-#more type checking
+#load PiFace module only if available
 #TODO: 
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO:

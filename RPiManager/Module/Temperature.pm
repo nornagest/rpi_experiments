@@ -26,11 +26,8 @@ use warnings;
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Temperature' );
 has '+__direction' => ( default => '' );
 has '+__type' => ( default => '' );
-
-#Port
-#Host
-
-#TODO: Add something useful here
+has 'Port' => ( is => 'ro', isa => 'Int', default => '12345' );
+has 'Host' => ( is => 'ro', isa => 'Str', default => 'creampi' );
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
