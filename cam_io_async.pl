@@ -9,12 +9,12 @@ use IO::Async::Signal;
 use IO::Async::Timer::Periodic;
 
 my $program = '/opt/vc/bin/raspistill';
-my $interval = 600;
+my $interval = 900;
 my $output_dir = '/usr/share/nginx/img';
 my $output = '_cam.jpg';
 my %params = (
 	'-n' => '', #no preview
-	'-t' => 2000,      #delay
+	'-t' => 1000,      #delay
 	'-w' => 1280,      #width
 	'-h' => 960,       #height
 	'-rot' => 90,     #rotation
@@ -58,12 +58,11 @@ $loop->add($sigint);
 $loop->run();
 #subs
 sub take_pic {
-    #TODO: test this
     my $time = strftime "%Y%m%d-%H%M%S", localtime;
     my $command = $program . ' ' . join ' ', %params;
     my $final_command = "$command -o " . $output_dir . '/';
     $final_command .= $time unless $output eq '-';
     $final_command .= $output;
-print $final_command, "\n";
+    say $final_command;
     system($final_command);
 }
