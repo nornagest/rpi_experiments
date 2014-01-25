@@ -35,9 +35,9 @@ has 'Modules' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 sub add {
     my ($self, $module) = @_;
     my $guid = $module->GUID;
-
     $self->Modules->{$guid} = $module unless defined $self->Modules->{$guid};
 };
+
 sub remove_module {};
 sub activate_module {};
 sub deactivate_module {};
