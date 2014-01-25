@@ -17,12 +17,8 @@
 
 #TODO:
 # make this a class
-
 package Notifier::Routine;
-
 use Modern::Perl 2013;
-use warnings;
- 
 use IO::Async::Routine;
 
 sub create_routine {

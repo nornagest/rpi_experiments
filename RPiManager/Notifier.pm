@@ -15,8 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-use strict;
-use warnings;
+use Modern::Perl 2013;
  
 #TODO: design this
 #Make this a base class

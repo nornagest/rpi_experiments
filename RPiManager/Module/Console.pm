@@ -17,13 +17,10 @@
 
 #TODO: Use IO::Async
 package Module::Console;
-
+use Modern::Perl 2013;
 use Moose;
 extends 'Module';
 
-use Modern::Perl 2013;
-use warnings;
- 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Console' );
 has '+__direction' => ( default => 'Output' );
 has '+__type' => ( default => 'string' );

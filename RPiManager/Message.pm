@@ -16,11 +16,8 @@
 #===============================================================================
 
 package Message;
-
-use Moose;
-
 use Modern::Perl 2013;
-use warnings;
+use Moose;
 
 has 'Source' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'Direction' => ( is => 'ro', isa => 'Str', required => 1 );

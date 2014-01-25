@@ -16,12 +16,9 @@
 #===============================================================================
 
 package Module::Temperature;
-
+use Modern::Perl 2013;
 use Moose;
 extends 'Module';
-
-use Modern::Perl 2013;
-use warnings;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Temperature' );
 has '+__direction' => ( default => '' );

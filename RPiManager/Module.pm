@@ -16,11 +16,9 @@
 #===============================================================================
 
 package Module;
+use Modern::Perl 2013;
 use Moose;
 
-use Modern::Perl 2013;
-use warnings;
- 
 has 'Manager' => ( is => 'ro', isa => 'Manager', required => 1);
 has 'Name' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'GUID' => ( is => 'ro', isa => 'Str', required => 1 );
@@ -40,8 +38,6 @@ sub accepts {
 sub send {
     my ($self, $output) = @_;
     say "Module write";
-    use Data::Dumper;
-    say Dumper($output);
 };
 
 no Moose;

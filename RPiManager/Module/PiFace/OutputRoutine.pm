@@ -16,7 +16,6 @@
 #===============================================================================
 
 package Module::PiFace::OutputRoutine;
-
 use Modern::Perl 2013;
 use Moose;
 use Notifier::Routine;

@@ -18,12 +18,8 @@
 #TODO:
 #Make this a class
 #object has Timer -> is Periodic/Absolute/Countdown
-
 package Notifier::Timer;
-
 use Modern::Perl 2013;
-use warnings;
- 
 use IO::Async::Timer::Absolute; 
 use IO::Async::Timer::Countdown; 
 use IO::Async::Timer::Periodic; 

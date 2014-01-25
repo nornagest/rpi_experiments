@@ -20,11 +20,9 @@
 
 #===============================================================================
 #TODO:
-#load PiFace module only if available
+#Make modules configurable -> config file
 #TODO: 
 #find a decent way to block certain output (per Module/Type) for a time
-#TODO:
-#Make modules configurable -> config file
 #TODO: 
 #move everything so far to Manager
 #make Modules real Modules
@@ -61,8 +59,6 @@
 #===============================================================================
 
 use Modern::Perl 2013;
-use warnings;
-
 use Data::GUID;
 use IO::Async::Loop;
 use Manager;

@@ -16,20 +16,14 @@
 #===============================================================================
 
 package Module::PiFace;
-
+use Modern::Perl 2013;
 use Moose;
 extends 'Module';
-
-use Modern::Perl 2013;
-use warnings;
-
 use IO::Async::Channel;
 use Module::PiFace::InputRoutine;
 use Module::PiFace::OutputRoutine;
 use Message::Input;
 
-#use Device::MyNoPiFace; #dummy for testing locally
-#use Device::MyPiFace;
 #dynamically load dummy module if the real one doesn't work
 eval "require Device::MyNoPiFace" unless eval "require Device::MyPiFace";
 

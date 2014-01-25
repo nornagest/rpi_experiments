@@ -16,12 +16,9 @@
 #===============================================================================
 
 package Message::Input;
-
+use Modern::Perl 2013;
 use Moose;
 extends 'Message';
-
-use Modern::Perl 2013;
-use warnings;
 
 has '+Direction' => ( default => 'Input' );
 

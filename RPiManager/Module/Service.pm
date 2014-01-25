@@ -16,11 +16,8 @@
 #===============================================================================
 
 package Module::Service;
-
-use Moose;
-
 use Modern::Perl 2013;
-use warnings;
+use Moose;
 
 #TODO: implement
 # split into client and Server? Best do this in Input/Output and just keep 

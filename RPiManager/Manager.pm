@@ -16,18 +16,12 @@
 #===============================================================================
 
 #TODO:
-#Cleanup unneeded methods
-#Implement needed methods
+#Implement other methods
 package Manager;
-
+use Modern::Perl 2013;
 use Moose;
-
 use Module;
 use Message;
-
-use Modern::Perl 2013;
-use strict;
-use warnings;
 
 has 'Loop' => ( is => 'ro', isa => 'Object', required => 1 );
 has 'Modules' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );

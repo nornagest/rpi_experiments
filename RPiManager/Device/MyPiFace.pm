@@ -1,10 +1,6 @@
 package Device::MyPiFace;
-
-use Moose;
-
 use Modern::Perl 2013;
-use warnings;
-
+use Moose;
 use PiFace qw(:all);
 
 has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);

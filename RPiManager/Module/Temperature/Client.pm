@@ -16,13 +16,9 @@
 #===============================================================================
 
 package Module::Temperature::Client;
-
+use Modern::Perl 2013;
 use Moose;
 extends 'Module::Temperature';
-
-use Modern::Perl 2013;
-use warnings;
-
 use curry;
 use IO::Async::Stream;
 use Message::Output;

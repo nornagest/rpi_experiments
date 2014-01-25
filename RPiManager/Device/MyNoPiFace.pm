@@ -1,10 +1,6 @@
 package Device::MyPiFace;
-
-use Moose;
-
 use Modern::Perl 2013;
-use warnings;
-
+use Moose;
 #TODO: Use Term::TermKey(::Async)
 use Term::ReadKey;
 

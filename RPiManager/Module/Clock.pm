@@ -18,12 +18,9 @@
 
 #TODO: Remove old way of output
 package Module::Clock;
-
+use Modern::Perl 2013;
 use Moose;
 extends 'Module';
-
-use Modern::Perl 2013;
-use warnings;
 
 use Message::Output;
 use Notifier::Timer;
