@@ -1,7 +1,7 @@
 package DS18B20;
 
 use Moose;
-
+use Modern::Perl 2013;
 use DS18B20::Sensor;
 
 has 'Directory' => (
@@ -9,7 +9,6 @@ has 'Directory' => (
   isa => 'Str',
   default => '/sys/bus/w1/devices'
 );
-
 has 'Sensors' => (
   is  => 'rw',
   isa => 'ArrayRef',

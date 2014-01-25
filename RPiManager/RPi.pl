@@ -24,10 +24,9 @@
 #TODO: 
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO: 
-#move everything so far to Manager
-#make Modules real Modules
-#remove all say except for debugging
-#  even better: handle debug output via Module::Console
+#use Carp
+#add fault tolerance / error handling
+#use Exporter 
 #------
 #Modules: PiFace / 433MHz / GPIO / Sensors / Console / DB / File
 #Notifier: encapsulate IO::Async implementation
@@ -37,21 +36,18 @@
 # keep main state
 # manage Modules and Modules
 #===============================================================================
-#add fault tolerance / error handling
-#use Exporter 
-#===============================================================================
 #other modules with PiFace output:
 #temperature load audio_volume
-#
+#------
 #more Modules:
 #manage programs/services module (indicators via LEDs, start/stop via buttons)
 #read/request info from other hosts/programs via sockets 
 #write information to DB/file
-#
+#------
 #web frontend (first just output, then control)
 #integration with nornagest.org (just transfer info/write info to DB on 
 # server/accept requests from server)
-#
+#------
 #control/integrate camera module on creampi
 #run on creampi
 # i/o web frontend

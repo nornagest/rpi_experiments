@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
 use Modern::Perl 2013;
-use warnings;
-
 use DS18B20;
 use AnyEvent;
 
@@ -15,7 +13,6 @@ my $w = AnyEvent->timer (
 );
 
 $exit_loop->recv; 
-
 
 sub read_temp {
   for(@{$ds18b20->Sensors}) {

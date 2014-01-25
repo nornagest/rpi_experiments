@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
 use Modern::Perl 2013;
-use warnings;
-
 use DS18B20;
 use IO::Async::Listener;
 use IO::Async::Loop;

@@ -1,10 +1,7 @@
 #!/usr/bin/perl
 
-use strict;
-use warnings;
-
+use Modern::Perl 2013;
 use DS18B20;
-
 use POE;
 
 #Main Session
@@ -32,11 +29,9 @@ sub main_start {
 
 sub main_tick {
   #print "Tick main.\n";
-
   for my $sensor (@{$_[HEAP]->{ds18b20}->Sensors}) {
     $_[KERNEL]->post('reader', 'read', $sensor);
   }
-
   $_[HEAP]->{time} += 300;
   $_[KERNEL]->alarm( tick => $_[HEAP]->{time});
 }
