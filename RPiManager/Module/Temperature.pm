@@ -16,15 +16,15 @@
 #===============================================================================
 
 package Module::Temperature;
-
-use Moose;
-
 use Modern::Perl 2013;
-use warnings;
+use Moose;
+extends 'Module';
 
-#TODO: implement
-# split into client and Server? Best do this in Input/Output and just keep 
-#   functionality here
+has '+Name' => ( is => 'ro', isa => 'Str', default => 'Temperature' );
+has '+__direction' => ( default => '' );
+has '+__type' => ( default => '' );
+has 'Port' => ( is => 'ro', isa => 'Int', default => '12345' );
+has 'Host' => ( is => 'ro', isa => 'Str', default => 'creampi' );
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

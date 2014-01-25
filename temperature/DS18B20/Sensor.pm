@@ -1,7 +1,7 @@
 package DS18B20::Sensor;
 
 use Moose;
-
+use Modern::Perl 2013;
 use File::Slurp;
 
 has 'File' => (

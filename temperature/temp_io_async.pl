@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
 use Modern::Perl 2013;
-use warnings;
-
 use DS18B20;
 use IO::Async::Listener;
 use IO::Async::Loop;
@@ -60,13 +58,9 @@ sub read_temp {
 sub print_temp {
     my $temp = shift;
 
-    say $temp->{"time"};
+    my @lines;
     for(sort keys %{$temp->{"sensors"}}) {
-        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
+        push @lines, $temp->{"time"} . " " . $_ . " " . $temp->{"sensors"}{$_};
     }
-}
-
-sub process_temp($) {
-    my $temp = shift;
-    print $temp->{"time"}, " ", $temp->{"sensor"}, " ", $temp->{"value"}, "°C\n";
+    say join "\n", @lines;
 }

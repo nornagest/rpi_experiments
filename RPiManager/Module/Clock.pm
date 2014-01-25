@@ -16,29 +16,56 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO: Remove old way of output
 package Module::Clock;
-
-use Moose;
-
 use Modern::Perl 2013;
-use warnings;
+use Moose;
+extends 'Module';
+
+use Message::Output;
+use Notifier::Timer;
+
+has '+Name' => ( is => 'ro', isa => 'Str', default => 'Clock' );
+has '+__direction' => ( default => 'Input' );
+has '+__type' => ( default => 'byte' );
+
+has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
+has 'output' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has 'block_output' => ( is => 'rw', isa => 'Bool', default => 0 );
+
+
+sub BUILD {
+    my $self = shift;
+    my $timer = Notifier::Timer::create_timer_periodic(0.1, 0, sub { $self->on_tick() });
+    $self->Manager->add( $self );
+    $self->Manager->Loop->add( $timer );
+}
+
+override 'send' => sub {
+    my ($self, $input) = @_;
+    return unless $self->accepts($input);
+    my $byte = $input->Content->{byte} if defined $input->Content->{byte};
+    if(defined $byte) {
+        $self->next if $byte & 1;
+        $self->prev if $byte & 2;
+        $self->reset if $byte & 4;
+        $self->print_state if $byte > 0 && $byte < 8;
+    }
+};
 
 my $state_mod = 6;
 
-has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
-has 'on_button' => ( is => 'ro', isa => 'ArrayRef', 
-    default => sub { [ \&next, \&prev, \&reset, sub {} ] },
-);
-has 'output_ref' => ( is => 'ro', isa => 'CodeRef', default => sub {});
-
 sub on_tick {
     my $self = shift;
-
     my @time = localtime();
     my $time = $time[$self->state];
     $time++ if $self->state == 4;      # adjust month representation 
     $time %= 100 if $self->state == 5; # adjust year representation
-    $self->output_ref->($time);
+
+    return if $self->block_output || (defined $self->output->{byte} 
+        && $self->output->{byte} == $time);
+    $self->output( { "byte" => $time, "string" => scalar localtime() } );
+    $self->print;
 }
 
 sub next {
@@ -56,9 +83,23 @@ sub reset {
 
 sub print_state {
     my $self = shift;
-    my $state = $self->state;
     my @states = ( 'Seconds', 'Minutes', 'Hours', 'Day', 'Month', 'Year' );
-    say $states[$state];
+    $self->output( 
+        { "byte" => $self->state, "string" => $states[$self->state] } );
+    $self->print;
+
+    $self->block_output(1);
+    $self->Manager->Loop->add( Notifier::Timer::create_timer_countdown( 
+            0.5, sub { $self->block_output(0) } ) );
+}
+
+sub print {
+    my $self = shift;
+    my $message = Message::Output->new(
+        'Source'  => $self->Name,
+        'Content' => $self->output,
+    );
+    $self->Manager->send($message);
 }
 
 no Moose;

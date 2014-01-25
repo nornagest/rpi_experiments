@@ -15,16 +15,15 @@
 #     REVISION: ---
 #===============================================================================
 
-package Out::PiFaceOutputRoutine;
-
+package Module::PiFace::OutputRoutine;
 use Modern::Perl 2013;
 use Moose;
 use Notifier::Routine;
 
-has 'piface' => ( is => 'rw', required => 1,);
-has 'channel' => ( is => 'rw', required => 1,);
-has 'loop' => ( is => 'rw', required => 1,);
-has 'routine' => ( is => 'rw',);
+has 'piface' => ( is => 'rw', isa => 'Device::MyPiFace', required => 1,);
+has 'channel' => ( is => 'rw', isa => 'IO::Async::Channel', required => 1,);
+has 'loop' => ( is => 'rw', isa => 'IO::Async::Loop', required => 1,);
+has 'routine' => ( is => 'rw', isa => 'IO::Async::Routine');
 
 sub BUILD {
     my $self = shift;
@@ -41,15 +40,15 @@ sub __create_piface_output_routine {
     my ($piface, $channel) = @_;
 
     my $output_code_ref = sub {
-            $piface->init;
-            while(1) {
-                my $input = ${$channel->recv};
-                $piface->write_byte($input);
-            }
+        $piface->init;
+        while(1) {
+            my $input = ${$channel->recv};
+            $piface->write_byte($input);
+        }
     };
     my $on_finish_ref = sub {
-            say "Output routine exited.";
-            $piface->deinit;
+        say "Output routine exited.";
+        $piface->deinit;
     };
 
     return Notifier::Routine::create_output_routine($channel, $output_code_ref, $on_finish_ref);

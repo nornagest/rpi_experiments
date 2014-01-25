@@ -1,7 +1,7 @@
 #
 #===============================================================================
 #
-#         FILE: InputManager.pm
+#         FILE: Output.pm
 #
 #  DESCRIPTION: 
 #
@@ -11,18 +11,19 @@
 #       AUTHOR: YOUR NAME (), 
 # ORGANIZATION: 
 #      VERSION: 1.0
-#      CREATED: 01/13/2014 08:11:48 PM
+#      CREATED: 01/25/2014 11:22:40 AM
 #     REVISION: ---
 #===============================================================================
 
-use Moose;
-
+package Message::Output;
 use Modern::Perl 2013;
-use strict;
-use warnings;
- 
+use Moose;
+extends 'Message';
+
+has '+Direction' => ( default => 'Output' );
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
 1;
+

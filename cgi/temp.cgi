@@ -1,8 +1,6 @@
 #!/usr/bin/perl 
 
 use Modern::Perl 2013;
-use warnings;
-
 use Storable qw(thaw);
 use IO::Async::Loop;
 
@@ -23,7 +21,6 @@ $loop->connect(
                 $$buffref = "";
             },
             on_closed => sub {
-#say "Connection closed.";
                 $loop->stop;
             }
         );
@@ -33,6 +30,8 @@ $loop->connect(
     on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
     on_connect_error => sub { die "Cannot connect\n" },
 );
+
+$loop->run;
 
 sub print_temp {
     my $temp = shift;
@@ -44,4 +43,3 @@ sub print_temp {
 
 }
 
-$loop->run;

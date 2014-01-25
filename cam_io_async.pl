@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
 use Modern::Perl 2013;
-use warnings; 
-
 use POSIX qw(strftime);
 use IO::Async::Loop;
 use IO::Async::Signal;

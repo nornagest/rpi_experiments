@@ -1,8 +1,6 @@
 #!/usr/bin/perl
 
-use strict;
-use warnings;
-
+use Modern::Perl 2013;
 use File::Slurp;
 
 my $dir = '/sys/bus/w1/devices';

@@ -15,18 +15,17 @@
 #     REVISION: ---
 #===============================================================================
 
-package In::PiFaceInputRoutine;
-
+package Module::PiFace::InputRoutine;
 use Modern::Perl 2013;
 use Moose;
 use Notifier::Routine;
 use Time::HiRes qw(sleep);
 
-has 'piface' => ( is => 'rw', required => 1,);
-has 'channel' => ( is => 'rw', required => 1,);
-has 'loop' => ( is => 'rw', required => 1,);
-has 'in_ref' => ( is => 'rw', required => 1,);
-has 'routine' => ( is => 'rw',);
+has 'piface' => ( is => 'rw', isa => 'Device::MyPiFace', required => 1,);
+has 'channel' => ( is => 'rw', isa => 'IO::Async::Channel', required => 1,);
+has 'loop' => ( is => 'rw', isa => 'IO::Async::Loop', required => 1,);
+has 'in_ref' => ( is => 'rw', isa => 'CodeRef', required => 1,);
+has 'routine' => ( is => 'rw', isa => 'IO::Async::Routine');
 
 sub BUILD {
     my $self = shift;
@@ -40,11 +39,10 @@ sub BUILD {
     $self->channel->configure(
         on_recv => sub {
             my ( $ch, $refout ) = @_;
-
             if(defined $refout->{'input'} && defined $refout->{'last_input'}) {
                 my $input = $refout->{'input'};
                 my $last_input =  $refout->{'last_input'};
-                $self->in_ref->($input, $last_input);
+                $self->in_ref->($input);
             }
         }
     );
@@ -52,13 +50,12 @@ sub BUILD {
 
 sub __create_piface_input_routine {
     my ($piface, $channel) = @_;
-    
     my $input_code_ref = sub {
         $piface->init;
-
         my $last_input = 0;
         while(1) {
             my $input = $piface->read_byte();
+            die("Input undefined.") unless defined $input;
             if ($input != $last_input ) {
                 $channel->send( { 'input' => $input, 'last_input' => $last_input } );
                 $last_input = $input;

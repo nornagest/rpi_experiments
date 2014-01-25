@@ -15,20 +15,12 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO:
+# make this a class
 package Notifier::Routine;
-
 use Modern::Perl 2013;
-use warnings;
- 
 use IO::Async::Routine;
 
-#TODO:
-#inject $loop
-#add routine to loop
-#configure channel via $output_code_ref
-# => think about it again
-#
-# make this a class
 sub create_routine {
     my ($input_channel, 
         $output_channel,
@@ -45,7 +37,6 @@ sub create_routine {
     return $routine;
 }
 
-#TODO: like for create_routine
 sub create_input_routine {
     my ( $output_channel,
         $code_ref, 
