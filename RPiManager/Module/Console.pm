@@ -34,6 +34,7 @@ sub BUILD {
     my $self = shift;
     $self->Manager->add( $self );
 }
+
 override 'send' => sub {
     my ($self, $output) = @_;
     return unless $self->accepts($output);

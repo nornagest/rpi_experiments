@@ -49,7 +49,6 @@ sub send {
     my $content = $message->Content;
     $self->finish if $direction eq 'Input' && defined $content->{byte} 
         && $content->{byte} == 8;
-
     $self->dispatch_message($message);
 }
 
@@ -61,7 +60,6 @@ sub dispatch_message {
 sub finish {
     my $self = shift;
     $self->Loop->stop;
-
     #Make sure all processes exit
     $_->kill(15) for grep $_->isa('IO::Async::Process'), $self->Loop->notifiers;
     say "Goodbye!";

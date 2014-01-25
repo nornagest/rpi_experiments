@@ -71,7 +71,6 @@ sub on_tick {
     $self->print;
 }
 
-#TODO: Handle byte input from InputManager
 sub next {
     my $self = shift;
     $self->state( ($self->state + 1) % $state_mod) if defined $self;
@@ -103,7 +102,7 @@ sub print {
         'Source'  => $self->Name,
         'Content' => $self->output,
     );
-    $self->Manager->send( $message );
+    $self->Manager->send($message);
 }
 
 no Moose;

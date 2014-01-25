@@ -69,74 +69,20 @@ use Manager;
 use Module::PiFace;
 use Module::Console;
 use Module::Clock;
-#Temperature
+use Module::Temperature::Client;
 #WebCam
 #Web -> Mojo? Dancer? Listener? HTTP::Server?
 
 my $loop = IO::Async::Loop->new;
 my $manager = Manager->new( 'Loop' => $loop );
 
-$manager->add( Module::Clock->new( 
-        'GUID' => Data::GUID->new->as_string, 'Manager' => $manager, 
-        'output_ref' => \&sub_output) );
-$manager->add( Module::PiFace->new( 
-        'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
-$manager->add( Module::Console->new( 
-        'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) );
-
-&create_and_add_notifiers;
+Module::Clock->new(  'Manager' => $manager,  'GUID' => Data::GUID->new->as_string ) ;
+Module::Temperature::Client->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
+Module::PiFace->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
+Module::Console->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) ;
 
 say "Ready...";
 $loop->run;
-
-#===============================================================================
-#TODO: Move this to Notifier and Module
-# => Notifier::Listener
-# => hide reading temperature over network somehow
-#===============================================================================
-sub create_and_add_notifiers() {
-    my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
-    $loop->add( $temp_ticker );
-}
-
-use Notifier::Timer;
-use IO::Async::Stream;
-use Storable qw(thaw);
-
-sub on_tick {
-    $loop->connect(
-        host     => "creampi",
-        service  => 12345,
-        socktype => 'stream',
-
-        on_stream => sub {
-            my $stream = shift;
-            $stream->configure(
-                on_read => sub {
-                    my ( $self, $buffref, $eof ) = @_;
-                    return 0 unless $eof;
-                    print_temp( thaw($$buffref) );
-                    $$buffref = "";
-                },
-                on_closed => sub {
-                    #say "Connection closed.";
-                }
-            );
-            $loop->add( $stream );
-        },
-
-        on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
-        on_connect_error => sub { die "Cannot connect\n" },
-    );
-}
-
-sub print_temp {
-    my $temp = shift;
-    say $temp->{"time"};
-    for(sort keys %{$temp->{"sensors"}}) {
-        say $_, " => ", $temp->{"sensors"}{$_};
-    }
-}
 
 #===============================================================================
 #TODO: (in Module)

@@ -22,11 +22,11 @@ use Moose;
 use Notifier::Routine;
 use Time::HiRes qw(sleep);
 
-has 'piface' => ( is => 'rw', required => 1,);
-has 'channel' => ( is => 'rw', required => 1,);
-has 'loop' => ( is => 'rw', required => 1,);
-has 'in_ref' => ( is => 'rw', required => 1,);
-has 'routine' => ( is => 'rw',);
+has 'piface' => ( is => 'rw', isa => 'Device::MyPiFace', required => 1,);
+has 'channel' => ( is => 'rw', isa => 'IO::Async::Channel', required => 1,);
+has 'loop' => ( is => 'rw', isa => 'IO::Async::Loop', required => 1,);
+has 'in_ref' => ( is => 'rw', isa => 'CodeRef', required => 1,);
+has 'routine' => ( is => 'rw', isa => 'IO::Async::Routine');
 
 sub BUILD {
     my $self = shift;
@@ -51,7 +51,6 @@ sub BUILD {
 
 sub __create_piface_input_routine {
     my ($piface, $channel) = @_;
-    
     my $input_code_ref = sub {
         $piface->init;
         my $last_input = 0;

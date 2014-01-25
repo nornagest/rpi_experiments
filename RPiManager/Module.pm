@@ -21,7 +21,7 @@ use Moose;
 use Modern::Perl 2013;
 use warnings;
  
-has 'Manager' => ( is => 'ro', isa => 'Object', required => 1);
+has 'Manager' => ( is => 'ro', isa => 'Manager', required => 1);
 has 'Name' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'GUID' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'Active' => ( is => 'rw', isa => 'Bool', default => 1 );

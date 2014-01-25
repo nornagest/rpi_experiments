@@ -28,23 +28,23 @@ use Module::PiFace::InputRoutine;
 use Module::PiFace::OutputRoutine;
 use Message::Input;
 
-#use Device::MyNoPiFace; #dummy for testing locally
-use Device::MyPiFace;
+use Device::MyNoPiFace; #dummy for testing locally
+#use Device::MyPiFace;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
 has '+__direction' => ( default => 'Output' );
 has '+__type' => ( default => 'byte' );
 
-has 'MyPiFace' => ( is => 'rw', isa => 'Object' );
-has 'In_Channel' => ( is => 'rw', isa => 'Object' );
-has 'Out_Channel' => ( is => 'rw', isa => 'Object' );
+has 'MyPiFace' => ( is => 'rw', isa => 'Device::MyPiFace' );
+has 'In_Channel' => ( is => 'rw', isa => 'IO::Async::Channel' );
+has 'Out_Channel' => ( is => 'rw', isa => 'IO::Async::Channel' );
 has 'last_output' => ( is => 'rw', isa => 'Int' );
 
 sub BUILD {
     my $self = shift;
     $self->In_Channel( IO::Async::Channel->new );
-    $self->Out_Channel( IO::Async::Channel->new);
-    $self->MyPiFace(Device::MyPiFace->new);
+    $self->Out_Channel( IO::Async::Channel->new );
+    $self->MyPiFace( Device::MyPiFace->new );
     $self->Manager->add( $self );
     $self->create_routines();
 }
