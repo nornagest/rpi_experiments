@@ -28,8 +28,8 @@ use Module::PiFace::InputRoutine;
 use Module::PiFace::OutputRoutine;
 use Message::Input;
 
-use Device::MyNoPiFace; #dummy for testing locally
-#use Device::MyPiFace;
+#use Device::MyNoPiFace; #dummy for testing locally
+use Device::MyPiFace;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
 has '+__direction' => ( default => 'Output' );
