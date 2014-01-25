@@ -22,7 +22,7 @@ extends 'InOut';
 
 use Modern::Perl 2013;
 use warnings;
- 
+
 use InOut::PiFace::InputRoutine;
 use InOut::PiFace::OutputRoutine;
 use IO::Async::Channel;
@@ -34,6 +34,8 @@ has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
 has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
 
 has 'MyPiFace' => ( is => 'rw', isa => 'Object' );
+has 'In_Routine' => ( is => 'rw', isa => 'Object' );
+has 'Out_Routine' => ( is => 'rw', isa => 'Object' );
 has 'In_Channel' => ( is => 'rw', isa => 'Object' );
 has 'Out_Channel' => ( is => 'rw', isa => 'Object' );
 has 'last_output' => ( is => 'rw', isa => 'Int' );
@@ -63,19 +65,23 @@ sub handle_input {
 
 sub create_routines {
     my $self = shift;
-    my $input_routine = InOut::PiFace::InputRoutine->new(
-        'piface' => $self->MyPiFace, 
-        'channel' => $self->In_Channel, 
-        'loop' => $self->Manager->Loop,
-        'in_ref' => sub { 
-            my ($input, $last_input) = @_;
-            $self->handle_input($input, $last_input) 
-        },
+    #my $input_routine = 
+    $self->In_Routine( InOut::PiFace::InputRoutine->new(
+            'piface' => $self->MyPiFace, 
+            'channel' => $self->In_Channel, 
+            'loop' => $self->Manager->Loop,
+            'in_ref' => sub { 
+                my ($input, $last_input) = @_;
+                $self->handle_input($input, $last_input) 
+            },
+        )
     );
-    my $output_routine = InOut::PiFace::OutputRoutine->new(
-        'piface' => $self->MyPiFace, 
-        'channel' => $self->Out_Channel, 
-        'loop' => $self->Manager->Loop,
+    #my $output_routine = 
+    $self->Out_Routine( InOut::PiFace::OutputRoutine->new(
+            'piface' => $self->MyPiFace, 
+            'channel' => $self->Out_Channel, 
+            'loop' => $self->Manager->Loop,
+        )
     );
 }
 

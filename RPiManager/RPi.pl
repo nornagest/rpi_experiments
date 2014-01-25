@@ -20,7 +20,6 @@
 
 #===============================================================================
 #TODO: 
-#avoid spamming console from Clock
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO:
 #Make modules configurable -> config file
@@ -37,18 +36,14 @@
 #Main/Reactor: build a state machine for handling stuff
 # keep main state
 # manage inputs + outputs -> more or less in InOut::Manager
-# keep track of modules
 #------
 #think about state of modules 
 # Clock:
 # Part 1: functionality (create timer, on_tick give time to Manager for output)
 # Part 2: output time (on PiFace), react to buttons and change output accordingly
-#------
-#think about Childmanager instead of Routine
 #===============================================================================
 #add fault tolerance / error handling
 #use Exporter in modules
-#kill subprocess/routine on exit
 #===============================================================================
 #other modules with PiFace output:
 #temperature load audio_volume
@@ -100,15 +95,15 @@ say "Ready...";
 $loop->run;
 
 #===============================================================================
+#TODO: Move this to Notifier and Module
+# => Notifier::Listener
+# => hide reading temperature over network somehow
+#===============================================================================
 sub create_and_add_notifiers() {
     my $temp_ticker = Notifier::Timer::create_timer_periodic( 60, 0, sub { on_tick() } );
     $loop->add( $temp_ticker );
 }
 
-#===============================================================================
-#TODO: Move this to Notifier and Module
-# => Notifier::Listener
-# => hide reading temperature over network somehow
 use Notifier::Timer;
 use IO::Async::Stream;
 use Storable qw(thaw);
@@ -149,6 +144,8 @@ sub print_temp {
 }
 
 #===============================================================================
+#TODO: (in Module)
+#block other Module outputs (handle this in Manager)
 sub blink($$) {
     my ($value, $interval) = @_;
     my $ticker = Notifier::Timer::create_timer_periodic($interval, 0, 

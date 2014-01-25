@@ -5,6 +5,7 @@ use Moose;
 use Modern::Perl 2013;
 use warnings;
 
+#TODO: Use Term::TermKey(::Async)
 use Term::ReadKey;
 
 has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
@@ -20,7 +21,6 @@ sub DEMOLISH {
     $self->deinit;
 };
 
-#TODO: Use Term::TermKey(::Async)
 sub get_key {
     ReadMode 'raw';
     my $input = ReadKey(0);
@@ -48,8 +48,7 @@ sub deinit {
 }
 
 sub write_byte {
-    my $self = shift;
-    my $byte = shift;
+    my ($self, $byte) = @_;
     return unless $self->IsInitialized;
 
     $| = 1;

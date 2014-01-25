@@ -15,7 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO: extract most of this as a role
+#TODO: extract most of this as a role give it a kill/clean method
 package Module;
 use Moose;
 

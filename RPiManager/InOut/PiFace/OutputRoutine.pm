@@ -15,7 +15,6 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO: Make this a Notifier
 package InOut::PiFace::OutputRoutine;
 
 use Modern::Perl 2013;

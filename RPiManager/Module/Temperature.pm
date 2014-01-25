@@ -29,6 +29,11 @@ has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
 #TODO: implement
 # split into client and Server? Best do this in Input/Output and just keep 
 #   functionality here
+#
+#on_tick (rename this to act/process or something in all modules)
+#  loop->connect
+#  get temp
+#  print
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

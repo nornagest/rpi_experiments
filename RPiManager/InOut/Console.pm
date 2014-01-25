@@ -15,6 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO: Use IO::Async
 package InOut::Console;
 
 use Moose;
@@ -23,8 +24,8 @@ extends 'InOut';
 use Modern::Perl 2013;
 use warnings;
  
-has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
-has '+Type' => ( is => 'ro', isa => 'Str', default => 'byte' );
+has '+Name' => ( is => 'ro', isa => 'Str', default => 'Console' );
+has '+Type' => ( is => 'ro', isa => 'Str', default => 'string' );
 has 'last_output' => ( is => 'rw', isa => 'Str' );
 
 override 'write' => sub {

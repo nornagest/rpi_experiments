@@ -15,6 +15,9 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO:
+#Cleanup unneeded methods
+#Implement needed methods
 package Manager;
 
 use Moose;
@@ -77,6 +80,19 @@ sub dispatch_outputs {};
 sub finish {
     my $self = shift;
     $self->Loop->stop;
+
+    #TODO: This is NOT nice
+    #compare this with the idiomatic solution and rethink system design
+    #use $routine->kill when it arrives
+    for (values $self->InOuts) {
+        if ( $_->Name eq 'PiFace' ) {
+            #send SIGTERM to children to make sure they go away.
+            $_->In_Routine->routine->{process}->kill(15);
+            $_->Out_Routine->routine->{process}->kill(15);
+        }
+    }
+    #a more idiomatic and general way
+    #$_->kill(15) for grep $_->isa('IO::Async::Process'), $self->Loop->notifiers;
     say "Goodbye!";
 }
 
