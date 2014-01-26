@@ -1,45 +1,33 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 
 use Modern::Perl 2013;
-use Storable qw(thaw);
-use IO::Async::Loop;
+use File::Slurp;
 
-my $loop = IO::Async::Loop->new;
+my $dir = '/sys/bus/w1/devices';
 
-$loop->connect(
-    host     => "localhost",
-    service  => 12345,
-    socktype => 'stream',
+load_modules() unless (-e $dir);
+my @devices = read_devices($dir);
 
-    on_stream => sub {
-        my $stream = shift;
-        $stream->configure(
-            on_read => sub {
-                my ( $self, $buffref, $eof ) = @_;
-                return 0 unless $eof;
-                print_temp( thaw($$buffref) );
-                $$buffref = "";
-            },
-            on_closed => sub {
-                $loop->stop;
-            }
-        );
-        $loop->add( $stream );
-    },
-
-    on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
-    on_connect_error => sub { die "Cannot connect\n" },
-);
-
-$loop->run;
-
-sub print_temp {
-    my $temp = shift;
-    say "Content-type: text/plain\n";
-    say $temp->{"time"};
-    for(sort keys %{$temp->{"sensors"}}) {
-        print $_, " => ", $temp->{"sensors"}{$_}, "\n";
-    }
-
+for my $dev (@devices) {
+  if( $dev =~ m/28.*/ ) {
+    my $file = $dir . '/' . $dev . '/w1_slave';
+    my $temp = read_file($file);
+    $temp =~ s/(.*YES.*\n.*t\=)(\d{2})(\d{3})/$2\.$3°C/;
+    print "Temperature ($dev): $temp";
+  }
 }
 
+sub load_modules {
+  system("modprobe", "w1-gpio") == 0
+    or die "Could not load module w1-gpio.\n";
+  system("modprobe", "w1-therm") == 0
+    or die "Could not load module w1-therm.\n";
+};
+
+sub read_devices {
+  my $dir = shift;
+  opendir(my $dh, $dir) or die "Error opening $dir.\n";
+  my @devices = readdir($dh);
+  closedir($dh);
+  return @devices;
+}
