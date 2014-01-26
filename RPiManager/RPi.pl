@@ -27,6 +27,7 @@
 #use Carp
 #add fault tolerance / error handling
 #use Exporter 
+#Unit Tests
 #------
 #Modules: PiFace / 433MHz / GPIO / Sensors / Console / DB / File
 #Notifier: encapsulate IO::Async implementation

@@ -25,6 +25,8 @@ use Message;
 
 has 'Loop' => ( is => 'ro', isa => 'Object', required => 1 );
 has 'Modules' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+#TODO: Switches for Outputs
+#remember Active Modules, switch depending on internal state
 
 sub add {
     my ($self, $module) = @_;
