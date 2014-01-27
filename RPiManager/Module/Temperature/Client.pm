@@ -15,6 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
+#TODO: error handling
 package Module::Temperature::Client;
 use Modern::Perl 2013;
 use Moose;
