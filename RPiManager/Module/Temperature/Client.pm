@@ -30,12 +30,11 @@ has '+Name' => ( is => 'ro', isa => 'Str', default => 'Temperature-Client' );
 has '+__direction' => ( default => '' );
 has '+__type' => ( default => '' );
 
-has 'interval' => ( is => 'ro', isa => 'Int', default => 60 );
-#interval
+has 'Interval' => ( is => 'ro', isa => 'Int', default => 60 );
 
 sub BUILD {
     my $self = shift;
-    my $timer = Notifier::Timer::create_timer_periodic( $self->interval, 0, sub { $self->on_tick() } );
+    my $timer = Notifier::Timer::create_timer_periodic( $self->Interval, 0, sub { $self->on_tick() } );
     $self->Manager->add( $self );
     $self->Manager->Loop->add( $timer );
 }

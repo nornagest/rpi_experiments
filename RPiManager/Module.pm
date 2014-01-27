@@ -22,6 +22,7 @@ use Moose;
 has 'Manager' => ( is => 'ro', isa => 'Manager', required => 1);
 has 'Name' => ( is => 'ro', isa => 'Str', required => 1 );
 has 'GUID' => ( is => 'ro', isa => 'Str', required => 1 );
+#TODO: remove this or move it to Manager
 has 'Active' => ( is => 'rw', isa => 'Bool', default => 1 );
 
 #intenal stuff
