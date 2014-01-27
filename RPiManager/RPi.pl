@@ -41,6 +41,7 @@
 #temperature load audio_volume
 #------
 #more Modules:
+#MPD via Net::MPD
 #manage programs/services module (indicators via LEDs, start/stop via buttons)
 #read/request info from other hosts/programs via sockets 
 #write information to DB/file
