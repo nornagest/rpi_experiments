@@ -22,12 +22,16 @@
 #TODO:
 #Make modules configurable -> config file
 #TODO: 
+#MPD module
+#TODO: 
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO: 
 #use Carp
 #add fault tolerance / error handling
 #use Exporter 
 #Unit Tests
+#TODO:
+#Status/Fehler auf oberen LEDs anzeigen
 #------
 #Modules: PiFace / 433MHz / GPIO / Sensors / Console / DB / File
 #Notifier: encapsulate IO::Async implementation
