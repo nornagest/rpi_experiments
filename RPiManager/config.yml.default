@@ -1,9 +1,8 @@
 ---
-modules:
-  Module::Clock: {}
-  Module::Console: {}
-  Module::PiFace: {}
-  Module::Temperature::Client:
-    Host: creampi
-    Interval: 60
-    Port: 12345
+Module::Clock: {}
+Module::Console: {}
+Module::PiFace: {}
+Module::Temperature::Client:
+  Host: creampi
+  Interval: 60
+  Port: 12345

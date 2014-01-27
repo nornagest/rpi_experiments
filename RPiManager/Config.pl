@@ -23,15 +23,14 @@ use YAML::Tiny;
 
 my $config = YAML::Tiny->new;
 
-$config->[0] = { 'modules' => {
-        'Module::Clock' => {},
-        'Module::Temperature::Client' => {
-            'Host' => 'creampi',
-            'Port' => 12345,
-            'Interval' => 60,
-        },
-        'Module::Console' => {},
-        'Module::PiFace' => {},
-    }
+$config->[0] = {
+    'Module::Clock' => {},
+    'Module::Temperature::Client' => {
+        'Host' => 'creampi',
+        'Port' => 12345,
+        'Interval' => 60,
+    },
+    'Module::Console' => {},
+    'Module::PiFace' => {},
 };
 $config->write("config.yml.default");

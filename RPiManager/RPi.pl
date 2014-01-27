@@ -68,16 +68,25 @@ use Module::PiFace;
 use Module::Console;
 use Module::Clock;
 use Module::Temperature::Client;
+use YAML::Tiny;
 #WebCam
 #Web -> Mojo? Dancer? Listener? HTTP::Server?
 
 my $loop = IO::Async::Loop->new;
 my $manager = Manager->new( 'Loop' => $loop );
+my $config = YAML::Tiny->read("config.yml");
 
-Module::Clock->new(  'Manager' => $manager,  'GUID' => Data::GUID->new->as_string ) ;
-Module::Temperature::Client->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
-Module::PiFace->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
-Module::Console->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) ;
+for my $module (keys $config->[0]) {
+    $config->[0]->{$module}->{'Manager'} = $manager;
+    $config->[0]->{$module}->{'GUID'} = Data::GUID->new->as_string;
+
+    $module->new(%{ $config->[0]->{$module} } );
+};
+
+#Module::Clock->new(  'Manager' => $manager,  'GUID' => Data::GUID->new->as_string ) ;
+#Module::Temperature::Client->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
+#Module::PiFace->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string );
+#Module::Console->new( 'Manager' => $manager, 'GUID' => Data::GUID->new->as_string ) ;
 
 say "Ready...";
 $loop->run;
