@@ -19,8 +19,6 @@
 #===============================================================================
 
 #===============================================================================
-#TODO:
-#Make modules configurable -> config file
 #TODO: 
 #MPD module
 #TODO: 
@@ -72,14 +70,18 @@ use YAML::Tiny;
 #WebCam
 #Web -> Mojo? Dancer? Listener? HTTP::Server?
 
+my $config_file = -e "config.yml" ? "config.yml" : "config.yml.default";
+say "Using $config_file";
+
 my $loop = IO::Async::Loop->new;
 my $manager = Manager->new( 'Loop' => $loop );
-my $config = YAML::Tiny->read("config.yml");
+my $config = YAML::Tiny->read($config_file);
 
 for my $module (keys $config->[0]) {
     $config->[0]->{$module}->{'Manager'} = $manager;
     $config->[0]->{$module}->{'GUID'} = Data::GUID->new->as_string;
 
+    say "Loading $module";
     $module->new(%{ $config->[0]->{$module} } );
 };
 
