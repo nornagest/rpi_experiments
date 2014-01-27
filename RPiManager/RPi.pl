@@ -31,7 +31,7 @@
 #use Exporter 
 #Unit Tests
 #TODO:
-#Status/Fehler auf oberen LEDs anzeigen
+#show state/errors on (free) upper LEDs
 #------
 #Modules: PiFace / 433MHz / GPIO / Sensors / Console / DB / File
 #Notifier: encapsulate IO::Async implementation
