@@ -52,19 +52,9 @@
 # keep main state
 # manage Modules
 #===============================================================================
-#more Modules:
-#manage programs/services module (indicators via LEDs, start/stop via buttons)
-#read/request info from other hosts/programs via sockets 
-#write information to DB/file
-#------
-#web frontend (first just output, then control)
 #integration with nornagest.org (just transfer info/write info to DB on 
 # server/accept requests from server)
-#------
 #control/integrate camera module on creampi
-#run on creampi
-# i/o web frontend
-# upload to nornagest.org
 #===============================================================================
 
 use Modern::Perl 2013;
@@ -76,8 +66,6 @@ use Module::Console;
 use Module::Clock;
 use Module::Temperature::Client;
 use YAML::Tiny;
-#WebCam
-#Web -> Mojo? Dancer? Listener? HTTP::Server?
 
 my $config_file = -e "config.yml" ? "config.yml" : "config.yml.default";
 say "Using $config_file";
