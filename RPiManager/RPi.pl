@@ -46,6 +46,7 @@
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO:
 #show state/errors on (free) upper LEDs
+#implement/copy temperature sensors, think about where to put them
 #------
 #Main/Manager: (or new module)
 # build a state machine for handling stuff

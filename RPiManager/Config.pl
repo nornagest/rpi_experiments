@@ -28,7 +28,7 @@ $config->[0] = {
     'Module::Temperature::Client' => {
         'Host' => 'creampi',
         'Port' => 12345,
-        'Interval' => 60,
+        'Interval' => 300,
     },
     'Module::Console' => {},
     'Module::PiFace' => {},

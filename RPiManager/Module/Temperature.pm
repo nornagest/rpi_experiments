@@ -26,6 +26,8 @@ has '+__type' => ( default => '' );
 has 'Port' => ( is => 'ro', isa => 'Int', default => '12345' );
 has 'Host' => ( is => 'ro', isa => 'Str', default => 'creampi' );
 
+#TODO: Make use of temperature devices
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
