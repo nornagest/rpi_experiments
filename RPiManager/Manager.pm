@@ -26,6 +26,8 @@ use Message;
 has 'Loop' => ( is => 'ro', isa => 'Object', required => 1 );
 has 'Modules' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 #TODO: Switches for Outputs
+#entweder Hash anpassen: Modules = { 'GUID' => { 'object' => $module, 'output' => ... } }
+# oder zusätzliches Attribut
 #remember Active Modules, switch depending on internal state
 
 sub add {
