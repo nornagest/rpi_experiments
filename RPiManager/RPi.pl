@@ -20,30 +20,39 @@
 
 #===============================================================================
 #TODO: 
-#MPD module
-#TODO: 
-#find a decent way to block certain output (per Module/Type) for a time
-#TODO: 
+#Unit Tests
 #use Carp
 #add fault tolerance / error handling
 #use Exporter 
-#Unit Tests
+#===============================================================================
+#TODO: Modules
+# MPD (client) (Net::MPD)
+# Temperature::Server
+# Temperature::Server::CPU
+# Temperature::Server::GPU
+# Temperature::Server::DS18B20
+# 433MHz
+# PIR
+# file
+# DB
+# Web (Mojolicious, Dancer, FCGI)
+# Load
+# network throughput
+# audio volume
+# Program
+# Service -> SystemD interaction
+#===============================================================================
+#TODO: Refactoring
+#find a decent way to block certain output (per Module/Type) for a time
 #TODO:
 #show state/errors on (free) upper LEDs
 #------
-#Modules: PiFace / 433MHz / GPIO / Sensors / Console / DB / File
-#Notifier: encapsulate IO::Async implementation
-#Modules: implement Functionality 
-#------
-#Main/Reactor: build a state machine for handling stuff
+#Main/Manager: (or new module)
+# build a state machine for handling stuff
 # keep main state
-# manage Modules and Modules
+# manage Modules
 #===============================================================================
-#other modules with PiFace output:
-#temperature load audio_volume
-#------
 #more Modules:
-#MPD via Net::MPD
 #manage programs/services module (indicators via LEDs, start/stop via buttons)
 #read/request info from other hosts/programs via sockets 
 #write information to DB/file
