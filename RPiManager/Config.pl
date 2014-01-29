@@ -32,5 +32,10 @@ $config->[0] = {
     },
     'Module::Console' => {},
     'Module::PiFace' => {},
+    'Module::Mpd' => {
+        'Host' => 'nornapi',
+        'Port' => 6600,
+        'Password' => 'secret',
+    },
 };
 $config->write("config.yml.default");
