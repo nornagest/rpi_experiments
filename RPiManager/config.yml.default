@@ -4,5 +4,5 @@ Module::Console: {}
 Module::PiFace: {}
 Module::Temperature::Client:
   Host: creampi
-  Interval: 60
+  Interval: 90
   Port: 12345
