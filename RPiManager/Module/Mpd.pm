@@ -32,6 +32,8 @@ has 'Password' => ( is => 'rw', isa => 'Str', default => '' );
 
 has '__mpd' => ( is => 'rw', isa => 'Net::MPD' );
 
+#TODO: Handle input (byte/string)
+#TODO: check for MPD updates and print
 sub connect {
     my $self = shift;
     my $connect_string = $self->Password . '@' . $self->Host . ':' . $self->Port;
