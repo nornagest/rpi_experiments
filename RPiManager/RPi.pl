@@ -25,6 +25,13 @@
 #add fault tolerance / error handling
 #use Exporter 
 #===============================================================================
+#TODO:
+#implement/copy temperature sensors, think about where to put them
+#  -> Temperature::Server:XXX
+#  -> Device::Temperature::XXX
+#implement MMPd module
+#dispatch inputs correctly (set modules active/inactive?)
+#
 #TODO: Modules
 # MPD (client) (Net::MPD)
 # Temperature::Server
@@ -46,7 +53,6 @@
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO:
 #show state/errors on (free) upper LEDs
-#implement/copy temperature sensors, think about where to put them
 #------
 #Main/Manager: (or new module)
 # build a state machine for handling stuff
@@ -56,6 +62,10 @@
 #integration with nornagest.org (just transfer info/write info to DB on 
 # server/accept requests from server)
 #control/integrate camera module on creampi
+#===============================================================================
+#TODO:
+# make list of required (CPAN) modules (by Module)
+# give this a decent form (directory structure)
 #===============================================================================
 
 use Modern::Perl 2013;
