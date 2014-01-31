@@ -40,6 +40,8 @@ sub connect {
     $self->__mpd = Net::MPD->connect($connect_string);
 }
 
+sub write {}
+
 no Moose;
 __PACKAGE__->meta->make_immutable;
 
