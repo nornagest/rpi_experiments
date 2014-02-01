@@ -40,7 +40,9 @@ sub connect {
     $self->__mpd = Net::MPD->connect($connect_string);
 }
 
-sub send {}
+override 'send' => sub {
+    my ($self, $input) = @_;
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
