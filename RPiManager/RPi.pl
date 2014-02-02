@@ -72,9 +72,10 @@ use Modern::Perl 2013;
 use Data::GUID;
 use IO::Async::Loop;
 use Manager;
-use Module::PiFace;
 use Module::Console;
 use Module::Clock;
+use Module::Mpd;
+use Module::PiFace;
 use Module::Temperature::Client;
 use YAML::Tiny;
 

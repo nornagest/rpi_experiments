@@ -1,8 +1,12 @@
 ---
 Module::Clock: {}
 Module::Console: {}
+Module::Mpd:
+  Host: nornapi
+  Password: secret
+  Port: 6600
 Module::PiFace: {}
 Module::Temperature::Client:
   Host: creampi
-  Interval: 90
+  Interval: 300
   Port: 12345

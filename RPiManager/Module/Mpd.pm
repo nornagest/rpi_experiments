@@ -42,7 +42,7 @@ sub connect {
 
 override 'send' => sub {
     my ($self, $input) = @_;
-}
+};
 
 no Moose;
 __PACKAGE__->meta->make_immutable;
