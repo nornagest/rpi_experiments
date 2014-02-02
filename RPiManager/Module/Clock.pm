@@ -16,7 +16,6 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO: Remove old way of output
 package Module::Clock;
 use Modern::Perl 2013;
 use Moose;
@@ -29,9 +28,9 @@ has '+Name' => ( is => 'ro', isa => 'Str', default => 'Clock' );
 has '+__direction' => ( default => 'Input' );
 has '+__type' => ( default => 'byte' );
 
-has 'state' => ( is => 'rw', isa => 'Int', default => 0,);
-has 'output' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
-has 'block_output' => ( is => 'rw', isa => 'Bool', default => 0 );
+has '__state' => ( is => 'rw', isa => 'Int', default => 0,);
+has '__output' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
+has '__block_output' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 
 sub BUILD {
@@ -58,46 +57,47 @@ my $state_mod = 6;
 sub on_tick {
     my $self = shift;
     my @time = localtime();
-    my $time = $time[$self->state];
-    $time++ if $self->state == 4;      # adjust month representation 
-    $time %= 100 if $self->state == 5; # adjust year representation
+    my $time = $time[$self->__state];
+    $time++ if $self->__state == 4;      # adjust month representation 
+    $time %= 100 if $self->__state == 5; # adjust year representation
 
-    return if $self->block_output || (defined $self->output->{byte} 
-        && $self->output->{byte} == $time);
-    $self->output( { "byte" => $time, "string" => scalar localtime() } );
+    return if $self->__block_output || (defined $self->__output->{byte} 
+        && $self->__output->{byte} == $time);
+    $self->__output->{"byte"} = $time;
+    $self->__output->{"string"} = scalar localtime();
     $self->print;
 }
 
 sub next {
     my $self = shift;
-    $self->state( ($self->state + 1) % $state_mod) if defined $self;
+    $self->__state( ($self->__state + 1) % $state_mod) if defined $self;
 }
 sub prev {
     my $self = shift;
-    $self->state( ($self->state - 1) % $state_mod) if defined $self;
+    $self->__state( ($self->__state - 1) % $state_mod) if defined $self;
 }
 sub reset {
     my $self = shift;
-    $self->state( 0 ) if defined $self;
+    $self->__state( 0 ) if defined $self;
 }
 
 sub print_state {
     my $self = shift;
     my @states = ( 'Seconds', 'Minutes', 'Hours', 'Day', 'Month', 'Year' );
-    $self->output( 
-        { "byte" => $self->state, "string" => $states[$self->state] } );
+    $self->__output( 
+        { "byte" => $self->__state, "string" => $states[$self->__state] } );
     $self->print;
 
-    $self->block_output(1);
+    $self->__block_output(1);
     $self->Manager->Loop->add( Notifier::Timer::create_timer_countdown( 
-            0.5, sub { $self->block_output(0) } ) );
+            0.5, sub { $self->__block_output(0) } ) );
 }
 
 sub print {
     my $self = shift;
     my $message = Message::Output->new(
         'Source'  => $self->Name,
-        'Content' => $self->output,
+        'Content' => $self->__output,
     );
     $self->Manager->send($message);
 }
