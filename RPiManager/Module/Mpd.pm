@@ -40,6 +40,21 @@ has '__state' => ( is => 'rw', isa => 'Str', default => '' );
 #  add: next/prev adjust volume
 #TODO: check for MPD updates and print them
 #  may have to use a routine for updates
+
+#add two timers:
+# 1: ping every 5s 
+# 2: check every second for status and print that / set state
+#
+#Inputs:
+# Play/Stop -> 1->0 edge (input 0 if input was 1 before; on 2 or 4 lock auf true)
+#   1 -> { __input_state = 1 if __input_state == 0; }
+#   0 -> { play/stop if __input_state == 1; __input_state=0 }
+#   else -> { __input_state = 7; }
+# Vol+ -> 4
+# Vol- -> 2
+# Next -> 5
+# Prev -> 3
+
 sub BUILD {
     my $self = shift;
     $self->Manager->add( $self );
