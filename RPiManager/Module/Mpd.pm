@@ -72,8 +72,8 @@ override 'send' => sub {
     return unless $self->accepts($input);
     my $byte = $input->Content->{byte} if defined $input->Content->{byte};
     if(defined $byte) {
-        $self->play if $byte & 1;
-        $self->stop if $byte & 2;
+        #$self->play if $byte & 1;
+        #$self->stop if $byte & 2;
         #$self->reset if $byte & 4;
         $self->print_state if $byte > 0 && $byte < 8;
     }
