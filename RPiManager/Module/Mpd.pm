@@ -23,6 +23,7 @@ extends 'Module';
 
 use Message::Output;
 use Net::MPD;
+use Notifier::Timer;
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'MPD' );
 has '+__direction' => ( default => 'Input' );
@@ -48,7 +49,9 @@ has '__input_state' => ( is => 'rw', isa => 'Int', default => 0 );
 
 sub BUILD {
     my $self = shift;
+    my $timer = Notifier::Timer::create_timer_periodic(5, 5, sub { $self->ping });
     $self->Manager->add( $self );
+    $self->Manager->Loop->add( $timer );
     $self->connect;
 }
 
@@ -62,24 +65,17 @@ override 'send' => sub {
     my ($self, $input) = @_;
     return unless $self->accepts($input);
     my $byte = $input->Content->{byte} if defined $input->Content->{byte};
-    if(defined $byte) {
-        $self->handle_input($byte);
-        $self->print_state if $byte > 0 && $byte < 8;
-    }
+    $self->handle_input($byte) if defined $byte;
 };
+
+sub ping {
+    my $self = shift;
+    say "MPD: ping";
+    $self->__mpd->ping;
+}
 
 sub handle_input {
     my ($self, $byte) = @_;
-#Inputs:
-# Play/Stop -> 1->0 edge (input 0 if input was 1 before; on 2 or 4 lock auf true)
-#   1 -> { __input_state = 1 if __input_state == 0; }
-#   0 -> { play/stop if __input_state == 1; __input_state=0 }
-#   else -> { __input_state = 7; }
-# Vol+ -> 4
-# Vol- -> 2
-# Next -> 5
-# Prev -> 3
-    say "MPD: handle_input ", $self->__input_state, " ", $byte;
     $self->state_0($byte) if $self->__input_state == 0;
     $self->state_1($byte) if $self->__input_state == 1;
     $self->state_2($byte) if $self->__input_state == 2;
@@ -127,16 +123,16 @@ sub play {
     my $self = shift;
     say "MPD: play ", $self->__state;
     return if $self->__state eq 'playing';
-    $self->__mpd->ping;
     $self->__mpd->play;
     $self->__state('playing');
+    $self->print_state;
 }
 sub stop {
     my $self = shift;
     say "MPD: stop ", $self->__state;
-    $self->__mpd->ping;
     $self->__mpd->stop;
     $self->__state('stopped');
+    $self->print_state;
 }
 
 sub print_state {
