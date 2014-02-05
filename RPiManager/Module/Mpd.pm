@@ -70,18 +70,33 @@ override 'send' => sub {
 
 sub ping {
     my $self = shift;
-    say "MPD: ping";
     $self->__mpd->ping;
+    my $status = $self->__mpd->update_status;
+    #use Data::Dumper;
+    #say Dumper($status);
 }
 
 sub handle_input {
     my ($self, $byte) = @_;
+
+    if( $byte == 1) {
+        if( $self->__state eq 'playing' ) {
+            $self->stop;
+        } else {
+            $self->play;
+        }
+        #$self->__input_state(0);
+    }
+    return;
+
+    #shut off state machine for now
     $self->state_0($byte) if $self->__input_state == 0;
     $self->state_1($byte) if $self->__input_state == 1;
     $self->state_2($byte) if $self->__input_state == 2;
     $self->state_4($byte) if $self->__input_state == 4;
 }
 
+#TODO: make state machine a role, Manager too
 sub state_0 {
     my ($self, $byte) = @_;
     say "MPD: state_0 ", $self->__input_state, " ", $byte;

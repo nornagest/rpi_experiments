@@ -25,14 +25,11 @@ use Message;
 
 has 'Loop' => ( is => 'ro', isa => 'Object', required => 1 );
 has 'Modules' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
-#TODO: Switches for Outputs
-#either change the Module hash Modules = { 'GUID' => { 'object' => $module, 'output' => ... } }
-#  or add another attribute
-#remember Active Modules, switch depending on internal state
 
-#my $test_message = Message::Input->new( "Source" => "test", "Direction" => "Input", "Content" => { "byte" => 0 } );
-#my @modules = grep $_->accepts($test_message), $self->Modules;
-
+has '__sinks' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
+has '__state' => ( is => 'rw', isa => 'Int', default => 0 );
+has '__mod_active' => ( is => 'rw', isa => 'Bool', default => 0 );
+has '__input' => ( is => 'rw', isa => 'Int', default => 0 );
 
 sub add {
     my ($self, $module) = @_;
@@ -41,23 +38,80 @@ sub add {
 };
 
 sub remove_module {};
-sub activate_module {};
-sub deactivate_module {};
 
 sub send {
     my ($self, $message) = @_;
-    my $direction = $message->Direction;
-    my $source = $message->Source;
-    my $content = $message->Content;
-    $self->finish if $direction eq 'Input' && defined $content->{byte} 
-        && $content->{byte} == 8;
     $self->dispatch_message($message);
 }
 
 sub dispatch_message {
     my ($self, $message) = @_;
-    map $_->send($message), grep $_->accepts($message),values $self->Modules;
+    my $direction = $message->Direction;
+    my $source = $message->Source;
+    my $content = $message->Content;
+
+    if ( $direction eq 'Input' && defined $content->{byte} ) {
+        my @sinks = grep $self->Modules->{$_}->accepts($message), keys $self->Modules;
+        $self->__sinks(\@sinks);
+        $self->handle_input($content->{byte}, $message);
+    } else {
+        map $_->send($message), grep $_->accepts($message),values $self->Modules;
+    }
 };
+
+sub handle_input {
+    my ($self, $byte, $message) = @_;
+    my $input = $self->__input;
+    return if $byte == $input;
+    if( $byte > 0 ) {
+        $self->__input($byte);
+        return;
+    }
+
+    if( $self->__mod_active ) {
+        $self->state_module($input, $message);
+    } else {
+        $self->state_main($input, $message);
+    }
+}
+
+sub state_main {
+    my ($self, $byte, $message) = @_;
+
+    if ($byte == 1) {
+        $self->__mod_active(1);
+    } elsif ($byte == 8) {
+        $self->finish;
+    } else {
+        my $state = $self->__state;
+        $state++ if $byte == 4;
+        $state-- if $byte == 2;
+        $state %= scalar @{$self->__sinks};
+        $self->__state($state);
+    }
+
+    #TODO: Add LED display of module
+    my $state = $self->__state;
+    my $sink = $self->__sinks->[$state];
+    if($self->__mod_active) {
+        say "Module: ", $self->Modules->{$sink}->Name;
+    } else {
+        say "Main ", $self->Modules->{$sink}->Name;
+    }
+}
+
+sub state_module {
+    my ($self, $byte, $message) = @_;
+
+    if ( $byte == 8 ) {
+        $self->__mod_active(0);
+    } else {
+        my $state = $self->__state;
+        my $sink = $self->__sinks->[$state];
+        $message->Content->{byte} = $byte;
+        $self->Modules->{$sink}->send($message);
+    }
+}
 
 sub finish {
     my $self = shift;
