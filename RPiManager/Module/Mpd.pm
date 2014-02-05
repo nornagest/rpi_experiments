@@ -71,7 +71,7 @@ override 'send' => sub {
 sub ping {
     my $self = shift;
     $self->__mpd->ping;
-    my $status = $self->__mpd->update_status;
+    #my $status = $self->__mpd->update_status;
     #use Data::Dumper;
     #say Dumper($status);
 }
@@ -152,11 +152,20 @@ sub stop {
 
 sub print_state {
     my $self = shift;
+
+    my $status = $self->__mpd->update_status;
+    my $song = $self->__mpd->current_song;
+    my $output = $self->__state . ' Song: ' . $song->{"Name"};
+    
     my $message = Message::Output->new(
         'Source' => $self->Name,
-        'Content' => { 'string' => $self->__state },
+        'Content' => { 'string' => $output },
     );
     $self->Manager->send($message);
+
+    #use Data::Dumper;
+    #say Dumper($status);
+    #say Dumper($song);
 }
 
 no Moose;
