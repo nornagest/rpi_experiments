@@ -89,15 +89,7 @@ sub state_main {
         $state %= scalar @{$self->__sinks};
         $self->__state($state);
     }
-
-    #TODO: Add LED display of module
-    my $state = $self->__state;
-    my $sink = $self->__sinks->[$state];
-    if($self->__mod_active) {
-        say "Module: ", $self->Modules->{$sink}->Name;
-    } else {
-        say "Main ", $self->Modules->{$sink}->Name;
-    }
+    $self->print_state($byte);
 }
 
 sub state_module {
@@ -110,6 +102,20 @@ sub state_module {
         my $sink = $self->__sinks->[$state];
         $message->Content->{byte} = $byte;
         $self->Modules->{$sink}->send($message);
+    }
+    $self->print_state($byte);
+}
+
+sub print_state {
+    my ($self, $byte) = @_;
+
+    #TODO: Add LED display of module
+    my $state = $self->__state;
+    my $sink = $self->__sinks->[$state];
+    if($self->__mod_active) {
+        say "Module: ", $self->Modules->{$sink}->Name;
+    } else {
+        say "Main ", $self->Modules->{$sink}->Name;
     }
 }
 
