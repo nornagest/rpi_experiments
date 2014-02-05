@@ -15,8 +15,6 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO:
-#Implement other methods
 package Manager;
 use Modern::Perl 2013;
 use Moose;
@@ -37,7 +35,11 @@ sub add {
     $self->Modules->{$guid} = $module unless defined $self->Modules->{$guid};
 };
 
-sub remove_module {};
+sub remove_module {
+    my ($self, $module) = @_;
+    my $guid = $module->GUID;
+    $self->Modules->{$guid} = undef;
+};
 
 sub send {
     my ($self, $message) = @_;

@@ -53,11 +53,6 @@
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO:
 #show state/errors on (free) upper LEDs
-#------
-#Main/Manager: (or new module)
-# build a state machine for handling stuff
-# keep main state
-# manage Modules
 #===============================================================================
 #integration with nornagest.org (just transfer info/write info to DB on 
 # server/accept requests from server)
