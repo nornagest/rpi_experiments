@@ -37,6 +37,7 @@ has '__mpd' => ( is => 'rw', isa => 'Net::MPD' );
 #TODO: define enum or get a clear idea
 has '__state' => ( is => 'rw', isa => 'Str', default => '' );
 has '__input_state' => ( is => 'rw', isa => 'Int', default => 0 );
+has 'song' => ( is => 'rw', isa => 'Str', default => '' );
 
 #TODO: Handle input as string
 #  add: next/prev adjust volume
@@ -49,7 +50,7 @@ has '__input_state' => ( is => 'rw', isa => 'Int', default => 0 );
 
 sub BUILD {
     my $self = shift;
-    my $timer = Notifier::Timer::create_timer_periodic(5, 5, sub { $self->ping });
+    my $timer = Notifier::Timer::create_timer_periodic(1, 1, sub { $self->ping });
     $self->Manager->add( $self );
     $self->Manager->Loop->add( $timer );
     $self->connect;
@@ -72,8 +73,12 @@ sub ping {
     my $self = shift;
     $self->__mpd->ping;
     #my $status = $self->__mpd->update_status;
-    #use Data::Dumper;
-    #say Dumper($status);
+    my $song = $self->__mpd->current_song;
+    my $name = $song->{"Name"};
+    if( $name ne $self->song) {
+        $self->song($name);
+        $self->print_state;
+    }
 }
 
 sub handle_input {
@@ -153,19 +158,13 @@ sub stop {
 sub print_state {
     my $self = shift;
 
-    my $status = $self->__mpd->update_status;
-    my $song = $self->__mpd->current_song;
-    my $output = $self->__state . ' Song: ' . $song->{"Name"};
-    
+    my $output = $self->__state . ' Song: ' . $self->song;
+
     my $message = Message::Output->new(
         'Source' => $self->Name,
         'Content' => { 'string' => $output },
     );
     $self->Manager->send($message);
-
-    #use Data::Dumper;
-    #say Dumper($status);
-    #say Dumper($song);
 }
 
 no Moose;
