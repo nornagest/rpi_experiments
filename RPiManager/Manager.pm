@@ -30,6 +30,10 @@ has 'Modules' => ( is => 'rw', isa => 'HashRef', default => sub { {} } );
 #  or add another attribute
 #remember Active Modules, switch depending on internal state
 
+#my $test_message = Message::Input->new( "Source" => "test", "Direction" => "Input", "Content" => { "byte" => 0 } );
+#my @modules = grep $_->accepts($test_message), $self->Modules;
+
+
 sub add {
     my ($self, $module) = @_;
     my $guid = $module->GUID;
