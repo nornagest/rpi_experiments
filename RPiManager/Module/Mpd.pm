@@ -34,15 +34,9 @@ has 'Port' => ( is => 'rw', isa => 'Int', default => 6600 );
 has 'Password' => ( is => 'rw', isa => 'Str', default => '' );
 
 has '__mpd' => ( is => 'rw', isa => 'Net::MPD' );
-#TODO: define enum or get a clear idea
 has '__state' => ( is => 'rw', isa => 'Str', default => '' );
 has '__input_state' => ( is => 'rw', isa => 'Int', default => 0 );
-has 'song' => ( is => 'rw', isa => 'Str', default => '' );
-
-#TODO: Handle input as string
-#  add: next/prev and adjust volume
-#TODO: set __state depending on real state of MPD in sub ping()
-#  may have to use a routine for updates
+has '__song' => ( is => 'rw', isa => 'Str', default => '' );
 
 sub BUILD {
     my $self = shift;
@@ -71,11 +65,11 @@ sub ping {
 
     my $status = $self->__mpd->update_status;
     my $state = $status->{"state"};
-    my $song = $self->__mpd->current_song;
-    my $name = $song->{"Name"};
+    my $song_info = $self->__mpd->current_song;
+    my $song = $song_info->{"Name"};
 
-    if( $name ne $self->song || $state ne $self->__state) {
-        $self->song($name);
+    if( $song ne $self->__song || $state ne $self->__state) {
+        $self->__song($song);
         $self->__state($state);
         $self->print_state;
     }
@@ -91,6 +85,8 @@ sub handle_input {
             $self->play;
         }
     }
+#TODO: Handle input as string
+#  add: next/prev and adjust volume
 }
 
 sub play {
@@ -105,7 +101,7 @@ sub stop {
 
 sub print_state {
     my $self = shift;
-    my $output = $self->__state . ' Song: ' . $self->song;
+    my $output = $self->__state . ' Song: ' . $self->__song;
     my $message = Message::Output->new(
         'Source' => $self->Name,
         'Content' => { 'string' => $output },

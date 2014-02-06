@@ -65,6 +65,9 @@ sub handle_input {
     my ($self, $byte, $message) = @_;
     my $input = $self->__input;
     return if $byte == $input;
+
+    #TODO: state machine to allow multiple inputs 
+    #(MPD with next/prev and vol +/-)
     if( $byte > 0 ) {
         $self->__input($byte);
         return;
