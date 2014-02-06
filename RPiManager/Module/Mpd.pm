@@ -95,13 +95,11 @@ sub handle_input {
 
 sub play {
     my $self = shift;
-    say "MPD: play ", $self->__state;
     return if $self->__state eq 'play';
     $self->__mpd->play;
 }
 sub stop {
     my $self = shift;
-    say "MPD: stop ", $self->__state;
     $self->__mpd->stop;
 }
 
