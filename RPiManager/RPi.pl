@@ -29,8 +29,6 @@
 #implement/copy temperature sensors, think about where to put them
 #  -> Temperature::Server:XXX
 #  -> Device::Temperature::XXX
-#implement MMPd module
-#dispatch inputs correctly (set modules active/inactive?)
 #
 #TODO: Modules
 # MPD (client) (Net::MPD)
@@ -53,6 +51,9 @@
 #find a decent way to block certain output (per Module/Type) for a time
 #TODO:
 #show state/errors on (free) upper LEDs
+#TODO:
+#string inputs
+#web/TCP interface
 #===============================================================================
 #integration with nornagest.org (just transfer info/write info to DB on 
 # server/accept requests from server)

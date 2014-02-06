@@ -85,8 +85,7 @@ sub handle_input {
             $self->play;
         }
     }
-#TODO: Handle input as string
-#  add: next/prev and adjust volume
+#TODO: add: next/prev and volume +/-
 }
 
 sub play {
