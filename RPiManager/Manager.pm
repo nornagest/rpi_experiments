@@ -28,6 +28,7 @@ has '__sinks' => ( is => 'rw', isa => 'ArrayRef', default => sub { [] } );
 has '__state' => ( is => 'rw', isa => 'Int', default => 0 );
 has '__mod_active' => ( is => 'rw', isa => 'Bool', default => 0 );
 has '__input' => ( is => 'rw', isa => 'Int', default => 0 );
+has '__multi_in' => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub add {
     my ($self, $module) = @_;
@@ -64,15 +65,24 @@ sub dispatch_message {
 sub handle_input {
     my ($self, $byte, $message) = @_;
     my $input = $self->__input;
+    #Same button or no button
     return if $byte == $input;
 
-    #TODO: state machine to allow multiple inputs 
-    #(MPD with next/prev and vol +/-)
-    if( $input > $byte ) {
+    #a button has been pressed
+    if( $byte > $input ) {
+        $self->__multi_in(1) if $input > 0;
+        $self->__input($byte);
+        return;
+    } 
+    #a button has been released
+
+    if( $byte == 0 && $self->__multi_in ) {
+        $self->__multi_in(0);
         $self->__input($byte);
         return;
     }
 
+    #Handle pressed button (buttons before one was released)
     if( $self->__mod_active ) {
         $self->state_module($input, $message);
     } else {
