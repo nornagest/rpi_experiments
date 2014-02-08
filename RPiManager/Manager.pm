@@ -65,28 +65,24 @@ sub dispatch_message {
 sub handle_input {
     my ($self, $byte, $message) = @_;
     my $input = $self->__input;
-    #Same button or no button
     return if $byte == $input;
 
-    #a button has been pressed
-    if( $byte > $input ) {
-        $self->__multi_in(1) if $input > 0;
+    if ( $byte < $input ) {
+        $self->send_input($input - $byte, $message) unless $self->__multi_in;
+        $self->__multi_in( $byte > 0 );
         $self->__input($byte);
-        return;
-    } 
-    #a button has been released
-
-    if( $byte == 0 && $self->__multi_in ) {
-        $self->__multi_in(0);
-        $self->__input($byte);
-        return;
     }
 
-    #Handle pressed button (buttons before one was released)
-    if( $self->__mod_active ) {
-        $self->state_module($input, $message);
+    $self->__input($byte);
+}
+
+sub send_input {
+    my ($self, $byte, $message) = @_;
+
+    if ( $self->__mod_active ) {
+        $self->state_module($byte, $message);
     } else {
-        $self->state_main($input, $message);
+        $self->state_main($byte, $message);
     }
 }
 
@@ -115,7 +111,7 @@ sub state_module {
     } else {
         my $state = $self->__state;
         my $sink = $self->__sinks->[$state];
-        $message->Content->{byte} = $byte;
+        $message->Content->{byte} = $byte; #TODO: This must probably be done in send_input or handle_input
         $self->Modules->{$sink}->send($message);
     }
     $self->print_state($byte);
