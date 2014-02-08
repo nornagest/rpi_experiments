@@ -68,7 +68,7 @@ sub handle_input {
 
     #TODO: state machine to allow multiple inputs 
     #(MPD with next/prev and vol +/-)
-    if( $byte > 0 ) {
+    if( $input > $byte ) {
         $self->__input($byte);
         return;
     }
