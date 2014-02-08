@@ -68,9 +68,8 @@ sub handle_input {
     return if $byte == $input;
 
     if ( $byte < $input ) {
-        $self->send_input($input - $byte, $message) unless $self->__multi_in;
+        $self->send_input( $input - $byte, $message ) unless $self->__multi_in;
         $self->__multi_in( $byte > 0 );
-        $self->__input($byte);
     }
 
     $self->__input($byte);
