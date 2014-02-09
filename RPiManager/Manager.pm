@@ -68,7 +68,9 @@ sub handle_input {
     return if $byte == $input;
 
     if ( $byte < $input ) {
-        $self->send_input( $input - $byte, $message ) unless $self->__multi_in;
+        my $input_value = $input - $byte;
+        $input_value = $input_value << 3 if $byte == 1;
+        $self->send_input( $input_value, $message ) unless $self->__multi_in;
         $self->__multi_in( $byte > 0 );
     }
 
@@ -85,6 +87,7 @@ sub send_input {
     }
 }
 
+#TODO: Some code could be extracted from these two methods
 sub state_main {
     my ($self, $byte, $message) = @_;
 
@@ -101,7 +104,6 @@ sub state_main {
     }
     $self->print_state($byte);
 }
-
 sub state_module {
     my ($self, $byte, $message) = @_;
 
