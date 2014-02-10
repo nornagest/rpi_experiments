@@ -1,18 +1,18 @@
 #
 #===============================================================================
 #
-#         FILE: Mpd.pm
+# FILE: Mpd.pm
 #
-#  DESCRIPTION: 
+# DESCRIPTION:
 #
-#        FILES: ---
-#         BUGS: ---
-#        NOTES: ---
-#       AUTHOR: YOUR NAME (), 
-# ORGANIZATION: 
-#      VERSION: 1.0
-#      CREATED: 01/29/2014 08:47:30 PM
-#     REVISION: ---
+# FILES: ---
+# BUGS: ---
+# NOTES: ---
+# AUTHOR: YOUR NAME (),
+# ORGANIZATION:
+# VERSION: 1.0
+# CREATED: 01/29/2014 08:47:30 PM
+# REVISION: ---
 #===============================================================================
 
 package Module::Mpd;
@@ -85,8 +85,15 @@ sub handle_input {
         } else {
             $self->play;
         }
+    } elsif ( $byte == 2) {
+        $self->prev;
+    } elsif ( $byte == 4) {
+        $self->next;
+    } elsif ( $byte == 16) {
+        $self->vol_down;
+    } elsif ( $byte == 32) {
+        $self->vol_up;
     }
-#TODO: add: next/prev and volume +/-
 }
 
 sub play {
@@ -97,6 +104,15 @@ sub play {
 sub stop {
     my $self = shift;
     $self->__mpd->stop;
+}
+#TODO: implement!
+sub next {
+}
+sub prev {
+}
+sub vol_up {
+}
+sub vol_down {
 }
 
 sub print_state {
