@@ -71,6 +71,7 @@ sub handle_input {
     if ( $byte < $input ) {
         my $input_value = $input - $byte;
         $input_value = $input_value << 3 if $byte == 1;
+        say "Manager: handle_input old: $input new: $byte sending: $input_value";
         $self->send_input( $input_value, $message ) unless $self->__multi_in;
         $self->__multi_in( $byte > 0 );
     }
@@ -113,7 +114,8 @@ sub state_module {
     } else {
         my $state = $self->__state;
         my $sink = $self->__sinks->[$state];
-        $message->Content->{byte} = $byte; #TODO: This must probably be done in send_input or handle_input
+        #TODO: This should probably be done in send_input or handle_input
+        $message->Content->{byte} = $byte; 
         $self->Modules->{$sink}->send($message);
     }
     $self->print_state($byte);
