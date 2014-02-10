@@ -89,11 +89,10 @@ say "Ready...";
 $loop->run;
 
 #===============================================================================
-#TODO: (in Module)
-#block other Module outputs (handle this in Manager)
+#TODO: move this in a module and handle conflicting outputs
 sub blink($$) {
     my ($value, $interval) = @_;
     my $ticker = Notifier::Timer::create_timer_periodic($interval, 0, 
-        sub {}); #TODO: implement and make this a Module
+        sub {}); #TODO: implement
 }
 
