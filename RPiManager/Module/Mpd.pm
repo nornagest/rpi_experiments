@@ -37,6 +37,7 @@ has '__mpd' => ( is => 'rw', isa => 'Net::MPD' );
 has '__state' => ( is => 'rw', isa => 'Str', default => '' );
 has '__input_state' => ( is => 'rw', isa => 'Int', default => 0 );
 has '__song' => ( is => 'rw', isa => 'Str', default => '' );
+has '__volume' => ( is => 'rw', isa => 'Int', default => 0 );
 
 sub BUILD {
     my $self = shift;
@@ -66,12 +67,15 @@ sub ping {
 
     my $status = $self->__mpd->update_status;
     my $state = $status->{"state"};
+    my $volume = $status->{"volume"};
     my $song_info = $self->__mpd->current_song;
     my $song = $song_info->{"Name"};
 
-    if( ( defined $song && $song ne $self->__song ) || $state ne $self->__state) {
+    if( ( defined $song && $song ne $self->__song ) || $state ne $self->__state
+        || $volume != $self->__volume ) {
         $self->__song($song) if defined $song;
         $self->__state($state);
+        $self->__volume($volume);
         $self->print_state;
     }
 }
@@ -129,7 +133,8 @@ sub vol_down {
 
 sub print_state {
     my $self = shift;
-    my $output = $self->__state . ' Song: ' . $self->__song;
+    my $output = $self->__state . ' Song: ' . $self->__song 
+        . ' Volume: ' . $self->__volume;
     my $message = Message::Output->new(
         'Source' => $self->Name,
         'Content' => { 'string' => $output },
