@@ -53,6 +53,7 @@ sub connect {
 }
 
 override 'send' => sub {
+    #TODO: check correctness of sent input
     my ($self, $input) = @_;
     return unless $self->accepts($input);
     my $byte = $input->Content->{byte} if defined $input->Content->{byte};

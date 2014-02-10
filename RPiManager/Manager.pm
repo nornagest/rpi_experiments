@@ -69,6 +69,7 @@ sub handle_input {
 
     if ( $byte < $input ) {
         my $input_value = $input - $byte;
+        #TODO: check correctness
         $input_value = $input_value << 3 if $byte == 1;
         $self->send_input( $input_value, $message ) unless $self->__multi_in;
         $self->__multi_in( $byte > 0 );
