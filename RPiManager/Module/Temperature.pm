@@ -3,7 +3,7 @@
 #
 # FILE: Temperature.pm
 #
-# DESCRIPTION: 
+# DESCRIPTION:
 #
 # FILES: ---
 # BUGS: ---
@@ -22,9 +22,9 @@ extends 'Module';
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Temperature' );
 has '+__direction' => ( default => '' );
-has '+__type' => ( default => '' );
-has 'Port' => ( is => 'ro', isa => 'Int', default => '12345' );
-has 'Host' => ( is => 'ro', isa => 'Str', default => 'creampi' );
+has '+__type'      => ( default => '' );
+has 'Port'         => ( is      => 'ro', isa => 'Int', default => '12345' );
+has 'Host'         => ( is      => 'ro', isa => 'Str', default => 'creampi' );
 
 #TODO: Make use of temperature devices
 

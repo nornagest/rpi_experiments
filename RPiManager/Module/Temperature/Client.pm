@@ -3,13 +3,13 @@
 #
 #         FILE: Client.pm
 #
-#  DESCRIPTION: 
+#  DESCRIPTION:
 #
 #        FILES: ---
 #         BUGS: ---
 #        NOTES: ---
-#       AUTHOR: YOUR NAME (), 
-# ORGANIZATION: 
+#       AUTHOR: YOUR NAME (),
+# ORGANIZATION:
 #      VERSION: 1.0
 #      CREATED: 01/25/2014 02:08:09 PM
 #     REVISION: ---
@@ -28,19 +28,20 @@ use Storable qw(thaw);
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'Temperature-Client' );
 has '+__direction' => ( default => '' );
-has '+__type' => ( default => '' );
+has '+__type'      => ( default => '' );
 
 has 'Interval' => ( is => 'ro', isa => 'Int', default => 60 );
 
 sub BUILD {
-    my $self = shift;
-    my $timer = Notifier::Timer::create_timer_periodic( $self->Interval, 0, sub { $self->on_tick() } );
-    $self->Manager->add( $self );
-    $self->Manager->Loop->add( $timer );
+    my $self  = shift;
+    my $timer = Notifier::Timer::create_timer_periodic( $self->Interval, 0,
+        sub { $self->on_tick() } );
+    $self->Manager->add($self);
+    $self->Manager->Loop->add($timer);
 }
 
 sub on_tick {
-    my $self = shift;
+    my $self       = shift;
     my $print_temp = $self->curry::print;
     $self->Manager->Loop->connect(
         host     => $self->Host,
@@ -58,7 +59,7 @@ sub on_tick {
                 },
                 on_closed => sub { }
             );
-            $self->Manager->Loop->add( $stream );
+            $self->Manager->Loop->add($stream);
         },
         on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
         on_connect_error => sub { die "Cannot connect\n" },
@@ -66,14 +67,14 @@ sub on_tick {
 }
 
 sub print {
-    my ($self, $temp) = @_;
+    my ( $self, $temp ) = @_;
     my @lines;
-    for(sort keys %{$temp->{"sensors"}}) {
+    for ( sort keys %{ $temp->{"sensors"} } ) {
         push @lines, $temp->{"time"} . " " . $_ . " " . $temp->{"sensors"}{$_};
     }
     my $message = Message::Output->new(
         'Source'  => $self->Name,
-        'Content' => { 'string' => join "\n",@lines },
+        'Content' => { 'string' => join "\n", @lines },
     );
     $self->Manager->send($message);
 }

@@ -3,7 +3,7 @@
 #
 #         FILE: Config.pl
 #
-#        USAGE: ./Config.pl  
+#        USAGE: ./Config.pl
 #
 #  DESCRIPTION: Small script to create the default config file
 #
@@ -11,8 +11,8 @@
 # REQUIREMENTS: ---
 #         BUGS: ---
 #        NOTES: ---
-#       AUTHOR: YOUR NAME (), 
-# ORGANIZATION: 
+#       AUTHOR: YOUR NAME (),
+# ORGANIZATION:
 #      VERSION: 1.0
 #      CREATED: 01/27/2014 09:08:31 PM
 #     REVISION: ---
@@ -24,17 +24,17 @@ use YAML::Tiny;
 my $config = YAML::Tiny->new;
 
 $config->[0] = {
-    'Module::Clock' => {},
+    'Module::Clock'               => {},
     'Module::Temperature::Client' => {
-        'Host' => 'creampi',
-        'Port' => 12345,
+        'Host'     => 'creampi',
+        'Port'     => 12345,
         'Interval' => 300,
     },
     'Module::Console' => {},
-    'Module::PiFace' => {},
-    'Module::Mpd' => {
-        'Host' => 'nornapi',
-        'Port' => 6600,
+    'Module::PiFace'  => {},
+    'Module::Mpd'     => {
+        'Host'     => 'nornapi',
+        'Port'     => 6600,
         'Password' => 'secret',
     },
 };

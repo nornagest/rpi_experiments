@@ -3,7 +3,7 @@
 #
 # FILE: Service.pm
 #
-# DESCRIPTION: 
+# DESCRIPTION:
 #
 # FILES: ---
 # BUGS: ---
@@ -20,7 +20,7 @@ use Modern::Perl 2013;
 use Moose;
 
 #TODO: implement
-# split into client and Server? Best do this in Input/Output and just keep 
+# split into client and Server? Best do this in Input/Output and just keep
 #   functionality here
 
 no Moose;
