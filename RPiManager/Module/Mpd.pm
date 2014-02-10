@@ -78,7 +78,6 @@ sub ping {
 
 sub handle_input {
     my ($self, $byte) = @_;
-    say "MPD handle_input $byte";
 
     if( $byte == 1) {
         if( $self->__state eq 'play' ) {
@@ -106,14 +105,25 @@ sub stop {
     my $self = shift;
     $self->__mpd->stop;
 }
-#TODO: implement!
 sub next {
+    my $self = shift;
+    $self->__mpd->next;
 }
 sub prev {
+    my $self = shift;
+    $self->__mpd->previous;
 }
 sub vol_up {
+    my $self = shift;
+    my $status = $self->__mpd->update_status;
+    my $vol = $status->{"volume"};
+    $self->__mpd->volume($vol + 3);
 }
 sub vol_down {
+    my $self = shift;
+    my $status = $self->__mpd->update_status;
+    my $vol = $status->{"volume"};
+    $self->__mpd->volume($vol - 3);
 }
 
 sub print_state {
