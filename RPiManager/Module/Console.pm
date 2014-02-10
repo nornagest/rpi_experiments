@@ -15,7 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO: Use IO::Async
+#TODO: Use IO::Async, handle STDIN
 package Module::Console;
 use Modern::Perl 2013;
 use Moose;

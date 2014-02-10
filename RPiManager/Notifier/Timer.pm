@@ -15,8 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO:
-#Make this a class
+#TODO: Make this a class
 #object has Timer -> is Periodic/Absolute/Countdown
 package Notifier::Timer;
 use Modern::Perl 2013;

@@ -36,7 +36,7 @@ sub add {
     $self->Modules->{$guid} = $module unless defined $self->Modules->{$guid};
 };
 
-sub remove_module {
+sub remove {
     my ($self, $module) = @_;
     my $guid = $module->GUID;
     $self->Modules->{$guid} = undef;
@@ -121,7 +121,7 @@ sub state_module {
 sub print_state {
     my ($self, $byte) = @_;
 
-    #TODO: Add LED display of module
+    #TODO: Add LED display of active module
     my $state = $self->__state;
     my $sink = $self->__sinks->[$state];
     if($self->__mod_active) {

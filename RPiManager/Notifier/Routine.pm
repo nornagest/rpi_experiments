@@ -15,8 +15,7 @@
 #     REVISION: ---
 #===============================================================================
 
-#TODO:
-# make this a class
+#TODO: make this a class
 package Notifier::Routine;
 use Modern::Perl 2013;
 use IO::Async::Routine;
