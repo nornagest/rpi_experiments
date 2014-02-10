@@ -67,11 +67,8 @@ sub handle_input {
     my $input = $self->__input;
     return if $byte == $input;
 
-    #TODO: Allow for multiple button presses, avoid sending unwanted differences
     if ( $byte < $input ) {
-        my $input_value = $input - $byte;
-        $input_value = $input_value << 3 if $byte == 1;
-        say "Manager: handle_input old: $input new: $byte sending: $input_value";
+        my $input_value = (($input - $byte) << (3 * $byte)) & 255; #multi buttons
         $self->send_input( $input_value, $message ) unless $self->__multi_in;
         $self->__multi_in( $byte > 0 );
     }
