@@ -69,8 +69,8 @@ sub ping {
     my $song_info = $self->__mpd->current_song;
     my $song = $song_info->{"Name"};
 
-    if( $song ne $self->__song || $state ne $self->__state) {
-        $self->__song($song);
+    if( ( defined $song && $song ne $self->__song ) || $state ne $self->__state) {
+        $self->__song($song) if defined $song;
         $self->__state($state);
         $self->print_state;
     }
@@ -78,6 +78,7 @@ sub ping {
 
 sub handle_input {
     my ($self, $byte) = @_;
+    say "MPD handle_input $byte";
 
     if( $byte == 1) {
         if( $self->__state eq 'play' ) {
