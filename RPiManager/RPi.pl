@@ -19,18 +19,19 @@
 #===============================================================================
 
 #===============================================================================
-#TODO: 
-#Unit Tests
-#use Carp
-#add fault tolerance / error handling
-#use Exporter 
+#TODO: Unit Tests
+#TODO: use Carp
+#TODO: add fault tolerance / error handling
+#TODO: use Exporter 
 #===============================================================================
-#TODO:
-#implement/copy temperature sensors, think about where to put them
+#TODO: Web-Interface (Mojo or Dancer)
+#TODO: DB module for persistence
+#===============================================================================
+#TODO: implement/copy temperature sensors, think about where to put them
 #  -> Temperature::Server:XXX
 #  -> Device::Temperature::XXX
-#
-#TODO: Modules
+#===============================================================================
+#TODO: more Modules
 # MPD (client) (Net::MPD)
 # Temperature::Server
 # Temperature::Server::CPU
@@ -38,30 +39,24 @@
 # Temperature::Server::DS18B20
 # 433MHz
 # PIR
-# file
-# DB
-# Web (Mojolicious, Dancer, FCGI)
 # Load
 # network throughput
 # audio volume
 # Program
 # Service -> SystemD interaction
+# file
 #===============================================================================
-#TODO: Refactoring
-#find a decent way to block certain output (per Module/Type) for a time
-#TODO:
-#show state/errors on (free) upper LEDs
-#TODO:
-#string inputs
-#web/TCP interface
+#TODO: find a decent way to block certain output (per Module/Type) for a time
+#TODO: show state/errors on (free) upper LEDs
+#TODO: string inputs
 #===============================================================================
-#integration with nornagest.org (just transfer info/write info to DB on 
+#TODO: integration with nornagest.org 
+# (just transfer info/write info to DB on 
 # server/accept requests from server)
-#control/integrate camera module on creampi
+#TODO: control/integrate camera module on creampi
 #===============================================================================
-#TODO:
-# make list of required (CPAN) modules (by Module)
-# give this a decent form (directory structure)
+#TODO: make list of required (CPAN) modules (by Module)
+#TODO: give this a decent form (directory structure)
 #===============================================================================
 
 use Modern::Perl 2013;
