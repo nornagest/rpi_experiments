@@ -78,6 +78,7 @@ sub ping {
 
 sub handle_input {
     my ($self, $byte) = @_;
+    say "MPD handle_input $byte";
 
     if( $byte == 1) {
         if( $self->__state eq 'play' ) {
