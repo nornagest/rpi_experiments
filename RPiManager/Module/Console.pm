@@ -35,8 +35,7 @@ sub BUILD {
 override 'send' => sub {
     my ( $self, $output ) = @_;
     return unless $self->accepts($output);
-    my $string = $output->Content->{string}
-      if defined $output->Content->{string};
+    my $string = $output->Content->{string};
     return if defined $self->last_output && $self->last_output eq $string;
     say $string;
     $self->last_output($string);

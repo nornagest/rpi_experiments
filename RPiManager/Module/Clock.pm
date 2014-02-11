@@ -43,7 +43,7 @@ sub BUILD {
 override 'send' => sub {
     my ( $self, $input ) = @_;
     return unless $self->accepts($input);
-    my $byte = $input->Content->{byte} if defined $input->Content->{byte};
+    my $byte = $input->Content->{byte};
     if ( defined $byte ) {
         $self->next        if $byte & 1;
         $self->prev        if $byte & 2;

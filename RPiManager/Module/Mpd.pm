@@ -41,11 +41,11 @@ has '__volume'      => ( is => 'rw', isa => 'Int', default => 0 );
 
 sub BUILD {
     my $self = shift;
+    eval {$self->connect} or return;
     my $timer =
       Notifier::Timer::create_timer_periodic( 1, 1, sub { $self->ping } );
     $self->Manager->add($self);
     $self->Manager->Loop->add($timer);
-    $self->connect;
 }
 
 sub connect {
@@ -58,7 +58,7 @@ sub connect {
 override 'send' => sub {
     my ( $self, $input ) = @_;
     return unless $self->accepts($input);
-    my $byte = $input->Content->{byte} if defined $input->Content->{byte};
+    my $byte = $input->Content->{byte};
     $self->handle_input($byte) if defined $byte;
 };
 

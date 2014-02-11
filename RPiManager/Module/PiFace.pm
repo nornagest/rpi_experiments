@@ -25,7 +25,7 @@ use Module::PiFace::OutputRoutine;
 use Message::Input;
 
 #dynamically load dummy module if the real one doesn't work
-eval "require Device::MyNoPiFace" unless eval "require Device::MyPiFace";
+eval { require Device::MyNoPiFace } unless eval { require Device::MyPiFace };
 
 has '+Name' => ( is => 'ro', isa => 'Str', default => 'PiFace' );
 has '+__direction' => ( default => 'Output' );
@@ -48,7 +48,7 @@ sub BUILD {
 override 'send' => sub {
     my ( $self, $output ) = @_;
     return unless $self->accepts($output);
-    my $byte = $output->Content->{byte} if defined $output->Content->{byte};
+    my $byte = $output->Content->{byte};
     return if defined $self->last_output && $self->last_output == $byte;
     $self->Out_Channel->send( \$byte );
     $self->last_output($byte);
