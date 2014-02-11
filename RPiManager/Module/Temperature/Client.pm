@@ -61,8 +61,12 @@ sub on_tick {
             );
             $self->Manager->Loop->add($stream);
         },
-        on_resolve_error => sub { die "Cannot resolve - $_[0]\n" },
-        on_connect_error => sub { die "Cannot connect\n" },
+        on_resolve_error => sub { 
+            warn "Cannot resolve - $_[0]\n" 
+        },
+        on_connect_error => sub { 
+            warn "Cannot connect\n" 
+        },
     );
 }
 
