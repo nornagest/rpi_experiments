@@ -77,8 +77,8 @@ sub ping {
         || $volume != $self->__volume )
     {
         $self->__song($song) if defined $song;
-        $self->__state($state);
-        $self->__volume($volume);
+        $self->__state($state) if defined $state;
+        $self->__volume($volume) if defined $volume;
         $self->print_state;
     }
 }
