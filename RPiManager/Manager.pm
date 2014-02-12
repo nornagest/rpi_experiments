@@ -91,7 +91,6 @@ sub send_input {
     }
 }
 
-#TODO: Some code could be extracted from these two methods
 sub state_main {
     my ( $self, $byte, $message ) = @_;
 
@@ -120,8 +119,6 @@ sub state_module {
     else {
         my $state = $self->__state;
         my $sink  = $self->__sinks->[$state];
-
-        #TODO: This should probably be done in send_input or handle_input
         $message->Content->{byte} = $byte;
         $self->Modules->{$sink}->send($message);
     }
