@@ -38,6 +38,7 @@ has '__state'       => ( is => 'rw', isa => 'Str', default => '' );
 has '__input_state' => ( is => 'rw', isa => 'Int', default => 0 );
 has '__song'        => ( is => 'rw', isa => 'Str', default => '' );
 has '__volume'      => ( is => 'rw', isa => 'Int', default => 0 );
+has '__vol_adjust'  => ( is => 'rw', isa => 'Int', default => 5 );
 
 sub BUILD {
     my $self = shift;
@@ -129,17 +130,19 @@ sub prev {
 }
 
 sub vol_up {
-    my $self   = shift;
-    my $status = $self->__mpd->update_status;
-    my $vol    = $status->{"volume"};
-    $self->__mpd->volume( $vol + 3 );
+    my $self       = shift;
+    my $status     = $self->__mpd->update_status;
+    my $vol        = $status->{"volume"};
+    my $vol_adjust = $self->__vol_adjust;
+    $self->__mpd->volume( $vol + $vol_adjust );
 }
 
 sub vol_down {
     my $self   = shift;
     my $status = $self->__mpd->update_status;
     my $vol    = $status->{"volume"};
-    $self->__mpd->volume( $vol - 3 );
+    my $vol_adjust = $self->__vol_adjust;
+    $self->__mpd->volume( $vol - $vol_adjust );
 }
 
 sub print_state {
