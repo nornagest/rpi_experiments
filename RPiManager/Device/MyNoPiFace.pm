@@ -1,23 +1,24 @@
 package Device::MyPiFace;
 use Modern::Perl 2013;
 use Moose;
+
 #TODO: Use Term::TermKey(::Async)
 use Term::ReadKey;
 
-has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0,);
+has 'IsInitialized' => ( is => 'rw', isa => 'Bool', default => 0, );
 
 #destructor
 sub DEMOLISH {
     my $self = shift;
     $self->deinit;
-};
+}
 
 sub get_key {
     ReadMode 'raw';
     my $input = ReadKey(0);
     ReadMode 'restore';
     chomp $input;
-    return $input; 
+    return $input;
 }
 
 sub init {
@@ -37,7 +38,7 @@ sub deinit {
 }
 
 sub write_byte {
-    my ($self, $byte) = @_;
+    my ( $self, $byte ) = @_;
     return unless $self->IsInitialized;
     $| = 1;
     say "\tPiFace: $byte";
@@ -45,7 +46,7 @@ sub write_byte {
 }
 
 sub write_bit {
-    my ($self, $pin, $value) = @_;
+    my ( $self, $pin, $value ) = @_;
     return unless $self->IsInitialized;
     $| = 1;
     say "\tPiFace: $pin $value";
@@ -59,7 +60,7 @@ sub read_byte {
 }
 
 sub read_bit {
-    my ($self, $pin) = @_;
+    my ( $self, $pin ) = @_;
     return unless $self->IsInitialized;
     return get_key();
 }
