@@ -129,6 +129,7 @@ sub print_state {
     my ( $self, $byte ) = @_;
 
     #TODO: Add LED display of active module
+    #TODO: Think about a way to show something overwriting other output/prioritizing output
     my $state = $self->__state;
     my $sink  = $self->__sinks->[$state];
     if ( $self->__mod_active ) {

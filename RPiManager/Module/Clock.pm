@@ -92,6 +92,7 @@ sub print_state {
         { "byte" => $self->__state, "string" => $states[ $self->__state ] } );
     $self->print;
 
+    #TODO: Think about moving this to Manager/new output module and find a general solution
     $self->__block_output(1);
     $self->Manager->Loop->add(
         Notifier::Timer::create_timer_countdown(
