@@ -7,3 +7,6 @@
 [submodule "external/wiringPi"]
 	path = external/wiringPi
 	url = git://git.drogon.net/wiringPi
+[submodule "external/WiringPi-Perl"]
+	path = external/WiringPi-Perl
+	url = git://github.com/WiringPi/WiringPi-Perl.git
