@@ -12,7 +12,7 @@ for my $dev (@devices) {
   if( $dev =~ m/28.*/ ) {
     my $file = $dir . '/' . $dev . '/w1_slave';
     my $temp = read_file($file);
-    $temp =~ s/(.*YES.*\n.*t\=)(\d{2})(\d{3})/$2\.$3°C/;
+    $temp =~ s/(.*YES.*\n.*t\=)(\d+)(\d{3})/$2\.$3°C/;
     print "Temperature ($dev): $temp";
   }
 }

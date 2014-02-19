@@ -8,15 +8,19 @@ my $dir = '/sys/bus/w1/devices';
 load_modules() unless (-e $dir);
 my @devices = read_devices($dir);
 
+print_begin();
+
 for my $dev (@devices) {
     if( $dev =~ m/28.*/ ) {
         my $file = $dir . '/' . $dev . '/w1_slave';
         my $temp = read_file($file);
-        $temp =~ s/(.*YES.*\n.*t\=)(\d{2})(\d{3})/$2\.$3 °C/;
+        $temp =~ s/(.*YES.*\n.*t\=)(\d+)(\d{3})/$2\.$3 °C/;
         my $output = "$dev: $temp";
         print_temp($output);
     }
 }
+
+print_end();
 
 sub load_modules {
     system("modprobe", "w1-gpio") == 0
@@ -35,15 +39,18 @@ sub read_devices {
 
 sub print_temp {
     my $output = shift;
+    print $output, "<br>\n";
+}
 
+sub print_begin {
     print "Content-type:text/html\n\n";
     print <<EndOfHTML;
 <html><head><title>Temperature</title></head>
 <body>
 <h1>Temperature</h1>
 EndOfHTML
+}
 
-    print $output, "<br>\n";
-
+sub print_end {
     print "</body></html>"; 
 }

@@ -12,7 +12,7 @@ has 'File' => (
 sub get_temp {
   my $self = shift;
   my $temp = read_file($self->File);
-  $temp =~ s/(.*YES.*\n.*t\=)(\d{2})(\d{3})(.*)/$2\.$3/;
+  $temp =~ s/(.*YES.*\n.*t\=)(\d+)(\d{3})(.*)/$2\.$3/;
   chomp $temp;
   return $temp;
 };
