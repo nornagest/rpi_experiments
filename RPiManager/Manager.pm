@@ -127,7 +127,7 @@ sub state_module {
 
 sub print_state {
     my ( $self, $byte ) = @_;
-
+:
     #TODO: Add LED display of active module
     #TODO: Think about a way to show something overwriting other output/prioritizing output
     my $state = $self->__state;
