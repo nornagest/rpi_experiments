@@ -42,6 +42,9 @@ sub wanted {
 }
 
 sub upload_files {
-    system($rsync_command . " " . $rsync_source . "* " . $rsync_dest);
+    my $command = $rsync_command . " -v  " . $rsync_source . "* " . $rsync_dest;
+
+    say "Executing: $command";
+    system($command);
 }
 
