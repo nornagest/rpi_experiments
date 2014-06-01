@@ -38,11 +38,11 @@ sub check_files {
 }
 
 sub wanted {
-    /.*\.jpg/ && !/lastsnap\.jpg/ && push @jpgs, $_;
+    /.*\.jpg/ && !/lastsnap\.jpg/ && say && push @jpgs, $_;
 }
 
 sub upload_files {
-    my $command = $rsync_command . " -v  " . $rsync_source . "* " . $rsync_dest;
+    my $command = $rsync_command . " " . $rsync_source . "* " . $rsync_dest;
 
     say "Executing: $command";
     system($command);
