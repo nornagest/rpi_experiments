@@ -22,7 +22,7 @@ use Modern::Perl 2013;
 use File::Find;
 
 my $rsync_source = "/usr/share/motion/";
-my $rsync_dest = "nornagest@nornagest.org:/usr/share/images/";
+my $rsync_dest = "nornagest\@nornagest.org:/usr/share/images/";
 my $rsync_command = "rsync -r --remove-source-files";
 my @jpgs;
 
