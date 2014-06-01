@@ -44,7 +44,7 @@ sub wanted {
 sub upload_files {
     my $command = $rsync_command . " " . $rsync_source . "* " . $rsync_dest;
 
-    say "Executing: $command";
+    say scalar localtime . " Executing: $command";
     system($command);
 }
 
