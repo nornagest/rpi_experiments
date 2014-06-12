@@ -45,8 +45,8 @@ sub upload_files {
     my $command = $rsync_command . " " . $rsync_source . "* " . $rsync_dest;
 
     #say scalar localtime . " Executing: $command";
-    say "Starting upload of " . scalar @jpgs . " files...";
+    say scalar localtime . " Starting upload of " . scalar @jpgs . " files...";
     system($command);
-    say "Done.";
+    say scalar localtime . " Done.";
 }
 
