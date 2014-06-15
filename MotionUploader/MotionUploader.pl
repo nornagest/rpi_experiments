@@ -19,10 +19,13 @@
 #===============================================================================
 
 use Modern::Perl 2013;
+use warnings;
 use File::Find;
+use Sys::Hostname;
 
+my $host = hostname;
 my $rsync_source = "/usr/share/motion/";
-my $rsync_dest = "nornagest\@nornagest.org:/usr/share/images/";
+my $rsync_dest = "nornagest\@nornagest.org:/usr/share/images/" . $host;
 my $rsync_command = "rsync -r --remove-source-files";
 my @jpgs;
 
