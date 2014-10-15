@@ -1,9 +1,8 @@
 #!/bin/bash
-DIR=/usr/share/nginx/img
-x=1
-while [ $x -le 132 ]; do                                                       
+DIR=/usr/share/motion
+while [ true ]; do                                                       
 filename=$(date -u +"%Y%m%d-%H%M-%S").jpg                                       
-raspistill -o $DIR/$filename -w 1280 -h 960 -rot 90 -n -t 1000
-x=$(( $x + 1 ))
-sleep 300;
+/opt/vc/bin/raspistill -o $DIR/$filename -w 2592 -h 1944 -rot 270 -n -t 5000
+echo "$DIR/$filename written"
+sleep 60;
 done
