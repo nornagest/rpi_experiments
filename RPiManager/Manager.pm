@@ -55,13 +55,13 @@ sub dispatch_message {
 
     if ( $direction eq 'Input' && defined $content->{byte} ) {
         my @sinks = grep $self->Modules->{$_}->accepts($message),
-          keys $self->Modules;
+          keys %{$self->Modules};
         $self->__sinks( \@sinks );
         $self->handle_input( $content->{byte}, $message );
     }
     else {
         map $_->send($message), grep $_->accepts($message),
-          values $self->Modules;
+          values %{$self->Modules};
     }
 }
 
@@ -127,7 +127,7 @@ sub state_module {
 
 sub print_state {
     my ( $self, $byte ) = @_;
-:
+
     #TODO: Add LED display of active module
     #TODO: Think about a way to show something overwriting other output/prioritizing output
     my $state = $self->__state;

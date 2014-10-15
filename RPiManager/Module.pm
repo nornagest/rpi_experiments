@@ -29,7 +29,7 @@ has '__type'      => ( is => 'ro', isa => 'Str' );
 sub accepts {
     my ( $self, $message ) = @_;
     return 0 unless $message->Direction eq $self->__direction;
-    return 0 unless grep $_ eq $self->__type, keys $message->Content;
+    return 0 unless grep $_ eq $self->__type, keys %{$message->Content};
     return 1;
 }
 
