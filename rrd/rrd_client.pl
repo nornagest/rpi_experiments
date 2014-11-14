@@ -26,6 +26,7 @@ use Storable qw(nfreeze);
 use Data::Dumper;
 
 use DataSource::CPU;
+use DataSource::DS18B20;
 
 my $host = 'feanor';
 my $server = 'feanor';
