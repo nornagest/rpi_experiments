@@ -23,7 +23,6 @@ use IO::Async::Loop;
 use IO::Async::Stream;
 use IO::Async::Timer::Periodic;
 use Storable qw(nfreeze);
-use Data::Dumper;
 
 use DataSource::CPU;
 use DataSource::DS18B20;
@@ -42,9 +41,10 @@ sub init {
     #for(@cpus) {
     #    push @sources,  DataSource::CPU->new(name => $_);
     #}
-    my @ds18b20 = DataSource::CPU->get_sensors();
+    my $type = 'DataSource::DS18B20';
+    my @ds18b20 = $type->get_sensors();
     for(@ds18b20) {
-        push @sources,  DataSource::DS18B20->new(name => $_);
+        push @sources,  $type->new(name => $_);
     }
 
     my $timer = IO::Async::Timer::Periodic->new(
@@ -65,15 +65,18 @@ sub create_message {
     my $sources = shift;
     my $message = { host => $host, data => [] };
     for(@{$sources}) {
+        my $time = time();
+        my $value = $_->get_value();
         push @{$message->{'data'}}, { 
             ds => {
                 name => $_->name,
                 type => $_->type,
                 description => $_->description, 
             },
-            value => $_->get_value(), 
-            time => time() 
+            value => $value, 
+            time => $time,
         };
+        say localtime($time) . ' ' . $_->name . ' ' . $value;
     }
     return $message;
 }
@@ -97,7 +100,6 @@ sub send_message {
     #don't expect client input
     $stream->configure( on_read => sub { ${$_[1]} = ""; return 0; } );
     $loop->add( $stream );
-    say Dumper($message);
     $message = nfreeze(\$message);
     $stream->write($message);
     $stream->close_when_empty; 

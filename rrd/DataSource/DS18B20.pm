@@ -42,10 +42,7 @@ sub BUILD {
 
 sub get_sensors {
   my ($self, $dir) = shift;
-  use Data::Dumper;
-  say Dumper($dir);
   $dir = $default_dir unless defined $dir;
-  say Dumper($dir);
   opendir(my $dh, $dir) or die "Error opening $dir.\n";
   my @devices = readdir($dh);
   closedir($dh);
