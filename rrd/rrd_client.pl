@@ -37,9 +37,13 @@ init();
 $loop->run;
 
 sub init {
-    my @cpus = DataSource::CPU->get_sensors();
-    for(@cpus) {
-        push @sources,  DataSource::CPU->new(name => $_);
+    #my @cpus = DataSource::CPU->get_sensors();
+    #for(@cpus) {
+    #    push @sources,  DataSource::CPU->new(name => $_);
+    #}
+    my @ds18b20 = DataSource::CPU->get_sensors();
+    for(@ds18b20) {
+        push @sources,  DataSource::DS18B20->new(name => $_);
     }
 
     my $timer = IO::Async::Timer::Periodic->new(
