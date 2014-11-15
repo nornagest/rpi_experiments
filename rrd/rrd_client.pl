@@ -41,9 +41,10 @@ sub init {
     #for(@cpus) {
     #    push @sources,  DataSource::CPU->new(name => $_);
     #}
-    my $type = 'DataSource::DS18B20';
-    my @ds18b20 = $type->get_sensors();
-    for(@ds18b20) {
+    my $type = 'DataSource::CPU';
+    say "Creating DataSources for $type";
+    my @sensors = $type->get_sensors();
+    for(@sensors) {
         push @sources,  $type->new(name => $_);
     }
 

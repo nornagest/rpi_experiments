@@ -27,14 +27,9 @@ use RRDTool::OO;
 use RRD;
 use DataSource;
 
-###
-#my $datasource = DataSource->new(
-#    name => 'CPU1', 
-#    type => 'DataSource::CPU', 
-#    description => 'Just a dummy'
-#);
-#my $rrd = RRD->new(name => 'test', datasources => [$datasource]);
-###
+#TODO: include in RPi.pl
+#TODO: timings per datasource
+#TODO: web frontend
 
 my $port = 12346;
 
