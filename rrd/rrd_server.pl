@@ -24,19 +24,24 @@ use IO::Async::Loop;
 use IO::Async::Timer::Periodic; 
 use Storable qw(thaw);
 use RRDTool::OO;
-use Data::Dumper;
 use RRD;
 use DataSource;
 
 ###
-my $datasource = DataSource->new(
-    name => 'CPU1', 
-    type => 'DataSource::CPU', 
-    description => 'Just a dummy'
-);
-my $rrd = RRD->new(name => 'test', datasources => [$datasource]);
+#my $datasource = DataSource->new(
+#    name => 'CPU1', 
+#    type => 'DataSource::CPU', 
+#    description => 'Just a dummy'
+#);
+#my $rrd = RRD->new(name => 'test', datasources => [$datasource]);
 ###
+
 my $port = 12346;
+
+my %rrds;
+for(RRD->get_rrds()){
+    create_rrd($_);
+}
 
 my $loop = IO::Async::Loop->new;
 my $timer = IO::Async::Timer::Periodic->new(
@@ -60,9 +65,8 @@ $loop->listen(
             on_read => sub {
                 my ( $self, $buffref, $eof ) = @_;
                 return 0 unless $eof;
-                my $temp = thaw($$buffref);
-                save_data($$temp);
-                #print_temp($$temp);
+                my $message = thaw($$buffref);
+                save_data($$message);
                 $$buffref = "";
             },
             on_closed => sub { },
@@ -75,19 +79,38 @@ $loop->listen(
 
 $loop->run;
 
-sub print_temp {
-    my $temp = shift;
-    say Dumper($temp);
+sub create_rrd {
+    my ($name, $datasources) = @_;
+
+    if(defined $datasources) {
+        $rrds{$name} = RRD->new(name => $name, datasources => $datasources);
+    } else {
+        $rrds{$name} = RRD->new(name => $name);
+    }
 }
-
-sub start_listener { }
-
-sub receive_data { }
 
 sub save_data { 
-    my $data = shift;
-    say Dumper($data);
+    my $message = shift;
+    my $data = $message->{'data'};
+
+    my $host = $message->{'host'};
+    for(@{$data}) {
+        my $rrd_name = $host . '_' . $_->{'ds'}->{'name'};
+
+        my $datasource = DataSource->new(
+            name => $_->{'ds'}->{'name'},
+            type => $_->{'ds'}->{'type'},
+        );
+        $datasource->{'description'} = $_->{'ds'}->{'description'};
+            
+        create_rrd($rrd_name, [$datasource]) unless defined $rrds{$rrd_name};
+        $rrds{$rrd_name}->update_rrd([$_]);
+    }
 }
 
-sub draw_graphs { }
+sub draw_graphs {
+    for(values %rrds) {
+        $_->create_graph();
+    }
+}
 
