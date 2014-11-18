@@ -27,10 +27,6 @@ use RRDTool::OO;
 use RRD;
 use DataSource;
 
-#TODO: include in RPi.pl
-#TODO: timings per datasource
-#TODO: web frontend
-
 my $port = 12346;
 
 my %rrds;
@@ -40,10 +36,18 @@ for(RRD->get_rrds()){
 
 my $loop = IO::Async::Loop->new;
 my $timer = IO::Async::Timer::Periodic->new(
-    interval => 60,
+    interval => 300,
     first_interval => 1,
     on_tick => sub { 
-        draw_graphs();
+        my $now = time();
+        my $start = $now - 4 * 3600;
+        draw_graphs($start, $now, '004h');
+
+        $start = $now - 24 * 3600;
+        draw_graphs($start, $now, '024h');
+
+        $start = $now - 7 * 24 * 3600;
+        draw_graphs($start, $now, '168h');
     },
 );
 
@@ -104,8 +108,9 @@ sub save_data {
 }
 
 sub draw_graphs {
+    my ($start, $end, $name) = @_;
     for(values %rrds) {
-        $_->create_graph();
+        $_->create_graph($start, $end, $name);
     }
 }
 

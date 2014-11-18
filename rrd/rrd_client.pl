@@ -27,7 +27,7 @@ use Storable qw(nfreeze);
 use DataSource::CPU;
 use DataSource::DS18B20;
 
-my $host = 'creampi';
+my $host = 'feanor';
 my $server = 'feanor';
 my $port = 12346;
 my @sources;
@@ -37,11 +37,11 @@ init();
 $loop->run;
 
 sub init {
-    my $type = 'DataSource::DS18B20';
-    create_sensors($type);
-
-    #$type = 'DataSource::CPU';
+    #my $type = 'DataSource::DS18B20';
     #create_sensors($type);
+
+    my $type = 'DataSource::CPU';
+    create_sensors($type);
 
     my $timer = IO::Async::Timer::Periodic->new(
         interval => 30,

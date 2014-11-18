@@ -24,6 +24,8 @@ use DataSource;
 
 #my $default_dir = '/var/db/rrd';
 my $default_dir = '.';
+my $default_rrd_dir = 'rrd';
+my $default_img_dir = 'img';
 my $step = 300;
 #TODO: move to specific classes
 #TODO: make sure only one type per RRD
@@ -42,15 +44,21 @@ has 'datasources' => ( is => 'rw', isa => 'ArrayRef',
     default => sub { [] } );
 has '__filename' => ( is => 'rw', isa => 'Str', );
 has '__img_filename' => ( is => 'rw', isa => 'Str', );
+has '__rrd_dir' => ( is => 'rw', isa => 'Str', );
+has '__img_dir' => ( is => 'rw', isa => 'Str', );
 has '__rrd' => ( is => 'rw', isa => 'RRDTool::OO', );
 
 sub BUILD {
     my $self = shift;
-    die unless (-e $self->directory);
+    return unless (-e $self->directory);
 
-    my $file = $self->directory . '/' . $self->name;
-    $self->__filename($file . '.rrd');
-    $self->__img_filename($file . '.png');
+    $self->__rrd_dir($self->directory . '/' . $default_rrd_dir);
+    $self->__img_dir($self->directory . '/' . $default_img_dir);
+
+    my $rrd_file = $self->__rrd_dir . '/' . $self->name . '.rrd';
+    my $img_file = $self->__img_dir . '/' . $self->name . '.png';
+    $self->__filename($rrd_file);
+    $self->__img_filename($img_file);
 
     my $rrd = RRDTool::OO->new( file => $self->__filename );
     $self->__rrd($rrd);
@@ -61,7 +69,7 @@ sub BUILD {
 
         for(keys %{$ds_from_file}) {
             push @{$self->datasources}, DataSource->new(name => $_);
-            say $_ . ' added.';
+            say 'Datasource ' . $_ . ' added.';
         }
     } else {
         say $self->__filename . ' not found.';
@@ -72,7 +80,7 @@ sub BUILD {
 
 sub get_rrds {
     my ($self, $dir) = shift;
-    $dir = $default_dir unless defined $dir;
+    $dir = $default_dir . '/' . $default_rrd_dir unless defined $dir;
     opendir(my $dh, $dir) or die "Error opening $dir.\n";
     my @rrds = readdir($dh);
     closedir($dh);
@@ -121,7 +129,7 @@ sub create {
 
 sub update_rrd { 
     my ($self, $data) = @_;
-    say 'Updating RRD';
+    #say 'Updating RRD ', $self->name;
 
     die unless scalar @{$self->datasources} == scalar @{$data};
     for(my $i = 0; $i < scalar @{$data}; $i++) {
@@ -135,28 +143,32 @@ sub update_rrd {
 
 sub update_data {
     my ($self, $data) = @_;
-    say 'Updating data.';
 
     my @values;
     my $time = time();
     $time = $data->[0]->{'time'} unless defined $data->[0];
     for(@{$data}) {
         push @values, $_->{'value'};
+        say localtime($_->{'time'}) . ' - ' 
+            . $_->{'ds'}->{'name'} . ': ' 
+            . $_->{'value'};
     }
     $self->__rrd->update(time => $time, values => \@values);
 }
 
 sub create_graph { 
-    my $self = shift;
-    say "Creating Graph";
+    my ($self, $start, $end, $name_addition) = @_;
+    my $filename = $self->__img_filename;
+    $filename =~ s/(.*)(\.png)/$1_$name_addition$2/;
+    say "Creating Graph ", $filename;
 
     my @arguments;
 
     push @arguments, (
-        image => $self->__img_filename,
+        image => $filename,
         vertical_label => $self->name,
-        start => time() - 24 * 3600,
-        end => time(),
+        start => $start,
+        end => $end,
     );
 
     for(@{$self->datasources}) {
