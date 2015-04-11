@@ -64,7 +64,8 @@ $loop->listen(
             on_read => sub {
                 my ( $self, $buffref, $eof ) = @_;
                 return 0 unless $eof;
-                my $message = thaw($$buffref);
+                my $message = thaw($$buffref) 
+                    if eval { $message = thaw($$buffref) };
                 save_data($$message);
                 $$buffref = "";
             },
@@ -103,7 +104,7 @@ sub save_data {
         $datasource->{'description'} = $_->{'ds'}->{'description'};
             
         create_rrd($rrd_name, [$datasource]) unless defined $rrds{$rrd_name};
-        $rrds{$rrd_name}->update_rrd([$_]);
+        say "Error: $!" unless eval { $rrds{$rrd_name}->update_rrd([$_]) };
     }
 }
 
