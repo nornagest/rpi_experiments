@@ -19,6 +19,7 @@
 #===============================================================================
 
 use Modern::Perl 2013;
+use Carp;
 use IO::Async::Listener;
 use IO::Async::Loop;
 use IO::Async::Timer::Periodic; 
@@ -26,6 +27,8 @@ use Storable qw(thaw);
 use RRDTool::OO;
 use RRD;
 use DataSource;
+
+$|=1;
 
 my $port = 12346;
 
@@ -95,23 +98,30 @@ sub save_data {
 
     my $host = $message->{'host'};
     for(@{$data}) {
-        my $rrd_name = $host . '_' . $_->{'ds'}->{'name'};
+        my $ds = $_->{ds};
+        next unless defined $ds 
+            && defined $ds->{'name'} 
+            && defined $ds->{'type'};
+        my $rrd_name = $host . '_' . $ds->{'name'};
 
         my $datasource = DataSource->new(
-            name => $_->{'ds'}->{'name'},
-            type => $_->{'ds'}->{'type'},
+            name => $ds->{'name'},
+            type => $ds->{'type'},
         );
-        $datasource->{'description'} = $_->{'ds'}->{'description'};
+        $datasource->{'description'} = $ds->{'description'};
             
         create_rrd($rrd_name, [$datasource]) unless defined $rrds{$rrd_name};
-        say "Error: $!" unless eval { $rrds{$rrd_name}->update_rrd([$_]) };
+        print ".";
+        croak "Error: $@" unless eval { $rrds{$rrd_name}->update_rrd([$_]) };
     }
 }
 
 sub draw_graphs {
+    print "Creating graphs";
     my ($start, $end, $name) = @_;
     for(values %rrds) {
         $_->create_graph($start, $end, $name);
     }
+    print "done";
 }
 

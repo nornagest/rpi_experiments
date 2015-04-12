@@ -18,6 +18,7 @@
 package RRD;
  
 use Modern::Perl 2013;
+use Carp;
 use Moose;
 use RRDTool::OO;
 use DataSource;
@@ -146,12 +147,12 @@ sub update_data {
 
     my @values;
     my $time = time();
-    $time = $data->[0]->{'time'} unless defined $data->[0];
+    $time = $data->[0]->{'time'} if defined $data->[0];
     for(@{$data}) {
         push @values, $_->{'value'};
-        say localtime($_->{'time'}) . ' - ' 
-            . $_->{'ds'}->{'name'} . ': ' 
-            . $_->{'value'};
+#        say localtime($_->{'time'}) . ' - ' 
+#            . $_->{'ds'}->{'name'} . ': ' 
+#            . $_->{'value'};
     }
     $self->__rrd->update(time => $time, values => \@values);
 }
@@ -160,7 +161,7 @@ sub create_graph {
     my ($self, $start, $end, $name_addition) = @_;
     my $filename = $self->__img_filename;
     $filename =~ s/(.*)(\.png)/$1_$name_addition$2/;
-    say "Creating Graph ", $filename;
+    #say "Creating Graph ", $filename;
 
     my @arguments;
 
