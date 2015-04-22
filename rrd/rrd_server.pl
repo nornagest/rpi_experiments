@@ -3,16 +3,16 @@
 #
 #         FILE: rrd_server.pl
 #
-#        USAGE: ./rrd_server.pl  
+#        USAGE: ./rrd_server.pl
 #
-#  DESCRIPTION: 
+#  DESCRIPTION:
 #
 #      OPTIONS: ---
 # REQUIREMENTS: ---
 #         BUGS: ---
 #        NOTES: ---
 #       AUTHOR: Hagen Kuehl (), nornagest[at]gmx.de
-# ORGANIZATION: 
+# ORGANIZATION:
 #      VERSION: 1.0
 #      CREATED: 11/11/2014 06:41:41 AM
 #     REVISION: ---
@@ -23,34 +23,34 @@ use Carp;
 use IO::Async::Function;
 use IO::Async::Listener;
 use IO::Async::Loop;
-use IO::Async::Timer::Periodic; 
+use IO::Async::Timer::Periodic;
 use Storable qw(thaw);
 use RRDTool::OO;
 use RRD;
 use DataSource;
 
-$|=1;
+$| = 1;
 
 my $port = 12346;
 
 my %rrds;
-for(RRD->get_rrds()){
+for ( RRD->get_rrds() ) {
     create_rrd($_);
 }
 
 my $loop = IO::Async::Loop->new;
 
 my $draw_graphs = IO::Async::Function->new(
-  code => sub {
-    my ($start, $end, $name) = @_;
-    for(values %rrds) {
-	$_->create_graph($start, $end, $name);
-    }
-  },
+    code => sub {
+        my ( $start, $end, $name ) = @_;
+        for ( values %rrds ) {
+            $_->create_graph( $start, $end, $name );
+        }
+    },
 );
 
-$loop->add( $draw_graphs );
- 
+$loop->add($draw_graphs);
+
 #$function->call(
 #   args => [ 123454321 ],
 #)->on_done( sub {
@@ -61,36 +61,36 @@ $loop->add( $draw_graphs );
 #})->get;
 
 my $timer = IO::Async::Timer::Periodic->new(
-    interval => 300,
+    interval       => 300,
     first_interval => 1,
-    on_tick => sub { 
+    on_tick        => sub {
         print "Creating graphs ";
-        my $now = time();
-        my $start = $now - 4 * 3600;
+        my $now    = time();
+        my $start  = $now - 4 * 3600;
         my $suffix = '0004h';
-	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+        $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
-        $start = $now - 24 * 3600;
+        $start  = $now - 24 * 3600;
         $suffix = '0024h';
-	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+        $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
-        $start = $now - 7 * 24 * 3600;
+        $start  = $now - 7 * 24 * 3600;
         $suffix = '0168h';
-	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+        $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
-        $start = $now - 31 * 24 * 3600;
+        $start  = $now - 31 * 24 * 3600;
         $suffix = '0744h';
-	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+        $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
-        $start = $now - 365 * 24 * 3600;
+        $start  = $now - 365 * 24 * 3600;
         $suffix = '8760h';
-	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+        $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
         print "done ";
     },
 );
 
 $timer->start;
-$loop->add( $timer );
+$loop->add($timer);
 
 $loop->listen(
     service  => $port,
@@ -102,7 +102,7 @@ $loop->listen(
             on_read => sub {
                 my ( $self, $buffref, $eof ) = @_;
                 return 0 unless $eof;
-                my $message; 
+                my $message;
                 return unless eval { $message = thaw($$buffref) };
                 save_data($$message);
                 $$buffref = "";
@@ -118,23 +118,25 @@ $loop->listen(
 $loop->run;
 
 sub create_rrd {
-    my ($name, $datasources) = @_;
+    my ( $name, $datasources ) = @_;
 
-    if(defined $datasources) {
-        $rrds{$name} = RRD->new(name => $name, datasources => $datasources);
-    } else {
-        $rrds{$name} = RRD->new(name => $name);
+    if ( defined $datasources ) {
+        $rrds{$name} = RRD->new( name => $name, datasources => $datasources );
+    }
+    else {
+        $rrds{$name} = RRD->new( name => $name );
     }
 }
 
-sub save_data { 
+sub save_data {
     my $message = shift;
-    my $data = $message->{'data'};
+    my $data    = $message->{'data'};
 
     my $host = $message->{'host'};
-    for(@{$data}) {
+    for ( @{$data} ) {
         my $ds = $_->{'ds'};
-        next unless defined $ds && defined $ds->{'name'} && defined $ds->{'type'};
+        next
+          unless defined $ds && defined $ds->{'name'} && defined $ds->{'type'};
         my $rrd_name = $host . '_' . $_->{'ds'}->{'name'};
 
         my $datasource = DataSource->new(
@@ -142,11 +144,10 @@ sub save_data {
             type => $ds->{'type'},
         );
         $datasource->{'description'} = $ds->{'description'};
-            
-        create_rrd($rrd_name, [$datasource]) unless defined $rrds{$rrd_name};
-	print ".";
-        carp "Error: $@" unless eval { $rrds{$rrd_name}->update_rrd([$_]) };
+
+        create_rrd( $rrd_name, [$datasource] ) unless defined $rrds{$rrd_name};
+        print ".";
+        carp "Error: $@" unless eval { $rrds{$rrd_name}->update_rrd( [$_] ) };
     }
-    print "done";
 }
 
