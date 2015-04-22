@@ -102,7 +102,8 @@ $loop->listen(
             on_read => sub {
                 my ( $self, $buffref, $eof ) = @_;
                 return 0 unless $eof;
-                my $message = thaw($$buffref);
+                my $message = thaw($$buffref) 
+                    if eval { $message = thaw($$buffref) };
                 save_data($$message);
                 $$buffref = "";
             },
@@ -137,14 +138,15 @@ sub save_data {
         my $rrd_name = $host . '_' . $_->{'ds'}->{'name'};
 
         my $datasource = DataSource->new(
-            name => $_->{'ds'}->{'name'},
-            type => $_->{'ds'}->{'type'},
+            name => $ds->{'name'},
+            type => $ds->{'type'},
         );
-        $datasource->{'description'} = $_->{'ds'}->{'description'};
+        $datasource->{'description'} = $ds->{'description'};
             
         create_rrd($rrd_name, [$datasource]) unless defined $rrds{$rrd_name};
 	print ".";
         carp "Error: $@" unless eval { $rrds{$rrd_name}->update_rrd([$_]) };
     }
+    print "done";
 }
 

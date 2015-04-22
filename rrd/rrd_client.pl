@@ -24,8 +24,7 @@ use IO::Async::Stream;
 use IO::Async::Timer::Periodic;
 use Storable qw(nfreeze);
 
-use DataSource::CPU;
-use DataSource::DS18B20;
+use DataSource::FreeBSD_CPU;
 
 my $host = 'nornapi';
 my $server = 'nornapi';
@@ -40,7 +39,10 @@ sub init {
     #my $type = 'DataSource::DS18B20';
     #create_sensors($type);
 
-    my $type = 'DataSource::CPU';
+    #my $type = 'DataSource::CPU';
+    #create_sensors($type);
+
+    my $type = 'DataSource::FreeBSD_CPU';
     create_sensors($type);
 
     my $timer = IO::Async::Timer::Periodic->new(
