@@ -18,6 +18,7 @@
 package RRD;
  
 use Modern::Perl 2013;
+use Carp;
 use Moose;
 use RRDTool::OO;
 use DataSource;
@@ -25,7 +26,7 @@ use DataSource;
 #my $default_dir = '/var/db/rrd';
 my $default_dir = '.';
 my $default_rrd_dir = 'rrd';
-my $default_img_dir = 'img';
+my $default_img_dir = '/usr/share/nginx/rrd';
 my $step = 300;
 #TODO: move to specific classes
 #TODO: make sure only one type per RRD
@@ -53,7 +54,7 @@ sub BUILD {
     return unless (-e $self->directory);
 
     $self->__rrd_dir($self->directory . '/' . $default_rrd_dir);
-    $self->__img_dir($self->directory . '/' . $default_img_dir);
+    $self->__img_dir($default_img_dir);
 
     my $rrd_file = $self->__rrd_dir . '/' . $self->name . '.rrd';
     my $img_file = $self->__img_dir . '/' . $self->name . '.png';
@@ -145,13 +146,14 @@ sub update_data {
     my ($self, $data) = @_;
 
     my @values;
-    my $time = time();
-    $time = $data->[0]->{'time'} unless defined $data->[0];
+    print "NO DATA!\n" && return unless defined $data->[0];
+
+    my $time = $data->[0]->{'time'};
     for(@{$data}) {
         push @values, $_->{'value'};
-        say localtime($_->{'time'}) . ' - ' 
-            . $_->{'ds'}->{'name'} . ': ' 
-            . $_->{'value'};
+#        say localtime($_->{'time'}) . ' - ' 
+#            . $_->{'ds'}->{'name'} . ': ' 
+#            . $_->{'value'};
     }
     $self->__rrd->update(time => $time, values => \@values);
 }
@@ -160,7 +162,7 @@ sub create_graph {
     my ($self, $start, $end, $name_addition) = @_;
     my $filename = $self->__img_filename;
     $filename =~ s/(.*)(\.png)/$1_$name_addition$2/;
-    say "Creating Graph ", $filename;
+    #say "Creating Graph ", $filename;
 
     my @arguments;
 

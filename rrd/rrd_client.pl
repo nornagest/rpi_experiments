@@ -27,8 +27,8 @@ use Storable qw(nfreeze);
 use DataSource::CPU;
 use DataSource::DS18B20;
 
-my $host = 'feanor';
-my $server = 'feanor';
+my $host = 'nornapi';
+my $server = 'nornapi';
 my $port = 12346;
 my @sources;
 
