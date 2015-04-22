@@ -22,9 +22,9 @@ sub init {
 
 sub deinit {
     my $self = shift;
-    say "MyNoPiFace deinit";
+    say "MyPiFace deinit";
     return unless $self->IsInitialized;
-    say "MyNoPiFace init";
+    say "MyPiFace deinit really";
     pfio_deinit();
     $self->IsInitialized(0);
 }

@@ -23,10 +23,11 @@ use IO::Async::Loop;
 use IO::Async::Stream;
 use IO::Async::Timer::Periodic;
 use Storable qw(nfreeze);
+use Sys::Hostname;
 
 use DataSource::FreeBSD_CPU;
 
-my $host = 'kvoth';
+my $host = hostname;
 my $server = 'nornapi';
 my $port = 12346;
 my @sources;

@@ -19,6 +19,8 @@
 #===============================================================================
 
 use Modern::Perl 2013;
+use Carp;
+use IO::Async::Function;
 use IO::Async::Listener;
 use IO::Async::Loop;
 use IO::Async::Timer::Periodic; 
@@ -26,6 +28,8 @@ use Storable qw(thaw);
 use RRDTool::OO;
 use RRD;
 use DataSource;
+
+$|=1;
 
 my $port = 12346;
 
@@ -35,19 +39,53 @@ for(RRD->get_rrds()){
 }
 
 my $loop = IO::Async::Loop->new;
+
+my $draw_graphs = IO::Async::Function->new(
+  code => sub {
+    my ($start, $end, $name) = @_;
+    for(values %rrds) {
+	$_->create_graph($start, $end, $name);
+    }
+  },
+);
+
+$loop->add( $draw_graphs );
+ 
+#$function->call(
+#   args => [ 123454321 ],
+#)->on_done( sub {
+#   my $isprime = shift;
+#   print "123454321 " . ( $isprime ? "is" : "is not" ) . " a prime number\n";
+#})->on_fail( sub {
+#   print STDERR "Cannot determine if it's prime - $_[0]\n";
+#})->get;
+
 my $timer = IO::Async::Timer::Periodic->new(
     interval => 300,
     first_interval => 1,
     on_tick => sub { 
+        print "Creating graphs ";
         my $now = time();
         my $start = $now - 4 * 3600;
-        draw_graphs($start, $now, '004h');
+        my $suffix = '0004h';
+	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
         $start = $now - 24 * 3600;
-        draw_graphs($start, $now, '024h');
+        $suffix = '0024h';
+	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
         $start = $now - 7 * 24 * 3600;
-        draw_graphs($start, $now, '168h');
+        $suffix = '0168h';
+	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+
+        $start = $now - 31 * 24 * 3600;
+        $suffix = '0744h';
+	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+
+        $start = $now - 365 * 24 * 3600;
+        $suffix = '8760h';
+	$draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+        print "done ";
     },
 );
 
@@ -95,23 +133,20 @@ sub save_data {
 
     my $host = $message->{'host'};
     for(@{$data}) {
+        my $ds = $_->{'ds'};
+        next unless defined $ds && defined $ds->{'name'} && defined $ds->{'type'};
         my $rrd_name = $host . '_' . $_->{'ds'}->{'name'};
 
         my $datasource = DataSource->new(
-            name => $_->{'ds'}->{'name'},
-            type => $_->{'ds'}->{'type'},
+            name => $ds->{'name'},
+            type => $ds->{'type'},
         );
-        $datasource->{'description'} = $_->{'ds'}->{'description'};
+        $datasource->{'description'} = $ds->{'description'};
             
         create_rrd($rrd_name, [$datasource]) unless defined $rrds{$rrd_name};
-        $rrds{$rrd_name}->update_rrd([$_]);
+	print ".";
+        carp "Error: $@" unless eval { $rrds{$rrd_name}->update_rrd([$_]) };
     }
-}
-
-sub draw_graphs {
-    my ($start, $end, $name) = @_;
-    for(values %rrds) {
-        $_->create_graph($start, $end, $name);
-    }
+    print "done";
 }
 
