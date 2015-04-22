@@ -102,8 +102,8 @@ $loop->listen(
             on_read => sub {
                 my ( $self, $buffref, $eof ) = @_;
                 return 0 unless $eof;
-                my $message = thaw($$buffref) 
-                    if eval { $message = thaw($$buffref) };
+                my $message; 
+                return unless eval { $message = thaw($$buffref) };
                 save_data($$message);
                 $$buffref = "";
             },
