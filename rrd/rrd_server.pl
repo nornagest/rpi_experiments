@@ -104,7 +104,7 @@ $loop->listen(
 
                 say $$buffref;
                 my @messages =
-                  sort { $$a->{content}->{time} <=> $$b->{content}->{time} }
+                  sort { $$a->{data}->[0]->{time} <=> $$b->{data}->[0]->{time} }
                   grep { is_correct($_) }
                   map {
                     eval { thaw( $_ . "\n" ) }
@@ -129,8 +129,8 @@ $loop->run;
 sub is_correct {
     my $message = shift;
 
-    return ref($message) eq 'REF'
-      && ref($$message) eq 'message';
+    return defined $message->{host}
+        && defined $message->{data};
 }
 
 sub create_rrd {
