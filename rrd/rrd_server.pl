@@ -24,7 +24,7 @@ use IO::Async::Function;
 use IO::Async::Listener;
 use IO::Async::Loop;
 use IO::Async::Timer::Periodic;
-use Storable qw(thaw);
+use YAML qw(thaw);
 use RRDTool::OO;
 use RRD;
 use DataSource;
