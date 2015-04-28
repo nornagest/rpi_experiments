@@ -104,7 +104,7 @@ $loop->listen(
 
                 my @messages =
                   sort { $$a->{content}->{time} <=> $$b->{content}->{time} }
-                  grep { defined $_ }
+                  grep { is_correct($_) }
                   map {
                     eval { thaw( $_ . "\n" ) }
                   }
@@ -124,6 +124,15 @@ $loop->listen(
 );
 
 $loop->run;
+
+sub is_correct {
+    my $message = shift;
+
+    return ref($message) eq 'REF'
+      && blessed($$message) eq 'message'
+      && defined $$message->{type}
+      && defined $$message->{content};
+}
 
 sub create_rrd {
     my ( $name, $datasources ) = @_;
