@@ -28,13 +28,15 @@ my $rsync_source = "/usr/share/nginx/rrd/";
 my $rsync_dest = "nornagest\@nornagest.org:/usr/share/images/rrd/";
 my $rsync_command = "rsync -r --remove-source-files";
 my @imgs;
+my $count;
 
 while(1) {
-    upload_files() if check_files();
+    upload_files() if check_files() && scalar @imgs == $count;
     sleep(1);
 }
 
 sub check_files {
+    $count = scalar @imgs;
     @imgs = ();
     find(\&wanted, $rsync_source);
     return scalar @imgs;
@@ -50,7 +52,7 @@ sub upload_files {
     my $command = $rsync_command . " " . $rsync_source . "* " . $rsync_dest;
 
     #say scalar localtime . " Executing: $command";
-    say scalar localtime . " Starting upload of " . scalar @imgs . " files...";
+    say scalar localtime . " Starting upload of " . $count . " files...";
     system($command);
     say scalar localtime . " Done.";
 }
