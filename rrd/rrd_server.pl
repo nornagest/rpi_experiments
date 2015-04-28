@@ -101,10 +101,18 @@ $loop->listen(
         $stream->configure(
             on_read => sub {
                 my ( $self, $buffref, $eof ) = @_;
-                return 0 unless $eof;
-                my $message;
-                return unless eval { $message = thaw($$buffref) };
-                save_data($$message);
+
+                my @messages =
+                  sort { $$a->{content}->{time} <=> $$b->{content}->{time} }
+                  grep { defined $_ }
+                  map {
+                    eval { thaw( $_ . "\n" ) }
+                  }
+                  split "\n\n", $$buffref;
+
+                for (@messages) {
+                    save_data($$_);
+                }
                 $$buffref = "";
             },
             on_closed => sub { },
