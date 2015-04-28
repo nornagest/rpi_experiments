@@ -129,7 +129,7 @@ sub is_correct {
     my $message = shift;
 
     return ref($message) eq 'REF'
-      && blessed($$message) eq 'message'
+      && ref($$message) eq 'message'
       && defined $$message->{type}
       && defined $$message->{content};
 }
