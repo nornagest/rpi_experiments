@@ -79,7 +79,7 @@ sub BUILD {
     }
     else {
         say $self->__filename . ' not found.';
-        die unless defined $self->datasources;
+        return unless defined $self->datasources;
         $self->create();
     }
 }
@@ -87,7 +87,7 @@ sub BUILD {
 sub get_rrds {
     my ( $self, $dir ) = shift;
     $dir = $default_dir . '/' . $default_rrd_dir unless defined $dir;
-    opendir( my $dh, $dir ) or die "Error opening $dir.\n";
+    opendir( my $dh, $dir ) or croak "Error opening $dir.\n";
     my @rrds = readdir($dh);
     closedir($dh);
     return map { local $_ = $_; s/(.*)\.rrd/$1/; $_ } grep { /^.*\.rrd/ } @rrds;
@@ -143,13 +143,11 @@ sub create {
 sub update_rrd {
     my ( $self, $data ) = @_;
 
-    #say 'Updating RRD ', $self->name;
-
-    die unless scalar @{ $self->datasources } == scalar @{$data};
+    return unless scalar @{ $self->datasources } == scalar @{$data};
     for ( my $i = 0 ; $i < scalar @{$data} ; $i++ ) {
         my $my_ds  = $self->datasources->[$i];
         my $msg_ds = $data->[$i]->{'ds'};
-        die unless $msg_ds->{'name'} eq $my_ds->{'name'};
+        return unless $msg_ds->{'name'} eq $my_ds->{'name'};
     }
 
     $self->update_data($data);
@@ -164,10 +162,6 @@ sub update_data {
     my $time = $data->[0]->{'time'};
     for ( @{$data} ) {
         push @values, $_->{'value'};
-
-        #        say localtime($_->{'time'}) . ' - '
-        #            . $_->{'ds'}->{'name'} . ': '
-        #            . $_->{'value'};
     }
     $self->__rrd->update( time => $time, values => \@values );
 }
