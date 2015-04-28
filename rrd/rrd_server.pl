@@ -147,6 +147,7 @@ sub save_data {
     my $message = shift;
     my $data    = $message->{'data'};
 
+    say "Save data";
     my $host = $message->{'host'};
     for ( @{$data} ) {
         my $ds = $_->{'ds'};
