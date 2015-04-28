@@ -128,8 +128,8 @@ $loop->run;
 sub is_correct {
     my $message = shift;
 
-    return defined $message->{host}
-        && defined $message->{data};
+    return defined $$message->{host}
+        && defined $$message->{data};
 }
 
 sub create_rrd {
@@ -147,7 +147,6 @@ sub save_data {
     my $message = shift;
     my $data    = $message->{'data'};
 
-    say "Save data";
     my $host = $message->{'host'};
     for ( @{$data} ) {
         my $ds = $_->{'ds'};
