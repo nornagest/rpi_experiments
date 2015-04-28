@@ -38,6 +38,7 @@ while(1) {
 sub check_files {
     $count = scalar @imgs;
     @imgs = ();
+    sleep(5);
     find(\&wanted, $rsync_source);
     return scalar @imgs;
 }
