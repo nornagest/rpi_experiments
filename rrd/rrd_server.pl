@@ -31,7 +31,7 @@ use DataSource;
 
 $| = 1;
 
-my $port = 12346;
+my $port = 12345;
 
 my %rrds;
 for ( RRD->get_rrds() ) {
