@@ -102,7 +102,6 @@ $loop->listen(
             on_read => sub {
                 my ( $self, $buffref, $eof ) = @_;
 
-                say $$buffref;
                 my @messages =
                   sort { $$a->{data}->[0]->{time} <=> $$b->{data}->[0]->{time} }
                   grep { is_correct($_) }
