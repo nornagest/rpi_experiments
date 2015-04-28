@@ -111,8 +111,8 @@ $loop->listen(
         );
         $loop->add($stream);
     },
-    on_resolve_error => sub { print STDERR "Cannot resolve - $_[0]\n"; },
-    on_listen_error  => sub { print STDERR "Cannot listen\n"; },
+    on_resolve_error => sub { carp "Cannot resolve - $_[0]\n"; },
+    on_listen_error  => sub { carp "Cannot listen\n"; },
 );
 
 $loop->run;
