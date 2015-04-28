@@ -32,7 +32,7 @@ my $count;
 
 while(1) {
     upload_files() if check_files() && scalar @imgs == $count;
-    sleep(1);
+    sleep(5);
 }
 
 sub check_files {
@@ -47,13 +47,12 @@ sub wanted {
 }
 
 sub upload_files {
-    #avoid conflict while graphs are created
-    sleep(60);
     my $command = $rsync_command . " " . $rsync_source . "* " . $rsync_dest;
 
-    #say scalar localtime . " Executing: $command";
     say scalar localtime . " Starting upload of " . $count . " files...";
     system($command);
     say scalar localtime . " Done.";
+    
+    sleep(60);
 }
 
