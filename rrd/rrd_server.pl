@@ -137,7 +137,7 @@ sub is_correct {
     my $message = shift;
 
     return defined $$message->{host}
-        && defined $$message->{data};
+      && defined $$message->{data};
 }
 
 sub create_rrd {
