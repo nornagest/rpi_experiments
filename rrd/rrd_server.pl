@@ -67,23 +67,31 @@ my $timer = IO::Async::Timer::Periodic->new(
         print "Creating graphs ";
         my $now    = time();
         my $start  = $now - 4 * 3600;
-        my $suffix = '0004h';
+        my $suffix = '00004h';
         $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
         $start  = $now - 24 * 3600;
-        $suffix = '0024h';
+        $suffix = '00024h';
         $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
         $start  = $now - 7 * 24 * 3600;
-        $suffix = '0168h';
+        $suffix = '00168h';
         $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
-        $start  = $now - 31 * 24 * 3600;
-        $suffix = '0744h';
+        $start  = $now - 4 * 7 * 24 * 3600;
+        $suffix = '00672h';
+        $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+
+        $start  = $now - 12 * 7 * 24 * 3600;
+        $suffix = '02016h';
         $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
 
         $start  = $now - 365 * 24 * 3600;
-        $suffix = '8760h';
+        $suffix = '08760h';
+        $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
+
+        $start  = $now - 5 * 365 * 24 * 3600;
+        $suffix = '43800h';
         $draw_graphs->call( args => [ $start, $now, $suffix ] )->get;
         print "done ";
     },

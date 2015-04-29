@@ -27,13 +27,13 @@ use DataSource;
 my $default_dir     = '.';
 my $default_rrd_dir = 'rrd';
 my $default_img_dir = '/usr/share/nginx/rrd';
-my $step            = 300;
+my $step            = 60;
 
 #TODO: move to specific classes
 #TODO: make sure only one type per RRD
 my %rrd_steps = (
     'DataSource::CPU'     => 5,
-    'DataSource::DS18B20' => 300
+    'DataSource::DS18B20' => 60,
 );
 my %rrd_types = (
     'DataSource::CPU'     => 'GAUGE',
@@ -110,28 +110,28 @@ sub create {
     push @arguments,
       (
         archive => {
-            rows    => 12,
+            rows    => 1440,
             cpoints => 1,
             cfunc   => 'AVERAGE',
         },
         archive => {
-            rows    => 288,
-            cpoints => 1,
+            rows    => 1008,
+            cpoints => 10,
             cfunc   => 'AVERAGE',
         },
         archive => {
-            rows    => 168,
-            cpoints => 12,
+            rows    => 1008,
+            cpoints => 120,
             cfunc   => 'AVERAGE',
         },
         archive => {
-            rows    => 720,
-            cpoints => 12,
+            rows    => 730,
+            cpoints => 720,
             cfunc   => 'AVERAGE',
         },
         archive => {
-            rows    => 365,
-            cpoints => 288,
+            rows    => 1825,
+            cpoints => 1440,
             cfunc   => 'AVERAGE',
         },
       );
