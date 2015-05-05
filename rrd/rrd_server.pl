@@ -136,7 +136,7 @@ $loop->run;
 sub is_correct {
     my $message = shift;
 
-    return ref($message)
+    return ref($message) eq 'HASH'
       && defined $$message->{host}
       && defined $$message->{data};
 }
