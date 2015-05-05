@@ -136,7 +136,8 @@ $loop->run;
 sub is_correct {
     my $message = shift;
 
-    return defined $$message->{host}
+    return ref($message)
+      && defined $$message->{host}
       && defined $$message->{data};
 }
 
