@@ -24,9 +24,10 @@ use RRDTool::OO;
 use DataSource;
 
 #my $default_dir = '/var/db/rrd';
+#my $default_img_dir = '/usr/share/nginx/rrd';
 my $default_dir     = '.';
 my $default_rrd_dir = 'rrd';
-my $default_img_dir = '/usr/share/nginx/rrd';
+my $default_img_dir = '/usr/share/images/rrd';
 my $step            = 60;
 
 #TODO: move to specific classes
