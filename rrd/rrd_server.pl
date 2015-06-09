@@ -44,9 +44,7 @@ my $draw_graphs = IO::Async::Function->new(
     code => sub {
         my ( $start, $end, $name ) = @_;
         for ( values %rrds ) {
-            my $last = $_->last;
-            next if $last < $start;
-            $_->create_graph( $start, $last, $name );
+            $_->create_graph( $start, $end, $name );
         }
     },
 );

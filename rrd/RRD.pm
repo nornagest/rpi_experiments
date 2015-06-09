@@ -172,7 +172,8 @@ sub create_graph {
     my $filename = $self->__img_filename;
     $filename =~ s/(.*)(\.png)/$1_$name_addition$2/;
 
-    #say "Creating Graph ", $filename;
+    $end = $self->__rrd->last;
+    return if $end < $start;
 
     my @arguments;
 
