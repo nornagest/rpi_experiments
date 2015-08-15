@@ -176,8 +176,8 @@ sub create_graph {
     return if $start < $last;
     my $span = $end - $start;
 
-    $end = $last if $last < $end
-    $start = $end - $span
+    $end = $last if $last < $end;
+    $start = $end - $span;
 
     my @arguments;
 
