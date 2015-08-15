@@ -173,7 +173,6 @@ sub create_graph {
     $filename =~ s/(.*)(\.png)/$1_$name_addition$2/;
 
     my $last = $self->__rrd->last;
-    return if $start < $last;
     my $span = $end - $start;
 
     $end = $last if $last < $end;
