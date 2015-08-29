@@ -119,7 +119,7 @@ $loop->listen(
                   split "\n\n", $$buffref;
 
                 for (@messages) {
-                    $self->__loop->later( 
+                    $loop->later( 
                         sub { save_data($$_) }
                     );
                 }
