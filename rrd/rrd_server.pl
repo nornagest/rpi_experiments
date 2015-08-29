@@ -118,11 +118,7 @@ $loop->listen(
                   }
                   split "\n\n", $$buffref;
 
-                for (@messages) {
-                    $loop->later( 
-                        sub { save_data($$_) }
-                    );
-                }
+                $loop->later( sub { save_messages(\@messages); } );
                 $$buffref = "";
             },
             on_closed => sub { },
@@ -134,6 +130,11 @@ $loop->listen(
 );
 
 $loop->run;
+
+sub save_messages {
+    my $message = shift;
+    save_data($$_) for @$messages;
+}
 
 sub is_correct {
     my $message = shift;
