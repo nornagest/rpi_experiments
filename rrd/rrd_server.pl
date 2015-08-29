@@ -132,7 +132,7 @@ $loop->listen(
 $loop->run;
 
 sub save_messages {
-    my $message = shift;
+    my $messages = shift;
     save_data($$_) for @$messages;
 }
 
